@@ -1,0 +1,3017 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>核心层 · 第 9 章 知识库与 RAG</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<style>
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1e40af;
+    --primary-light: #eff6ff;
+    --bg: #ffffff;
+    --bg-soft: #f8fafc;
+    --bg-card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --code-bg: #f1f5f9;
+    --table-header: #f1f5f9;
+    --ok: #16a34a;
+    --warn: #d97706;
+    --err: #dc2626;
+    --accent: #7c3aed;
+    --shadow: 0 1px 3px rgba(0,0,0,0.08);
+    --radius: 10px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;color:var(--text);background:var(--bg);line-height:1.8;font-size:15px}
+  .layout{display:flex;max-width:1400px;margin:0 auto}
+  .sidebar{width:260px;min-width:260px;position:sticky;top:0;height:100vh;overflow-y:auto;padding:24px 16px;background:var(--bg-soft);border-right:1px solid var(--border);display:none}
+  .main{flex:1;min-width:0;padding:32px 48px 80px;max-width:1080px;margin:0 auto}
+  /* Tab 切换器 */
+  .tab-bar{display:flex;gap:10px;margin:18px 0 8px;flex-wrap:wrap}
+  .tab-btn{background:var(--bg-soft);border:1px solid var(--border);border-radius:8px;padding:9px 18px;font-size:14px;font-weight:600;cursor:pointer;color:var(--text);transition:all .2s}
+  .tab-btn:hover{border-color:var(--primary);color:var(--primary-dark)}
+  .tab-btn.active{background:var(--primary);border-color:var(--primary);color:#fff;box-shadow:var(--shadow-sm)}
+  @media print{.tab-bar{display:none}}
+  .sidebar-title{font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);padding:0 8px 12px;border-bottom:1px solid var(--border);margin-bottom:12px}
+  .toc{list-style:none;padding:0;margin:0;font-size:13px}
+  .toc li{margin:1px 0}
+  .toc a{display:block;padding:6px 10px;color:var(--text);text-decoration:none;border-radius:6px;border-left:3px solid transparent;transition:all .15s}
+  .toc a:hover{background:var(--primary-light);border-left-color:var(--primary);color:var(--primary-dark)}
+  .toc a.l0{font-weight:800;color:var(--primary-dark);text-transform:uppercase;font-size:12px;letter-spacing:1px;border-left:3px solid var(--primary);margin-top:10px}
+  .toc a.l1{font-weight:600}
+  .toc a.l2{padding-left:24px;color:var(--muted);font-weight:400}
+  .toc a.active{background:var(--primary-light);border-left-color:var(--primary);color:var(--primary-dark);font-weight:600}
+  .chap-link{color:var(--primary);font-weight:600;text-decoration:none;border-bottom:1px dashed var(--primary);padding:0 1px}
+  .chap-link:hover{background:var(--primary-light);border-bottom-style:solid}
+
+  /* 头部 */
+.hero{background:linear-gradient(135deg,#2563eb,#1e40af);color:#fff;border-radius:14px;padding:24px 32px;margin-bottom:24px;box-shadow:0 4px 16px rgba(37,99,235,0.2);position:relative;overflow:hidden;display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.hero::after{content:"";position:absolute;top:-80px;right:-80px;width:260px;height:260px;background:rgba(255,255,255,0.06);border-radius:50%}
+.hero h1{font-size:24px;margin:0;font-weight:700}
+.hero .badge{display:inline-block;background:rgba(255,255,255,0.2);border:1px solid rgba(255,255,255,0.35);font-size:13px;font-weight:600;padding:3px 14px;border-radius:20px;margin-left:8px}
+.hero .meta{margin:0;font-size:13px;opacity:.92;line-height:1.8;text-align:right}
+.hero .meta p{margin:1px 0}
+.hero .meta a{color:#fff;text-decoration:underline;text-underline-offset:2px}
+
+  /* 引言卡片 */
+  .intro-card{background:var(--primary-light);border:1px solid #bfdbfe;border-radius:var(--radius);padding:20px 24px;margin:20px 0;font-size:15px}
+  .intro-card strong{color:var(--primary-dark)}
+
+  /* 标题 */
+  h2{font-size:24px;font-weight:700;margin:48px 0 16px;padding:14px 18px;border-left:5px solid var(--primary);background:var(--primary-light);border-radius:0 var(--radius) var(--radius) 0;color:var(--primary-dark);scroll-margin-top:20px}
+  h2.part-title{font-size:22px;font-weight:800;margin:56px 0 18px;padding:14px 20px;border-left:none;border-bottom:2px solid var(--primary);background:linear-gradient(90deg,#eef2ff,#f8fafc);border-radius:var(--radius);color:var(--primary-dark);letter-spacing:1px}
+  h3{font-size:18px;font-weight:600;margin:32px 0 12px;color:var(--text);scroll-margin-top:20px;border-bottom:1px solid var(--border);padding-bottom:6px}
+  h4{font-size:16px;font-weight:600;margin:24px 0 10px;color:var(--primary-dark);scroll-margin-top:20px;border-left:3px solid var(--primary-light);padding-left:10px}
+  h5{font-size:15px;font-weight:700;margin:20px 0 8px;color:var(--primary-dark);scroll-margin-top:20px}
+  p{margin:12px 0}
+  strong{font-weight:600;color:#0f172a}
+
+  /* 代码 */
+  code{font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;background:var(--code-bg);border:1px solid var(--border);border-radius:4px;padding:1px 6px}
+  pre{background:#0f172a;color:#e2e8f0;border-radius:10px;padding:18px 20px;overflow-x:auto;line-height:1.6;margin:14px 0;border:1px solid #1e293b}
+  pre code{background:none;border:none;padding:0;color:inherit}
+
+  /* 表格 */
+  .tw{overflow-x:auto;margin:14px 0;border-radius:10px;border:1px solid var(--border);box-shadow:var(--shadow)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  thead th{background:var(--table-header);font-weight:600;text-align:left;padding:11px 14px;border-bottom:2px solid var(--border);white-space:nowrap}
+  tbody td{padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:nth-child(even){background:var(--bg-soft)}
+  tbody tr:hover{background:var(--primary-light)}
+
+  /* 列表 */
+  ul,ol{margin:10px 0;padding-left:26px}
+  li{margin:5px 0}
+  li>ul,li>ol{margin:4px 0}
+
+  /* 引用 */
+  blockquote{margin:16px 0;padding:14px 18px;background:var(--bg-soft);border-left:4px solid var(--primary);color:var(--muted);border-radius:0 8px 8px 0;font-size:14px}
+  blockquote p{margin:4px 0}
+
+  hr{border:none;border-top:1px solid var(--border);margin:40px 0}
+  .ok{color:var(--ok);font-weight:600}
+  .warn{color:var(--warn);font-weight:600}
+  .err{color:var(--err);font-weight:600}
+
+  /* 高亮行 */
+  .hl{background:#dbeafe !important}
+
+  /* 问题卡片 */
+  .problem-box{background:#fef2f2;border:1px solid #fecaca;border-radius:var(--radius);padding:16px 20px;margin:16px 0}
+  .problem-box h4{margin:0 0 8px;color:var(--err);font-size:15px}
+  .solution-box{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:var(--radius);padding:16px 20px;margin:16px 0}
+  .solution-box h4{margin:0 0 8px;color:var(--ok);font-size:15px}
+
+  /* 页脚 */
+  .footer{margin-top:56px;padding-top:20px;border-top:2px solid var(--primary);font-size:13px;color:var(--muted);text-align:center}
+
+  @media(min-width:1200px){.sidebar{display:block}}
+  @media(max-width:768px){.main{padding:20px 16px 60px}.hero{padding:24px 20px}}
+  @media print{.sidebar{display:none}.main{padding:16px;max-width:100%}pre{background:#f5f5f5;color:#333}h2,h3{page-break-after:avoid}.hero{background:#fff;color:#000;border:2px solid var(--primary)}}
+
+  /* Mermaid 容器 */
+  .mermaid-wrap{background:#fff;border:1px solid var(--border);border-radius:10px;padding:16px;margin:14px 0;overflow-x:auto;box-shadow:var(--shadow)}
+  .mermaid{display:block;text-align:center}
+  .mermaid svg,.mermaid-case svg{max-width:100%;height:auto;cursor:zoom-in;transition:filter .2s}
+  .mermaid svg:hover,.mermaid-case svg:hover{filter:drop-shadow(0 0 4px rgba(37,99,235,0.35))}
+  .mermaid-hint{font-size:12px;color:var(--muted);text-align:center;margin-top:8px}
+  @media print{.mermaid-wrap{page-break-inside:avoid}.mermaid-hint{display:none}}
+
+  /* Mermaid Lightbox（点击放大） */
+  .mermaid-modal{position:fixed;inset:0;z-index:9999;background:rgba(10,15,25,0.96);backdrop-filter:blur(12px);display:none;flex-direction:column;opacity:0;transition:opacity .2s}
+  .mermaid-modal.open{display:flex;opacity:1}
+  .mermaid-modal-toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 20px;background:#0f172a;color:#e2e8f0;flex-shrink:0}
+  .mermaid-modal-title{font-size:14px;font-weight:600}
+  .mermaid-modal-actions{display:flex;gap:8px}
+  .mermaid-modal-actions button{background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.25);color:#e2e8f0;border-radius:6px;padding:5px 12px;font-size:13px;cursor:pointer;transition:background .15s}
+  .mermaid-modal-actions button:hover{background:rgba(255,255,255,0.25)}
+  .mermaid-modal-body{flex:1;overflow:hidden;position:relative;touch-action:none}
+  .mermaid-modal-stage{width:100%;height:100%;overflow:hidden;cursor:grab;background:#f1f5f9}
+  .mermaid-modal-stage.dragging{cursor:grabbing}
+  .mermaid-modal-stage svg{transform-origin:0 0;user-select:none;background:#fff;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.5)}
+  .mermaid-modal-stage svg .node rect,
+  .mermaid-modal-stage svg .node polygon,
+  .mermaid-modal-stage svg .cluster rect,
+  .mermaid-modal-stage svg .cluster polygon{fill:#fff !important;stroke:#475569 !important}
+  .mermaid-modal-stage svg .edgePath path{stroke:#475569 !important}
+  .mermaid-modal-stage svg text{fill:#1e293b !important}
+  .mermaid-modal-close{position:absolute;top:12px;right:16px;font-size:22px;color:rgba(255,255,255,0.8);background:none;border:none;cursor:pointer;z-index:10}
+  .mermaid-modal-close:hover{color:#fff}
+</style>
+<script>
+  mermaid.initialize({ startOnLoad: true, theme: 'base', securityLevel: 'loose', useMaxWidth: true, flowchart: { curve: 'basis', nodeSpacing: 30, rankSpacing: 40, htmlLabels: true, padding: 15 }, fontFamily: '"Microsoft YaHei","PingFang SC","Noto Sans SC",sans-serif', themeVariables: { fontSize: '15px', primaryColor: '#ffffff', primaryBorderColor: '#334155', primaryTextColor: '#1e293b', lineColor: '#475569', secondaryColor: '#f8fafc', secondaryBorderColor: '#94a3b8', secondaryTextColor: '#334155', tertiaryColor: '#f0f9ff', tertiaryBorderColor: '#93c5fd', tertiaryTextColor: '#1e40af', noteBkgColor: '#ffffff', noteTextColor: '#333', noteBorderColor: '#999', mainBkg: '#ffffff', nodeBorder: '#475569', clusterBkg: '#f0f9ff', clusterBorder: '#93c5fd', titleColor: '#1e293b', edgeLabelBackground: '#ffffff' } });
+
+// 动态为每个 mermaid 图追加"点击放大"提示
+document.addEventListener('DOMContentLoaded', function () {
+  document.querySelectorAll('.mermaid-wrap').forEach(function (wrap) {
+    if (wrap.querySelector('.mermaid-hint')) return;
+    var hint = document.createElement('div');
+    hint.className = 'mermaid-hint';
+    hint.textContent = '🖱 点击图形可放大 · 滚轮缩放 · 拖拽平移 · 双击复位';
+    wrap.appendChild(hint);
+  });
+});
+</script>
+</head>
+<body>
+<div class="layout">
+<nav class="sidebar" id="sidebar">
+  <div class="sidebar-title">📑 章节导航</div>
+  <ul class="toc" id="toc"></ul>
+</nav>
+<main class="main">
+
+<header class="hero">
+  <h1>核心层 · 第 9 章 知识库与 RAG <span class="badge">✅ 定稿 v3.4</span></h1>
+  <div class="meta">
+    <p>所属：核心层详细设计 · <a href="../核心层详细设计.md">返回导航</a></p>
+    <p>版本：v3.4 ｜ 日期：2026-08-11</p>
+  </div>
+</header>
+
+<!-- Tab 切换器 -->
+<div class="tab-bar">
+  <button class="tab-btn active" data-tab="design" onclick="switchTab('design')">📖 整体设计（9.1-9.12）</button>
+  <button class="tab-btn" data-tab="case" onclick="switchTab('case')">📄 实际案例（9.13）</button>
+  <button class="tab-btn" data-tab="detail" onclick="switchTab('detail')">📐 开发级详细设计</button>
+</div>
+
+<div id="tab-detail" style="display:none">
+<blockquote>
+<p>版本：v1.3 | 日期：2026-08-11
+前置：以《09-知识库与RAG.md》（v3.4 架构设计）为基础，本文档补齐开发所需的<strong>接口签名 / 数据模型 / 契约 / 迁移清单</strong>
+用途：编码前的最后一道文档，开发直接照此实现
+对应排期：P4a ~ P7
+状态：✅ 已定稿（§12 开发前决策 2026-08-11 全部确认；v1.2 补齐异常定义/OKF 模板/未命中语义/风险分级精确规则；v1.3 补充 manager 边界与 Web 端融合交叉引用）</p>
+</blockquote>
+<hr />
+<h2 id="0-ch9">0. 本文档与 Ch9 架构设计的关系</h2>
+<table>
+<thead>
+<tr>
+<th>文档</th>
+<th>层面</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="09-知识库与RAG.md">09-知识库与RAG.md</a>（v3.4）</td>
+<td>架构设计</td>
+<td>为什么这么设计、整体架构、治理模型</td>
+</tr>
+<tr>
+<td><strong>本文档（v1.3）</strong></td>
+<td><strong>开发级详细设计</strong></td>
+<td>接口签名、数据结构、Schema、API 契约、迁移步骤</td>
+</tr>
+<tr>
+<td>后续</td>
+<td>编码</td>
+<td>按本文档实现</td>
+</tr>
+</tbody>
+</table>
+<h3 id="01">0.1 章节关联映射（双向跳转）</h3>
+<table>
+<thead>
+<tr>
+<th>本文档章节</th>
+<th>对应架构设计章节</th>
+<th>跳转</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>§1 数据模型</td>
+<td><a href="09-知识库与RAG.md#97-知识目录规范">§9.7 知识目录规范</a> / <a href="09-知识库与RAG.md#98-检索设计">§9.8 检索设计</a></td>
+<td>字段定义 ↔ frontmatter schema</td>
+</tr>
+<tr>
+<td>§2 RAGProvider 完整接口</td>
+<td><a href="09-知识库与RAG.md#981-检索原语与统一入口">§9.8.1 检索原语与统一入口</a></td>
+<td>接口签名 ↔ 设计说明</td>
+</tr>
+<tr>
+<td>§3 检索原语接口</td>
+<td><a href="09-知识库与RAG.md#982-检索策略链每库声明非全库统一">§9.8.2 检索策略链</a></td>
+<td>原语实现 ↔ 各库策略链</td>
+</tr>
+<tr>
+<td>§4 DocStructPlugin 完整接口</td>
+<td><a href="09-知识库与RAG.md#991-入库流水线">§9.9.1 入库流水线 L2</a></td>
+<td>插件接口 ↔ L0-L3 分层设计</td>
+</tr>
+<tr>
+<td>§5 注册中心 schema</td>
+<td><a href="09-知识库与RAG.md#963-知识库注册中心治理核心新增组件">§9.6.3 知识库注册中心</a></td>
+<td>JSON Schema ↔ YAML 示例</td>
+</tr>
+<tr>
+<td>§6 配置 schema</td>
+<td><a href="09-知识库与RAG.md#983-向量库选型elasticsearch">§9.8.3 向量库选型（ES）</a> / <a href="09-知识库与RAG.md#9111-集成方式工具为主-context-注入为辅双轨">§9.11.1 集成方式（Context 注入）</a></td>
+<td>配置约束 ↔ 配置示例</td>
+</tr>
+<tr>
+<td>§7 入库流水线实现</td>
+<td><a href="09-知识库与RAG.md#991-入库流水线">§9.9.1 入库流水线</a></td>
+<td>实现步骤 ↔ 流水线设计</td>
+</tr>
+<tr>
+<td>§8 审计记录格式</td>
+<td><a href="09-知识库与RAG.md#993-信任与生命周期治理">§9.9.3 ④ 审计</a></td>
+<td>记录格式 ↔ 审计能力</td>
+</tr>
+<tr>
+<td>§9 知识工作台 API 契约</td>
+<td><a href="09-知识库与RAG.md#910-知识库工作台业务人员要做什么">§9.10 知识库工作台</a></td>
+<td>API 契约 ↔ 页签功能</td>
+</tr>
+<tr>
+<td>§10 迁移清单</td>
+<td><a href="09-知识库与RAG.md#9122-7-套现有实现迁移策略">§9.12.2 7 套迁移策略</a></td>
+<td>迁移步骤 ↔ 迁移方向</td>
+</tr>
+<tr>
+<td>§11 实现顺序</td>
+<td><a href="09-知识库与RAG.md#9121-排期rag-从-p7-提前至-p4p5">§9.12.1 排期</a></td>
+<td>阶段交付 ↔ P4a-P7</td>
+</tr>
+<tr>
+<td>§12 待确认决策</td>
+<td><a href="09-知识库与RAG.md#912-实施路径">§9.12 实施路径</a></td>
+<td>决策点 ↔ 实施依赖</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>📖 <strong>使用方式</strong>：从架构设计跳到本文档看"怎么实现"，从本文档跳回架构设计看"为什么这么设计"。</p>
+</blockquote>
+<h3 id="02-v12">0.2 最新设计点交叉引用（v1.2 补充）</h3>
+<p>主文档 v3.4 后续新增了两个设计点，与本文档的实现约束相关，需在开发时对齐：</p>
+<table>
+<thead>
+<tr>
+<th>最新设计点</th>
+<th>主文档位置</th>
+<th>对本文档实现的约束</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>manager 只路由不检索</strong></td>
+<td><a href="09-知识库与RAG.md#965-manager-的统一知识门户定位">§9.6.5 manager 的统一知识门户定位</a></td>
+<td>本文档 §2 RAGProvider 的 <code>search()</code> 是<strong>子 agent 调用</strong>，manager 仅做意图识别/路由/任务拆解分配；<code>agent_id</code> 审计字段如实记录调用方</td>
+</tr>
+<tr>
+<td><strong>Web 端融合 Obsidian</strong></td>
+<td><a href="09-知识库与RAG.md#9103-web-端融合-obsidian-功能方向-a复刻核心">§9.10.3 Web 端融合 Obsidian 功能</a></td>
+<td>本文档 §9 工作台 API 契约 + <code>knowledge-workbench/index.html</code> 前端需复刻 Obsidian 核心能力（marked 渲染 / 图谱图库 / 双链解析），数据与 Obsidian 同源（同一 vault）</td>
+</tr>
+</tbody>
+</table>
+<p><strong>对 §9 API 契约的影响</strong>：
+- <code>knowledge_search</code> 由<strong>子 agent</strong> 经 ReAct 循环调用（非 manager 直接调用），接口需记录 <code>agent_id</code>（调用方）
+- <code>knowledge_review_status</code> / <code>knowledge_ingest</code> 由业务人员/运维经 Web 工作台调用，接口需与 Web 端 marked 渲染 + 图谱图库对接</p>
+<hr />
+<h2 id="1">1. 数据模型</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#97-知识目录规范">§9.7 知识目录规范</a> · <a href="09-知识库与RAG.md#98-检索设计">§9.8 检索设计</a></p>
+</blockquote>
+<h3 id="11-chunk">1.1 Chunk（检索单元）</h3>
+<div class="codehilite"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Chunk</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;检索结果单元&quot;&quot;&quot;</span>
+    <span class="n">content</span><span class="p">:</span> <span class="nb">str</span>                    <span class="c1"># chunk 文本（必填）</span>
+    <span class="n">score</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>              <span class="c1"># RRF 融合分 [0,1]，默认 0</span>
+    <span class="n">source_doc_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>         <span class="c1"># 源文档 ID（必填，来自 sources）</span>
+    <span class="n">source_doc_version</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>    <span class="c1"># 源文档版本（如 &quot;V1.0&quot;）</span>
+    <span class="n">chapter</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>               <span class="c1"># 章节（可选）</span>
+    <span class="n">section</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>               <span class="c1"># 小节（可选）</span>
+    <span class="n">chunk_index</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>            <span class="c1"># 分块序号（从 0 起）</span>
+    <span class="n">knowledge_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;QA&quot;</span>      <span class="c1"># Parameter|Clause|QA|Concept|Policy|Relation</span>
+    <span class="n">trust_level</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;low&quot;</span>        <span class="c1"># high|medium|low（默认 low）</span>
+    <span class="n">valid_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># 生效日期 ISO8601</span>
+    <span class="n">valid_until</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1"># 失效日期 ISO8601，None=长期有效</span>
+    <span class="n">raw_metadata</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>  <span class="c1"># 原语自定义元数据</span>
+</code></pre></div>
+
+<p>校验规则：
+- <code>content</code> 非空、≤ 5000 字符
+- <code>knowledge_type</code> ∈ {Parameter, Clause, QA, Concept, Policy, Relation}
+- <code>trust_level</code> ∈ {high, medium, low}
+- <code>score</code> ∈ [0, 1]</p>
+<h3 id="12-searchresult">1.2 SearchResult（检索返回）</h3>
+<div class="codehilite"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SearchResult</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;统一检索返回&quot;&quot;&quot;</span>
+    <span class="n">chunks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Chunk</span><span class="p">]</span>              <span class="c1"># 命中结果</span>
+    <span class="n">total_hits</span><span class="p">:</span> <span class="nb">int</span>                  <span class="c1"># 命中总数（≥ len(chunks)）</span>
+    <span class="n">search_mode</span><span class="p">:</span> <span class="nb">str</span>                 <span class="c1"># exact|field|clause|keyword|vector|graph|timeline|external|hybrid</span>
+    <span class="n">query</span><span class="p">:</span> <span class="nb">str</span>                       <span class="c1"># 原始查询</span>
+    <span class="n">chain_path</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># 实际经过的原语链</span>
+    <span class="n">elapsed_ms</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>              <span class="c1"># 耗时（审计用）</span>
+    <span class="n">session_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>             <span class="c1"># 检索发起会话（审计用）</span>
+    <span class="n">agent_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>               <span class="c1"># 检索发起 agent（审计用）</span>
+</code></pre></div>
+
+<p><strong>未命中语义</strong>：策略链全部原语未命中（chunks 为空）时：
+- <code>search_mode</code> = "no_hit"
+- <code>chain_path</code> 记录全部走过的原语（供分析层判断检索失败原因）
+- 若该库配置了 <code>external</code> 原语且 <code>enable_fallback=true</code>，自动执行外部编译兜底；兜底也空 → 返回空 chunks + <code>chain_path</code> 含 "external"
+- 上层（工具 <code>knowledge_search</code>）收到空结果时，返回"未检索到相关知识，建议换措辞或调整知识库"的提示语</p>
+<h3 id="13-freshness">1.3 Freshness（生命周期状态）</h3>
+<div class="codehilite"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Freshness</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;文档生命周期状态&quot;&quot;&quot;</span>
+    <span class="n">doc_id</span><span class="p">:</span> <span class="nb">str</span>                      <span class="c1"># 文档 ID</span>
+    <span class="n">status</span><span class="p">:</span> <span class="nb">str</span>                      <span class="c1"># active|superseded|expired|unknown</span>
+    <span class="n">valid_from</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>    <span class="c1"># 生效日期</span>
+    <span class="n">valid_until</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span>   <span class="c1"># 失效日期</span>
+    <span class="n">checked_at</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>             <span class="c1"># 检查时间 ISO8601</span>
+    <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>                 <span class="c1"># 失效原因（如 &quot;ESB docStatus=1&quot;）</span>
+</code></pre></div>
+<p><strong><code>Freshness</code> 是生命周期检查的统一产物，<code>lifecycle</code> 是可扩展机制</strong>：<code>reason</code> 为开放式字符串，可承载任意失效来源（文件 mtime / ESB docStatus / DB 版本 / 消息队列等）。内置三种检查器——<code>FileLifecycleChecker</code>（mtime 30s 轮询）、<code>EsbLifecycleChecker</code>（ESB docStatus 事件）、<code>NoneLifecycleChecker</code>（不自动失效）。<strong>新增一种 lifecycle = 三步</strong>（与 DocStructPlugin / 检索原语同为"注册即用"）：①实现 <code>check_freshness</code> 检查器；②§5.1 schema 的 <code>lifecycle</code> enum 加值；③注册中心加载器补 <code>值 → 检查器</code> 映射。<code>RAGProvider.check_freshness()</code>（§2.2）内部按 <code>lifecycle</code> 值分发到对应检查器。</p>
+
+<h3 id="14-structuredblock">1.4 StructuredBlock（业务结构化产物）</h3>
+<div class="codehilite"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">StructuredBlock</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DocStructPlugin 业务切分后的领域结构块&quot;&quot;&quot;</span>
+    <span class="n">block_id</span><span class="p">:</span> <span class="nb">str</span>                    <span class="c1"># 块 ID（如 &quot;clause-03-02&quot;）</span>
+    <span class="n">block_type</span><span class="p">:</span> <span class="nb">str</span>                  <span class="c1"># clause|article|qa_pair|concept|rule|plain</span>
+    <span class="n">title</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>                  <span class="c1"># 块标题</span>
+    <span class="n">content</span><span class="p">:</span> <span class="nb">str</span>                     <span class="c1"># 块正文</span>
+    <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span>                   <span class="c1"># 层级（条款/章节嵌套深度）</span>
+    <span class="n">source_chunks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">list</span><span class="p">)</span>  <span class="c1"># 来源通用块序号</span>
+    <span class="n">extra</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="n">field</span><span class="p">(</span><span class="n">default_factory</span><span class="o">=</span><span class="nb">dict</span><span class="p">)</span>               <span class="c1"># 领域扩展（如条款号）</span>
+</code></pre></div>
+
+<h3 id="15-fieldvalue">1.5 FieldValue（字段提取产物）</h3>
+<div class="codehilite"><pre><span></span><code><span class="nd">@dataclass</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">FieldValue</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;DocStructPlugin 字段提取结果&quot;&quot;&quot;</span>
+    <span class="n">field_name</span><span class="p">:</span> <span class="nb">str</span>                  <span class="c1"># 字段名（如 management_fee_rate）</span>
+    <span class="n">field_value</span><span class="p">:</span> <span class="n">Any</span>                 <span class="c1"># 字段值（str/float/int/bool/list）</span>
+    <span class="n">field_type</span><span class="p">:</span> <span class="nb">str</span>                  <span class="c1"># str|float|int|bool|list</span>
+    <span class="n">source_block_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>        <span class="c1"># 来源结构块</span>
+    <span class="n">source_text</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>            <span class="c1"># 来源原文片段</span>
+    <span class="n">confidence</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.0</span>          <span class="c1"># 置信度 [0,1]</span>
+    <span class="n">unit</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>                   <span class="c1"># 单位（如 %）</span>
+</code></pre></div>
+
+<hr />
+<h2 id="2-ragprovider">2. RAGProvider 完整接口</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#981-检索原语与统一入口">§9.8.1 检索原语与统一入口</a></p>
+</blockquote>
+<h3 id="21">2.1 类定义</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RAGProvider</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;统一知识检索抽象。所有知识库经此访问。&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">registry</span><span class="p">:</span> <span class="n">KnowledgeRegistry</span><span class="p">,</span>      <span class="c1"># 注册中心（§5）</span>
+        <span class="n">vector_store</span><span class="p">:</span> <span class="n">VectorStore</span><span class="p">,</span>        <span class="c1"># 向量库适配器（默认 ES）</span>
+        <span class="n">embedding_model</span><span class="p">:</span> <span class="n">EmbeddingModel</span><span class="p">,</span>  <span class="c1"># 向量化模型</span>
+        <span class="n">config</span><span class="p">:</span> <span class="n">RagConfig</span><span class="p">,</span>                <span class="c1"># 全局配置（§6）</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="o">...</span>
+</code></pre></div>
+
+<h3 id="22">2.2 方法签名与异常</h3>
+<div class="codehilite"><pre><span></span><code>    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">search</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">knowledge_base</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>   <span class="c1"># None=全库</span>
+        <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">as_of_date</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>       <span class="c1"># 时间旅行</span>
+        <span class="n">session_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="n">agent_id</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SearchResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;统一检索入口。</span>
+<span class="sd">        行为：</span>
+<span class="sd">          1. knowledge_base 指定 → 读该库 retrieval_chain，按序执行原语，命中即返回</span>
+<span class="sd">          2. knowledge_base 未指定 → 全库检索（各库按自身链执行，结果聚合）</span>
+<span class="sd">          3. chain_path 记录实际路径</span>
+<span class="sd">          4. 执行后写审计日志（§8）</span>
+<span class="sd">        异常：</span>
+<span class="sd">          - KnowledgeBaseNotFoundError: knowledge_base 未注册</span>
+<span class="sd">          - PermissionDeniedError: 会话无该库权限</span>
+<span class="sd">          - EmbeddingError: 向量化失败</span>
+<span class="sd">          - VectorStoreTimeout: 向量库超时（超时重试 1 次）</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ingest</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">doc_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">knowledge_base</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">doc_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>        <span class="c1"># 传 DocStructPlugin.can_handle 匹配</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;入库（§7 流水线 L0-L3）。</span>
+<span class="sd">        返回：doc_id。</span>
+<span class="sd">        异常：</span>
+<span class="sd">          - KnowledgeBaseNotFoundError</span>
+<span class="sd">          - UnsupportedDocTypeError: 无插件可处理该文档</span>
+<span class="sd">          - IngestFailureError: 流水线任一步失败（保留旧索引）</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">check_freshness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Freshness</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;生命周期检查。异常：UnknownDocError&quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">invalidate</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">reason</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;标记失效，返回受影响知识条目 ID。异常：UnknownDocError&quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">archive</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">question</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">answer_summary</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">knowledge_base</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">products</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;自学习归档。返回：归档条目 ID。&quot;&quot;&quot;</span>
+</code></pre></div>
+
+<h3 id="23">2.3 原语注册与执行机制</h3>
+<div class="codehilite"><pre><span></span><code>    <span class="k">def</span><span class="w"> </span><span class="nf">register_primitive</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">primitive</span><span class="p">:</span> <span class="n">RetrievalPrimitive</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;注册检索原语（启动时各库按 retrieval_chain 装配）&quot;&quot;&quot;</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">_run_chain</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">chain</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">ctx</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SearchResult</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;按 chain 顺序执行原语，命中即返回；chain_path 累计&quot;&quot;&quot;</span>
+</code></pre></div>
+
+<h3 id="24">2.4 异常类型定义</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">KnowledgeError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;知识库异常基类&quot;&quot;&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">KnowledgeBaseNotFoundError</span><span class="p">(</span><span class="n">KnowledgeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;知识库未注册&quot;&quot;&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PermissionDeniedError</span><span class="p">(</span><span class="n">KnowledgeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;会话/角色无该库权限&quot;&quot;&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnknownDocError</span><span class="p">(</span><span class="n">KnowledgeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;文档 ID 不存在&quot;&quot;&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UnsupportedDocTypeError</span><span class="p">(</span><span class="n">KnowledgeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;无 DocStructPlugin 可处理该文档类型&quot;&quot;&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">EmbeddingError</span><span class="p">(</span><span class="n">KnowledgeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;向量化失败（外部服务异常）&quot;&quot;&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">VectorStoreTimeout</span><span class="p">(</span><span class="n">KnowledgeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;向量库超时（内部已重试 1 次仍失败）&quot;&quot;&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">IngestFailureError</span><span class="p">(</span><span class="n">KnowledgeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;入库流水线失败（旧索引保留）&quot;&quot;&quot;</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">RegistryValidationError</span><span class="p">(</span><span class="n">KnowledgeError</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;knowledge_registry.yaml 校验失败（含字段错误明细）&quot;&quot;&quot;</span>
+
+<span class="c1"># 继承关系：所有业务异常 &lt;: KnowledgeError &lt;: Exception</span>
+</code></pre></div>
+
+<hr />
+<h2 id="3-retrievalprimitive">3. 检索原语接口（RetrievalPrimitive）</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#982-检索策略链每库声明非全库统一">§9.8.2 检索策略链（每库声明，非全库统一）</a></p>
+</blockquote>
+<h3 id="31">3.1 基类</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">RetrievalPrimitive</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;一种检索动作。各库可按需实现/启用。&quot;&quot;&quot;</span>
+
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>   <span class="c1"># cache|field|clause|keyword|vector|graph|timeline|external|sql</span>
+
+    <span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">retrieve</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">top_k</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
+        <span class="n">knowledge_base</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+        <span class="o">**</span><span class="n">kwargs</span><span class="p">,</span>   <span class="c1"># as_of_date / doc_whitelist / field_name ...</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">Chunk</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;执行检索，返回结果（可为空列表=未命中）&quot;&quot;&quot;</span>
+</code></pre></div>
+
+<h3 id="32">3.2 各原语实现要点</h3>
+<table>
+<thead>
+<tr>
+<th>原语</th>
+<th>实现类</th>
+<th>关键实现点</th>
+<th>现有代码复用</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>cache</td>
+<td>CachePrimitive</td>
+<td>hash(query) 查问答缓存 → 命中返回；未命中 None</td>
+<td><code>wiki_manager.py:584</code> query_clause hash 层</td>
+</tr>
+<tr>
+<td>field</td>
+<td>FieldPrimitive</td>
+<td>读注册中心 field 映射（合同 78 字段/法规条款号）精确匹配</td>
+<td><code>wiki_manager.py:1210</code> search_by_field_value</td>
+</tr>
+<tr>
+<td>clause</td>
+<td>ClausePrimitive</td>
+<td>读编译时切分的 clauses.json，关键词命中数排序</td>
+<td><code>wiki_manager.py:527</code></td>
+</tr>
+<tr>
+<td>keyword</td>
+<td>KeywordPrimitive</td>
+<td>jieba 分词 + BM25；无 BM25 降级子串</td>
+<td><code>wiki_manager.py:1086</code></td>
+</tr>
+<tr>
+<td>vector</td>
+<td>VectorPrimitive</td>
+<td>委托向量库 kNN + BM25 + RRF；阈值 0.4</td>
+<td><code>pg_retriever.py:74</code> hybrid_search</td>
+</tr>
+<tr>
+<td>graph</td>
+<td>GraphPrimitive</td>
+<td>图谱节点/关系查询（11 种关系）</td>
+<td><code>graph/graphify.py:234</code></td>
+</tr>
+<tr>
+<td>timeline</td>
+<td>TimelinePrimitive</td>
+<td>生命周期时间旅行（as_of_date）</td>
+<td><code>wiki_manager.py:1503</code></td>
+</tr>
+<tr>
+<td>external</td>
+<td>ExternalPrimitive</td>
+<td>文档LLM检索 / 本地 PDF LLM 编译兜底，回写缓存</td>
+<td><code>local_wiki_compiler.py</code></td>
+</tr>
+<tr>
+<td>sql</td>
+<td>SqlPrimitive</td>
+<td>结构化 SQL 查询（稽核风控 OceanBase）</td>
+<td><code>audit_agent/tools.py</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="33-retrieval_chain-ch9-982">3.3 各库 retrieval_chain（与 Ch9 §9.8.2 一致）</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">CHAIN_CONTRACT</span>   <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cache&quot;</span><span class="p">,</span> <span class="s2">&quot;field&quot;</span><span class="p">,</span> <span class="s2">&quot;clause&quot;</span><span class="p">,</span> <span class="s2">&quot;keyword&quot;</span><span class="p">,</span> <span class="s2">&quot;vector&quot;</span><span class="p">,</span> <span class="s2">&quot;graph&quot;</span><span class="p">,</span> <span class="s2">&quot;timeline&quot;</span><span class="p">,</span> <span class="s2">&quot;external&quot;</span><span class="p">]</span>
+<span class="n">CHAIN_COMPLIANCE</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cache&quot;</span><span class="p">,</span> <span class="s2">&quot;keyword&quot;</span><span class="p">,</span> <span class="s2">&quot;concept&quot;</span><span class="p">,</span> <span class="s2">&quot;entity&quot;</span><span class="p">,</span> <span class="s2">&quot;article&quot;</span><span class="p">,</span> <span class="s2">&quot;raw_lookup&quot;</span><span class="p">]</span>
+<span class="n">CHAIN_AUDIT</span>      <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;keyword&quot;</span><span class="p">,</span> <span class="s2">&quot;sql&quot;</span><span class="p">]</span>
+<span class="n">CHAIN_CUSTOMER</span>   <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cache&quot;</span><span class="p">,</span> <span class="s2">&quot;jaccard&quot;</span><span class="p">,</span> <span class="s2">&quot;substring&quot;</span><span class="p">]</span>
+<span class="n">CHAIN_DEMAND</span>     <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;keyword&quot;</span><span class="p">,</span> <span class="s2">&quot;vector&quot;</span><span class="p">]</span>
+<span class="n">CHAIN_PUBLIC</span>     <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;keyword&quot;</span><span class="p">,</span> <span class="s2">&quot;fingerprint&quot;</span><span class="p">]</span>
+<span class="n">CHAIN_PRODUCT</span>    <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;cache&quot;</span><span class="p">,</span> <span class="s2">&quot;wiki&quot;</span><span class="p">,</span> <span class="s2">&quot;oracle&quot;</span><span class="p">]</span>
+</code></pre></div>
+
+<p>注：<code>concept/entity/article/raw_lookup/jaccard/substring/fingerprint/wiki/oracle</code> 为各库私有原语，在插件包内实现（§3.4）。</p>
+<h3 id="34">3.4 原语组织方式</h3>
+<div class="codehilite"><pre><span></span><code>agents/console_gateway/ 或独立包 knowledge_engine/
+├── primitives/                 # 通用原语
+│   ├── cache.py / field.py / clause.py / keyword.py
+│   ├── vector.py / graph.py / timeline.py / external.py / sql.py
+├── domain_plugins/             # 各库业务插件
+│   ├── contract/               # DocStructPlugin + 私有原语（field/clause 等）
+│   ├── compliance/
+│   ├── audit/ customer/ demand/ public/ product/
+</code></pre></div>
+
+<hr />
+<h2 id="4-docstructplugin">4. DocStructPlugin 完整接口</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#991-入库流水线">§9.9.1 入库流水线（L0-L3 分层）</a></p>
+</blockquote>
+<h3 id="41">4.1 基类</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">DocStructPlugin</span><span class="p">(</span><span class="n">Protocol</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;文档结构化插件：各 agent 在通用切块之上叠加业务理解&quot;&quot;&quot;</span>
+
+    <span class="n">plugin_id</span><span class="p">:</span> <span class="nb">str</span>                  <span class="c1"># contract_clause / regulation_article / ...</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">can_handle</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">doc_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;是否处理此文档类型（fund_contract / regulation / qa_pairs / operation_guide / audit_docs）&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">structure</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">chunks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Chunk</span><span class="p">],</span>
+        <span class="n">source_doc_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuredBlock</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;业务切分：通用语义块 → 领域结构（条款/条文/问答对/概念）&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">extract_fields</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">blocks</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">StructuredBlock</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">FieldValue</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;字段提取：结构块 → 业务字段（费率/生效日期/问答主题）&quot;&quot;&quot;</span>
+</code></pre></div>
+
+<h3 id="42">4.2 各库插件实现清单</h3>
+<table>
+<thead>
+<tr>
+<th>插件</th>
+<th>doc_type</th>
+<th>structure 产出</th>
+<th>extract_fields</th>
+<th>现有代码</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ContractClausePlugin</td>
+<td>fund_contract</td>
+<td>clause 块（编号/标题/类型/层级）</td>
+<td>78 字段（费率/风险/开放日）</td>
+<td><code>clause_segmenter.py</code> + <code>field_definitions.py</code></td>
+</tr>
+<tr>
+<td>RegulationArticlePlugin</td>
+<td>regulation</td>
+<td>article 块（条文号/章节）</td>
+<td>条款号/生效日期/监管机构</td>
+<td>ComplianceQ <code>_direct_clause_lookup</code></td>
+</tr>
+<tr>
+<td>QaPairPlugin</td>
+<td>qa_pairs</td>
+<td>qa_pair 块（问题/答案）</td>
+<td>问题/答案/主题</td>
+<td>customer_qa <code>tools.py</code></td>
+</tr>
+<tr>
+<td>OperationGuidePlugin</td>
+<td>operation_guide</td>
+<td>无（纯自由文本）</td>
+<td>无</td>
+<td>—</td>
+</tr>
+<tr>
+<td>ConceptClassifierPlugin</td>
+<td>audit_docs</td>
+<td>concept/rule 块</td>
+<td>概念定义/规则编号</td>
+<td>audit_agent <code>tools.py</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="5-schema">5. 注册中心 schema</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#963-知识库注册中心治理核心新增组件">§9.6.3 知识库注册中心（治理核心）</a></p>
+</blockquote>
+<h3 id="51-knowledge_registryyaml-json-schema">5.1 knowledge_registry.yaml JSON Schema</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="s2">&quot;$schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://json-schema.org/draft-07/schema#&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;knowledge_bases&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="s2">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">&quot;knowledge_bases&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s2">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="s2">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;id&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;domain&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;path&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;struct_plugin&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;retrieval_chain&quot;</span><span class="p">],</span>
+<span class="w">        </span><span class="s2">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">          </span><span class="s2">&quot;id&quot;</span><span class="p">:</span><span class="w">              </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;pattern&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;^[a-z_]+$&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="s2">&quot;domain&quot;</span><span class="p">:</span><span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="s2">&quot;path&quot;</span><span class="p">:</span><span class="w">            </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="s2">&quot;struct_plugin&quot;</span><span class="p">:</span><span class="w">   </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="s2">&quot;retrieval_chain&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="s2">&quot;knowledge_types&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;Parameter&quot;</span><span class="p">,</span><span class="s2">&quot;Clause&quot;</span><span class="p">,</span><span class="s2">&quot;QA&quot;</span><span class="p">,</span><span class="s2">&quot;Concept&quot;</span><span class="p">,</span><span class="s2">&quot;Policy&quot;</span><span class="p">,</span><span class="s2">&quot;Relation&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="s2">&quot;embedding&quot;</span><span class="p">:</span><span class="w">       </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">          </span><span class="s2">&quot;lifecycle&quot;</span><span class="p">:</span><span class="w">       </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;esb&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;none&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;file&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">},</span><span class="w">  </span><span class="c1">// 内置三种；可扩展：新增 = 实现 check_freshness 检查器 + enum 加值 + 加载器映射（见 §1.3）</span>
+<span class="w">          </span><span class="s2">&quot;permission&quot;</span><span class="p">:</span><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;array&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span><span class="w">  </span><span class="c1">// 访问白名单（角色/会话，空=公开）</span>
+<span class="w">          </span><span class="s2">&quot;tenant&quot;</span><span class="p">:</span><span class="w">          </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"> </span><span class="p">},</span><span class="w">                               </span><span class="c1">// 租户/部门隔离边界（默认跨租户不可见）</span>
+<span class="w">          </span><span class="s2">&quot;owner&quot;</span><span class="p">:</span><span class="w">           </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"> </span><span class="p">}</span><span class="w">                                </span><span class="c1">// 归属 agent（路由归属 + 报表聚合 + 责任追溯）</span>
+<span class="w">        </span><span class="p">}</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+<p><strong><code>knowledge_types</code> 用途</strong>（知识类型白名单）：</p>
+<ul>
+<li>取值：全局六类枚举 <code>Parameter | Clause | QA | Concept | Policy | Relation</code>（与 frontmatter <code>type</code> 一致，§1.1 / 架构 §9.7.2），每库声明自己的子集</li>
+<li>生效时机：入库流水线 L2 插件产出 <code>StructuredBlock</code> → 映射 <code>type</code> → <strong>生成 OKF 文件前校验 <code>type ∈ knowledge_types</code></strong>（<code>ingest_pipeline.py</code> 调用 <code>validate_knowledge_type</code>）；不在名单内则拦截（不写 wiki/，不建索引）</li>
+<li>与 <code>struct_plugin</code> 分工：插件管"怎么切"（识别结构块），白名单管"能存什么"（校验 type）；插件可识别出多种类型，白名单决定该库实际收纳哪几种</li>
+<li>注册中心加载器在启动时校验该字段值合法（enum 范围内），非法配置抛 <code>RegistryValidationError</code></li>
+</ul>
+<p><strong><code>embedding</code> 用途</strong>（入库侧向量化开关）：</p>
+<ul>
+<li><code>true</code>：L3 调用 embedding 模型（<code>provider</code> 指定的向量库 + <code>embedding_model</code>/<code>embedding_dimension</code>，§6.1）生成向量并写入 ES 向量索引；检索链可含 <code>vector</code> 原语做语义兜底</li>
+<li><code>false</code>：L3 只生成 OKF 文件，不调 embedding、不写 ES 向量；检索链不含 <code>vector</code>，靠精确/字段/图谱命中</li>
+<li>判断标准：含自由文本（Concept/Policy/QA/Clause）且提问开放式（措辞不可枚举）→ <code>true</code>；纯结构化（Parameter/Relation 为主）且业务问题可精确命中 → <code>false</code></li>
+<li>与检索链一致性：<code>true</code> 配含 <code>vector</code> 的 <code>retrieval_chain</code>；<code>false</code> 配不含 <code>vector</code> 的链（若链含 <code>vector</code> 而 <code>embedding: false</code>，属"预留未启用"状态，启用前应改为 <code>true</code>）</li>
+<li>编码要点：<code>ingest_pipeline.py</code> 的 <code>vectorize_and_index()</code> 依据该开关决定是否调用 embedding 与写 ES</li>
+</ul>
+
+<h3 id="52">5.2 注册中心加载器</h3>
+<div class="codehilite"><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">KnowledgeRegistry</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;加载 + 校验 knowledge_registry.yaml&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">yaml_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="c1"># 校验失败抛 RegistryValidationError（含字段错误明细）</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kb_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">KnowledgeBaseConfig</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;不存在抛 KnowledgeBaseNotFoundError&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">all</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">KnowledgeBaseConfig</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;全部库配置&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">route_chain</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kb_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;该库检索策略链&quot;&quot;&quot;</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">has_permission</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">kb_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">session_roles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;权限校验：permission 为空=公开；否则需命中会话角色&quot;&quot;&quot;</span>
+</code></pre></div>
+
+<hr />
+<h2 id="6-schema">6. 配置 schema</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#983-向量库选型elasticsearch">§9.8.3 向量库选型（ES/embedding）</a> · <a href="09-知识库与RAG.md#9111-集成方式工具为主-context-注入为辅双轨">§9.11.1 集成方式（Context 注入）</a></p>
+</blockquote>
+<h3 id="61-rag-ch9-983">6.1 rag 配置（对应 Ch9 §9.8.3）</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="s2">&quot;$schema&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;http://json-schema.org/draft-07/schema#&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s2">&quot;required&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;provider&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;embedding_model&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;embedding_dimension&quot;</span><span class="p">],</span>
+<span class="w">  </span><span class="s2">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s2">&quot;provider&quot;</span><span class="p">:</span><span class="w">              </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;enum&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span><span class="s2">&quot;elasticsearch&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;redis_search&quot;</span><span class="p">]</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;es_endpoint&quot;</span><span class="p">:</span><span class="w">           </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;embedding_model&quot;</span><span class="p">:</span><span class="w">       </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;embedding_dimension&quot;</span><span class="p">:</span><span class="w">   </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;minimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">64</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;maximum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">8192</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;knowledge_base_dir&quot;</span><span class="p">:</span><span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;string&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;top_k&quot;</span><span class="p">:</span><span class="w">                 </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;minimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;maximum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">50</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;similarity_threshold&quot;</span><span class="p">:</span><span class="w">  </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.4</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;minimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;maximum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;enable_fallback&quot;</span><span class="p">:</span><span class="w">       </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">true</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;enable_auto_archive&quot;</span><span class="p">:</span><span class="w">   </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;boolean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="bp">true</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;scan_interval_seconds&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">30</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;minimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;max_chunk_chars&quot;</span><span class="p">:</span><span class="w">       </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;integer&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1500</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s2">&quot;chunk_overlap_ratio&quot;</span><span class="p">:</span><span class="w">   </span><span class="p">{</span><span class="w"> </span><span class="s2">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;number&quot;</span><span class="p">,</span><span class="w"> </span><span class="s2">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.1</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<h3 id="62-knowledge_inject-context">6.2 knowledge_inject 配置（Context 注入）</h3>
+<div class="codehilite"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;object&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="s">&quot;properties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="s">&quot;routing_templates&quot;</span><span class="p">:</span><span class="w">     </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;boolean&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="kc">true</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s">&quot;high_frequency_params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;array&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;string&quot;</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">},</span>
+<span class="w">    </span><span class="s">&quot;max_inject_chars&quot;</span><span class="p">:</span><span class="w">      </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;integer&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;default&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">2000</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;minimum&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">100</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+</code></pre></div>
+
+<hr />
+<h2 id="7-l0-l3">7. 入库流水线实现（L0-L3）</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#991-入库流水线">§9.9.1 入库流水线</a></p>
+</blockquote>
+<div class="codehilite"><pre><span></span><code><span class="k">async</span> <span class="k">def</span><span class="w"> </span><span class="nf">ingest_pipeline</span><span class="p">(</span>
+    <span class="n">doc_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">kb_id</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+    <span class="n">registry</span><span class="p">:</span> <span class="n">KnowledgeRegistry</span><span class="p">,</span>
+    <span class="n">plugin</span><span class="p">:</span> <span class="n">DocStructPlugin</span> <span class="o">|</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">rag_config</span><span class="p">:</span> <span class="n">RagConfig</span><span class="p">,</span>
+<span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;四层流水线。失败保留旧索引并告警。&quot;&quot;&quot;</span>
+    <span class="n">doc_id</span> <span class="o">=</span> <span class="n">generate_doc_id</span><span class="p">(</span><span class="n">doc_path</span><span class="p">)</span>               <span class="c1"># 基于内容 hash</span>
+
+    <span class="c1"># L0 文档解析（复用 AgentScope 2.0 readers / PyMuPDF / MinerU）</span>
+    <span class="n">raw_text</span> <span class="o">=</span> <span class="k">await</span> <span class="n">parse_document</span><span class="p">(</span><span class="n">doc_path</span><span class="p">)</span>
+
+    <span class="c1"># L1 通用切块</span>
+    <span class="n">chunks</span> <span class="o">=</span> <span class="n">split_semantic_chunks</span><span class="p">(</span>
+        <span class="n">raw_text</span><span class="p">,</span>
+        <span class="n">max_chars</span><span class="o">=</span><span class="n">rag_config</span><span class="o">.</span><span class="n">max_chunk_chars</span><span class="p">,</span>        <span class="c1"># 1500</span>
+        <span class="n">overlap_ratio</span><span class="o">=</span><span class="n">rag_config</span><span class="o">.</span><span class="n">chunk_overlap_ratio</span><span class="p">,</span> <span class="c1"># 0.1</span>
+    <span class="p">)</span>
+
+    <span class="c1"># L2 业务结构化（插件化）</span>
+    <span class="n">blocks</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">structure</span><span class="p">(</span><span class="n">chunks</span><span class="p">,</span> <span class="n">doc_id</span><span class="p">)</span> <span class="k">if</span> <span class="n">plugin</span> <span class="k">else</span> <span class="p">[]</span>
+    <span class="n">fields</span> <span class="o">=</span> <span class="n">plugin</span><span class="o">.</span><span class="n">extract_fields</span><span class="p">(</span><span class="n">blocks</span><span class="p">)</span> <span class="k">if</span> <span class="n">plugin</span> <span class="k">else</span> <span class="p">[]</span>
+
+    <span class="c1"># L3 向量化 + 索引</span>
+    <span class="k">await</span> <span class="n">vectorize_and_index</span><span class="p">(</span><span class="n">doc_id</span><span class="p">,</span> <span class="n">chunks</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+
+    <span class="c1"># 生成 OKF 知识文件 + 更新 sources.json + 构建图谱</span>
+    <span class="k">await</span> <span class="n">write_okf_files</span><span class="p">(</span><span class="n">doc_id</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">fields</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">update_sources_registry</span><span class="p">(</span><span class="n">doc_id</span><span class="p">)</span>
+    <span class="k">await</span> <span class="n">build_graph</span><span class="p">(</span><span class="n">doc_id</span><span class="p">,</span> <span class="n">blocks</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">doc_id</span>
+</code></pre></div>
+
+<p>失败策略：任一步异常 → 保留旧索引 + 写告警（<code>IngestFailureError</code> 日志 + 控制台健康度）。</p>
+<h3 id="71-okf-write_okf_files">7.1 OKF 知识文件生成模板（write_okf_files 的具体产出）</h3>
+<p>每个结构化块生成一个 <code>.md</code> 文件，落盘位置 <code>wiki/{type}/{doc_id}_{block_id}.md</code>：</p>
+<div class="codehilite"><pre><span></span><code>---
+type: Clause                    # 由 block.block_type 映射：clause→Clause, article→Policy, qa_pair→QA, concept→Concept
+title: 管理费率                  # 由 block.title
+status: draft                   # 入库为 draft（审查 confirmed 后改 stable）
+sources: [SET829-main-v3]      # doc_id
+source_doc_version: V1.0
+validated_by: LLM               # 初始为 LLM，人工确认后改 人工确认
+valid_from: 2026-01-01
+valid_until: null
+trust_level: low                # 初始 low，审查后按风险级提升
+retrieval_strategy:
+  primary_source: llm_wiki
+  knowledge_type: Clause
+reviewed_by: null               # 审查后填确认人
+<span class="gu">reviewed_at: null               # 审查后填时间</span>
+<span class="gu">---</span>
+
+<span class="gh"># 管理费率</span>
+
+正文：block.content
+
+<span class="gu">### 来源</span>
+<span class="k">-</span><span class="w"> </span>文档：SET829-main-v3（V1.0）第 3.2 节
+</code></pre></div>
+
+<p><strong>文件命名与落盘规则</strong>：
+- <code>wiki/parameters/</code> → Parameter 类型
+- <code>wiki/clauses/</code> → Clause 类型
+- <code>wiki/policies/</code> → Concept/Policy 类型
+- <code>wiki/qa/</code> → QA 类型
+- <code>wiki/relations/</code> → Relation 类型（图谱）
+- 每次重编译覆盖同名文件；<code>sources.json</code> 登记 doc_id → 文件清单映射</p>
+<hr />
+<h2 id="8">8. 审计记录格式</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#993-信任与生命周期治理">§9.9.3 ④ 审计（信任与生命周期治理）</a></p>
+</blockquote>
+<h3 id="81-search">8.1 检索留痕（每次 search 写一条）</h3>
+<div class="codehilite"><pre><span></span><code>{
+  &quot;event&quot;: &quot;knowledge_search&quot;,
+  &quot;timestamp&quot;: &quot;2026-08-11T01:00:00Z&quot;,
+  &quot;session_id&quot;: &quot;wecom:abc123&quot;,
+  &quot;agent_id&quot;: &quot;manager&quot;,
+  &quot;knowledge_base&quot;: &quot;contract&quot;,
+  &quot;query&quot;: &quot;SET829的管理费率&quot;,
+  &quot;chain_path&quot;: [&quot;cache&quot;, &quot;field&quot;, &quot;keyword&quot;, &quot;vector&quot;],
+  &quot;total_hits&quot;: 3,
+  &quot;top_chunk_ids&quot;: [&quot;chunk-01&quot;, &quot;chunk-05&quot;],
+  &quot;elapsed_ms&quot;: 32
+}
+</code></pre></div>
+
+<h3 id="82">8.2 审查记录（工作台操作写一条）</h3>
+<div class="codehilite"><pre><span></span><code>{
+  &quot;event&quot;: &quot;knowledge_review&quot;,
+  &quot;timestamp&quot;: &quot;2026-08-11T01:00:00Z&quot;,
+  &quot;reviewer&quot;: &quot;张三&quot;,
+  &quot;knowledge_id&quot;: &quot;clause-SET829-003&quot;,
+  &quot;action&quot;: &quot;confirmed | rejected | modified&quot;,
+  &quot;reason&quot;: &quot;与合同附件一致&quot;,
+  &quot;before&quot;: { &quot;status&quot;: &quot;pending&quot;, &quot;trust_level&quot;: &quot;low&quot; },
+  &quot;after&quot;:  { &quot;status&quot;: &quot;confirmed&quot;, &quot;trust_level&quot;: &quot;high&quot; }
+}
+</code></pre></div>
+
+<h3 id="83">8.3 存储</h3>
+<ul>
+<li>审计日志存 <code>{KNOWLEDGE_BASE_DIR}/audit/audit.log.jsonl</code>（JSONL 追加）</li>
+<li>审查记录存 <code>{KNOWLEDGE_BASE_DIR}/audit/review.log.jsonl</code></li>
+<li>由注册中心治理报表聚合（confirmed 率/检索未命中率）</li>
+</ul>
+<hr />
+<h2 id="9-api">9. 知识工作台 API 契约</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#910-知识库工作台业务人员要做什么">§9.10 知识库工作台</a></p>
+</blockquote>
+<h3 id="91">9.1 待审查队列</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">GET</span><span class="w"> </span><span class="o">/</span><span class="kn">api</span><span class="o">/</span><span class="nx">knowledge</span><span class="o">/</span><span class="nx">pending</span><span class="p">?</span><span class="nx">kb_id</span><span class="p">=</span><span class="o">&amp;</span><span class="nx">limit</span><span class="p">=</span><span class="mi">50</span><span class="o">&amp;</span><span class="nx">offset</span><span class="p">=</span><span class="mi">0</span>
+<span class="nx">响应</span><span class="p">:</span>
+<span class="p">{</span><span class="w"> </span><span class="s">&quot;items&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;knowledge_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;clause-SET829-003&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;管理费率&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;knowledge_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;Clause&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;trust_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;low&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;source_doc_id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;SET829-main-v3&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;created_at&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;2026-08-10T10:00:00Z&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;risk_level&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;high&quot;</span><span class="w"> </span><span class="p">}],</span><span class="w">   </span><span class="c1">// 风险分级（§9.3 人审）</span>
+<span class="w">  </span><span class="s">&quot;total&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+
+<h3 id="92">9.2 审查操作</h3>
+<div class="codehilite"><pre><span></span><code>POST /api/knowledge/review
+请求:
+{ &quot;knowledge_id&quot;: &quot;clause-SET829-003&quot;,
+  &quot;action&quot;: &quot;confirmed | rejected | modified&quot;,
+  &quot;reason&quot;: &quot;与合同附件一致&quot;,
+  &quot;reviewer&quot;: &quot;张三&quot;,
+  &quot;modified_content&quot;: null }    // action=modified 时必填
+响应:
+{ &quot;status&quot;: &quot;ok&quot;, &quot;new_status&quot;: &quot;confirmed&quot;, &quot;trust_level&quot;: &quot;high&quot; }
+</code></pre></div>
+
+<h3 id="93">9.3 知识概览</h3>
+<div class="codehilite"><pre><span></span><code><span class="nx">GET</span><span class="w"> </span><span class="o">/</span><span class="kn">api</span><span class="o">/</span><span class="nx">knowledge</span><span class="o">/</span><span class="nx">overview</span>
+<span class="nx">响应</span><span class="p">:</span>
+<span class="p">{</span><span class="w"> </span><span class="s">&quot;knowledge_bases&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span><span class="w"> </span><span class="s">&quot;id&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;contract&quot;</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;domain&quot;</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;合同协议&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="s">&quot;total_entries&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">156</span><span class="p">,</span><span class="w"> </span><span class="s">&quot;by_type&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;Parameter&quot;</span><span class="p">:</span><span class="mi">60</span><span class="p">,</span><span class="s">&quot;Clause&quot;</span><span class="p">:</span><span class="mi">80</span><span class="p">,</span><span class="s">&quot;Relation&quot;</span><span class="p">:</span><span class="mi">16</span><span class="p">},</span>
+<span class="w">      </span><span class="s">&quot;by_trust&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="s">&quot;high&quot;</span><span class="p">:</span><span class="mi">100</span><span class="p">,</span><span class="s">&quot;medium&quot;</span><span class="p">:</span><span class="mi">40</span><span class="p">,</span><span class="s">&quot;low&quot;</span><span class="p">:</span><span class="mi">16</span><span class="p">}</span><span class="w"> </span><span class="p">}</span><span class="w"> </span><span class="p">],</span>
+<span class="w">  </span><span class="s">&quot;total_kb&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="p">}</span>
+</code></pre></div>
+
+<h3 id="94">9.4 知识健康度</h3>
+<div class="codehilite"><pre><span></span><code>GET /api/knowledge/health
+响应:
+{ &quot;items&quot;: [
+    { &quot;kb_id&quot;: &quot;contract&quot;, &quot;status&quot;: &quot;ok&quot;,
+      &quot;superseded_count&quot;: 3,
+      &quot;contradictions&quot;: 1,
+      &quot;compile_gaps&quot;: 0 } ],
+  &quot;summary&quot;: { &quot;degraded_kb&quot;: 1, &quot;total_kb&quot;: 20 } }
+</code></pre></div>
+
+<h3 id="95">9.5 检索实验台</h3>
+<div class="codehilite"><pre><span></span><code>POST /api/knowledge/search
+请求: { &quot;query&quot;: &quot;SET829的管理费率&quot;, &quot;knowledge_base&quot;: &quot;contract&quot;, &quot;top_k&quot;: 5 }
+响应: { &quot;chunks&quot;: [ { &quot;content&quot;: &quot;...&quot;, &quot;score&quot;: 0.9, &quot;source_doc_id&quot;: &quot;...&quot;, &quot;trust_level&quot;: &quot;high&quot; } ],
+        &quot;chain_path&quot;: [&quot;cache&quot;,&quot;field&quot;], &quot;total_hits&quot;: 3 }
+</code></pre></div>
+
+<h3 id="96">9.6 注册中心管理</h3>
+<div class="codehilite"><pre><span></span><code><span class="n">GET</span><span class="w">  </span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">knowledge</span><span class="o">/</span><span class="n">registry</span><span class="w">              </span><span class="err">→</span><span class="w"> </span><span class="err">全部库配置</span>
+<span class="n">POST</span><span class="w"> </span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">knowledge</span><span class="o">/</span><span class="n">registry</span><span class="w">              </span><span class="err">→</span><span class="w"> </span><span class="err">新增库（</span><span class="n">body</span><span class="o">=</span><span class="err">库配置）</span>
+<span class="n">PUT</span><span class="w">  </span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">knowledge</span><span class="o">/</span><span class="n">registry</span><span class="o">/</span><span class="p">{</span><span class="n">id</span><span class="p">}</span><span class="w">         </span><span class="err">→</span><span class="w"> </span><span class="err">修改库配置</span>
+<span class="n">DELETE</span><span class="w"> </span><span class="o">/</span><span class="n">api</span><span class="o">/</span><span class="n">knowledge</span><span class="o">/</span><span class="n">registry</span><span class="o">/</span><span class="p">{</span><span class="n">id</span><span class="p">}</span><span class="w">       </span><span class="err">→</span><span class="w"> </span><span class="err">移除库（需确认无引用）</span>
+</code></pre></div>
+
+<hr />
+<h2 id="10-7-ragprovider">10. 迁移清单（7 套现有实现 → RAGProvider）</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#9122-7-套现有实现迁移策略">§9.12.2 7 套现有实现迁移策略</a></p>
+</blockquote>
+<h3 id="101-p5">10.1 合同协议（P5，范本）</h3>
+<table>
+<thead>
+<tr>
+<th>动作</th>
+<th>文件</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>提取 FIELD_REGISTRY → field 原语</td>
+<td><code>config.py</code> + <code>field_definitions.py</code></td>
+<td>FieldPrimitive</td>
+</tr>
+<tr>
+<td>ClauseSegmenter → ContractClausePlugin</td>
+<td><code>compiler/clause_segmenter.py</code></td>
+<td>structure()</td>
+</tr>
+<tr>
+<td>78 字段提取 → extract_fields()</td>
+<td><code>field_compiler.py</code></td>
+<td>FieldValue 输出</td>
+</tr>
+<tr>
+<td>文档LLM检索封装 → external 原语</td>
+<td><code>analysis/local_wiki_compiler.py</code></td>
+<td>ExternalPrimitive</td>
+</tr>
+<tr>
+<td>WikiManager 六维 → cache 原语</td>
+<td><code>agents/shared/wiki/wiki_manager.py</code></td>
+<td>CachePrimitive</td>
+</tr>
+<tr>
+<td>graphify → graph 原语</td>
+<td><code>graph/graphify.py</code></td>
+<td>GraphPrimitive</td>
+</tr>
+<tr>
+<td>lifecycle_checker → timeline 原语</td>
+<td><code>documents/lifecycle_checker.py</code></td>
+<td>TimelinePrimitive</td>
+</tr>
+<tr>
+<td>batch_compiler（stub）→ 补全 ingest 编排</td>
+<td><code>compiler/batch_compiler.py</code></td>
+<td>流水线编排</td>
+</tr>
+</tbody>
+</table>
+<h3 id="102-p5">10.2 需求管理（P5）</h3>
+<table>
+<thead>
+<tr>
+<th>动作</th>
+<th>文件</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>hybrid_search → vector 原语</td>
+<td><code>pg_retriever.py:74</code></td>
+<td>VectorPrimitive</td>
+</tr>
+<tr>
+<td>补文件规范层（OKF 输出）</td>
+<td>新增</td>
+<td>写 OKF 文件</td>
+</tr>
+<tr>
+<td>补生命周期（ESB 对接）</td>
+<td>新增</td>
+<td>Freshness 实现</td>
+</tr>
+</tbody>
+</table>
+<h3 id="103-p6">10.3 法律法规（P6）</h3>
+<table>
+<thead>
+<tr>
+<th>动作</th>
+<th>文件</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>五级漏斗 → compliance 私有原语</td>
+<td><code>tools.py</code></td>
+<td>concept/entity/article 原语</td>
+</tr>
+<tr>
+<td>learning_review → 审查对接</td>
+<td><code>learning_review/</code></td>
+<td>工作台 pending 数据源</td>
+</tr>
+<tr>
+<td>目录对齐 OKF frontmatter</td>
+<td>新增迁移脚本</td>
+<td>标准 schema</td>
+</tr>
+</tbody>
+</table>
+<h3 id="104-p6-wiki">10.4 产品参数（P6，已复用共享 Wiki）</h3>
+<table>
+<thead>
+<tr>
+<th>动作</th>
+<th>文件</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>注册 wiki_manager 库</td>
+<td>新增</td>
+<td>注册中心条目</td>
+</tr>
+<tr>
+<td>ingest_contract_params → ingest 对接</td>
+<td><code>tools.py</code></td>
+<td>ingest()</td>
+</tr>
+</tbody>
+</table>
+<h3 id="105-p7">10.5 客户问答（P7）</h3>
+<table>
+<thead>
+<tr>
+<th>动作</th>
+<th>文件</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>JSONL → OKF QA 页</td>
+<td><code>tools.py</code> + 知识库</td>
+<td>QaPairPlugin + QA 知识文件</td>
+</tr>
+<tr>
+<td>Jaccard 三轮 → 私有原语</td>
+<td><code>tools.py</code></td>
+<td>jaccard/substring 原语</td>
+</tr>
+</tbody>
+</table>
+<h3 id="106-p7">10.6 舆情（P7）</h3>
+<table>
+<thead>
+<tr>
+<th>动作</th>
+<th>文件</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>ingest_log → cache 原语对接</td>
+<td><code>wiki_tools.py</code></td>
+<td>CachePrimitive 接入</td>
+</tr>
+<tr>
+<td>指纹去重 → fingerprint 私有原语</td>
+<td><code>wiki_tools.py</code></td>
+<td>fingerprint 原语</td>
+</tr>
+<tr>
+<td>search/ingest 接入接口</td>
+<td><code>wiki_tools.py</code></td>
+<td>RAGProvider 适配</td>
+</tr>
+</tbody>
+</table>
+<h3 id="107-p7">10.7 稽核风控（P7）</h3>
+<table>
+<thead>
+<tr>
+<th>动作</th>
+<th>文件</th>
+<th>产出</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>关键词评分 → keyword 原语适配</td>
+<td><code>tools.py</code></td>
+<td>KeywordPrimitive 参数化</td>
+</tr>
+<tr>
+<td>query_audit_sql → sql 原语</td>
+<td><code>tools.py</code></td>
+<td>SqlPrimitive</td>
+</tr>
+<tr>
+<td>raw → 统一格式</td>
+<td>迁移脚本</td>
+<td>OKF 文件</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="11-ch9-912">11. 实现顺序（对齐 Ch9 §9.12 排期）</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#9121-排期rag-从-p7-提前至-p4p5">§9.12.1 排期（RAG 从 P7 提前至 P4~P5）</a></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>阶段</th>
+<th>交付物</th>
+<th>本文档章节</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>P4a</td>
+<td>工具池框架 + 本地工具</td>
+<td>前置依赖</td>
+</tr>
+<tr>
+<td>P4b</td>
+<td>数据模型 + RAGProvider 骨架 + 原语注册机制 + 注册中心加载器</td>
+<td>§1 §2 §5</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>通用原语（cache/keyword/vector）+ ingest 流水线 + DocStructPlugin 机制</td>
+<td>§3 §4 §7</td>
+</tr>
+<tr>
+<td>P5</td>
+<td>注册中心 API + vault 原子写 + 待审查 API</td>
+<td>§5 §9</td>
+</tr>
+<tr>
+<td>P6</td>
+<td>工作台页签（5095）+ 人审（SLA/批量/反哺）+ 审计日志</td>
+<td>§8 §9</td>
+</tr>
+<tr>
+<td>P7</td>
+<td>7 套迁移完成 + 全库 frontmatter 统一 + 审计报表</td>
+<td>§10</td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="12-2026-08-11">12. 开发前决策（✅ 2026-08-11 已全部确认）</h2>
+<blockquote>
+<p>🔗 架构设计：<a href="09-知识库与RAG.md#912-实施路径">§9.12 实施路径</a></p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>决策</th>
+<th>确认结论</th>
+<th>影响</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>注册中心部署位置</strong></td>
+<td>✅ <strong>console_gateway 内</strong>（复用 5095，少一个部署单元）</td>
+<td>注册中心加载器挂 5095，不新增服务</td>
+</tr>
+<tr>
+<td><strong>审计存储</strong></td>
+<td>✅ <strong>先文件 JSONL</strong>（vault 内），量大后迁 OceanBase</td>
+<td>§8 审计日志 JSONL 落地，预留 OB 迁移</td>
+</tr>
+<tr>
+<td><strong>vault 原子写</strong></td>
+<td>✅ <strong>mtime 轮询 + 临时文件 rename</strong>（已有雏形）</td>
+<td>§7 流水线 + §9.10.5 沿用此机制</td>
+</tr>
+<tr>
+<td><strong>风险分级计算</strong></td>
+<td>✅ <strong>规则优先</strong>（trust=low 或数值字段 → 高风险）</td>
+<td>§9.10.4 批量审查按规则判定，暂不引入 LLM 标注</td>
+</tr>
+<tr>
+<td><strong>租户维度</strong></td>
+<td>✅ <strong>复用 Ch10 角色扩展 tenant 属性</strong></td>
+<td>§9.11.2 权限四层模型落地，不另建租户体系</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>✅ 决策已定稿，编码前无待确认项。上述结论直接约束 §1-§11 的实现细节。</p>
+</blockquote>
+<h3 id="121-4">12.1 风险分级精确规则（决策 #4 的编码细化）</h3>
+<p>按"规则优先"决策，风险分级判定表（入库后、进待审查队列前计算）：</p>
+<table>
+<thead>
+<tr>
+<th>优先级</th>
+<th>判定条件（满足任一即命中级）</th>
+<th>风险级</th>
+<th>审查方式</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>1</td>
+<td><code>knowledge_type</code> ∈ {Parameter} 且 <code>trust_level=low</code></td>
+<td><strong>高</strong></td>
+<td>必审（逐一人工确认）</td>
+</tr>
+<tr>
+<td>2</td>
+<td><code>sources</code> 为空 或 <code>source_doc_id</code> 未绑定</td>
+<td><strong>高</strong></td>
+<td>必审</td>
+</tr>
+<tr>
+<td>3</td>
+<td><code>trust_level=low</code>（无来源/LLM 编译）</td>
+<td><strong>高</strong></td>
+<td>必审</td>
+</tr>
+<tr>
+<td>4</td>
+<td><code>trust_level=medium</code> 且有来源</td>
+<td><strong>中</strong></td>
+<td>抽审（抽样 10%~20%）</td>
+</tr>
+<tr>
+<td>5</td>
+<td><code>trust_level=high</code> 且为 confirmed 高频主题重复归档</td>
+<td><strong>低</strong></td>
+<td>自动通过（trust 维持）</td>
+</tr>
+<tr>
+<td>6</td>
+<td>默认（其余情况）</td>
+<td><strong>中</strong></td>
+<td>抽审</td>
+</tr>
+</tbody>
+</table>
+<div class="codehilite"><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">compute_risk_level</span><span class="p">(</span><span class="n">entry</span><span class="p">:</span> <span class="n">KnowledgeEntry</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;返回 high / medium / low。规则判定，不调 LLM。&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">knowledge_type</span> <span class="o">==</span> <span class="s2">&quot;Parameter&quot;</span> <span class="ow">and</span> <span class="n">entry</span><span class="o">.</span><span class="n">trust_level</span> <span class="o">==</span> <span class="s2">&quot;low&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;high&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">entry</span><span class="o">.</span><span class="n">sources</span> <span class="ow">or</span> <span class="ow">not</span> <span class="n">entry</span><span class="o">.</span><span class="n">source_doc_id</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;high&quot;</span>
+    <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">trust_level</span> <span class="o">==</span> <span class="s2">&quot;low&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;high&quot;</span>
+    <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">trust_level</span> <span class="o">==</span> <span class="s2">&quot;medium&quot;</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;medium&quot;</span>
+    <span class="k">if</span> <span class="n">entry</span><span class="o">.</span><span class="n">trust_level</span> <span class="o">==</span> <span class="s2">&quot;high&quot;</span> <span class="ow">and</span> <span class="n">entry</span><span class="o">.</span><span class="n">is_repeat_archive</span><span class="p">:</span>
+        <span class="k">return</span> <span class="s2">&quot;low&quot;</span>
+    <span class="k">return</span> <span class="s2">&quot;medium&quot;</span>
+</code></pre></div>
+</div>
+
+<div id="tab-design">
+<h2 class="part-title" id="part-1">第一部分 问题与设计理念</h2>
+<!-- 9.1 -->
+<section id="s1">
+<h3>9.1 这一章要解决什么问题</h3>
+
+<div class="intro-card">
+  <p><strong>一句话：</strong>让银小帆能基于组织的真实文档回答问题，而不是"凭记忆"编造。</p>
+</div>
+
+<h4 id="sub-1">银小帆需要"知识"</h4>
+<p>员工问银小帆"运作指引对投资比例有什么要求""SET829 的管理费率是多少""同管理人还有哪些产品"——这些问题<strong>不能靠模型预训练知识回答</strong>，必须基于真实的业务文档（法规、合同、操作指引）来回答。</p>
+
+
+
+<h4 id="sub-2">设计理念：基于 OKF（Open Knowledge Format）</h4>
+<p>本知识库的<strong>整体设计基于 OKF（Open Knowledge Format）</strong>——Google Cloud 于 2026 年 6 月发布的开放知识格式标准。OKF 把 Karpathy 的 LLM Wiki 模式标准化为"一组 Markdown 文件 + YAML 元数据"，核心思想有三条，本章全部落地：</p>
+<div class="tw"><table>
+<thead><tr><th>OKF 理念</th><th>含义</th><th>本章落地</th></tr></thead>
+<tbody>
+<tr><td><strong>文件为规范形态</strong></td><td>知识是 Markdown + YAML 文件（可打开、可审查、可版本管理），向量库/RAG 只是消费者而非知识本体</td><td>§9.7 知识目录规范（frontmatter 携带来源/时效/可信度）</td></tr>
+<tr><td><strong>生产者/消费者分离</strong></td><td>知识不锁在某个 Agent/框架/向量库里，任何人可生成、任何模型可消费同一份知识产物</td><td>§9.10 知识库工作台（Agent 生产 → 业务人员审查 → 银小帆消费）</td></tr>
+<tr><td><strong>知识可信度</strong></td><td>每条知识可追溯"谁生成、来自什么来源、现在是否仍有效"，Agent 用知识前先判断是否值得信</td><td>§9.9 信任与生命周期治理（来源绑定/人工确认/trust_level）</td></tr>
+</tbody></table></div>
+<blockquote><p>OKF 并不替代 RAG/向量库/搜索引擎——它只定义这些系统共同操作的知识产物长什么样。本章"多原语组合检索"（§9.4）正是在 OKF 文件之上叠加检索能力，两者不冲突：<strong>OKF 管知识怎么存，RAG 管知识怎么查。</strong></p></blockquote>
+<p><strong>一句话概括本设计</strong>：以 OKF 文件为知识本体，以多原语检索为查询手段，以 Obsidian 和 Web 服务为人工界面，以注册中心为全局治理——让托管业务知识成为银小帆多智能体共享、业务人员可审查的组织级资产。</p>
+
+
+<h4 id="sub-3">现有专员各自有知识库</h4>
+<p>项目里已经有 7 个专员在用知识库回答业务问题：</p>
+<div class="tw"><table>
+<thead><tr><th>专员</th><th>回答什么</th><th>知识库</th></tr></thead>
+<tbody>
+<tr><td>合同协议专员</td><td>合同条款/费率/风险等级</td><td>合同协议知识库</td></tr>
+<tr><td>法律法规顾问</td><td>法规条款/合规要求</td><td>法律法规知识库</td></tr>
+<tr><td>稽核风控专员</td><td>风控概念/稽核报告</td><td>稽核风控数据库</td></tr>
+<tr><td>客户问答专员</td><td>托管业务常见问答</td><td>客户服务知识库</td></tr>
+<tr><td>舆情分析专员</td><td>舆情事件</td><td>舆情知识库</td></tr>
+<tr><td>产品参数专员</td><td>产品参数</td><td>复用合同协议的 Wiki</td></tr>
+<tr><td>需求管理专员</td><td>操作指引</td><td>系统操作指引知识库</td></tr>
+</tbody></table></div>
+
+<h4 id="sub-4">本章目标</h4>
+<p><strong>把 7 套各自为政的知识库，统一为银小帆可共享的知识底座。</strong> 具体三件事：</p>
+<ol>
+<li><strong>统一检索能力</strong>——银小帆（manager）能路由到全部知识库（通过子 agent 实施检索），而非每个专员只能查自己的</li>
+<li><strong>统一治理</strong>——知识的来源、时效、可信度可追溯；业务人员能审查确认</li>
+<li><strong>业务人员可参与</strong>——知识不只是 Agent 的工具，业务人员能读、能审、能改</li>
+</ol>
+</section>
+
+<hr>
+
+<section id="s2">
+<h3>9.2 现状：7 套知识库的实现全景</h3>
+
+<h4 id="sub-5">各专员的检索技术</h4>
+<div class="tw"><table>
+<thead><tr><th>专员</th><th>怎么检索</th><th>向量化</th><th>亮点</th></tr></thead>
+<tbody>
+<tr><td>合同协议专员</td><td>精确匹配 + BM25 + 结构化条款 + 问答缓存 + 时间旅行 + <strong>知识图谱</strong></td><td><span class="err">❌ 无向量（语义靠 LLM Wiki + 文档LLM检索）</span></td><td>7 类检索原语（现状未含 vector）+ 生命周期 + Obsidian 产品页（全量覆盖）</td></tr>
+<tr><td>法律法规顾问</td><td><strong>五级检索漏斗</strong>（index→概念→实体→对比→标签→关键词）+ TF-IDF</td><td><span class="err">❌</span></td><td><strong>learning_review 三态</strong>人工审查</td></tr>
+<tr><td>稽核风控专员</td><td>关键词命中计分（title ×3）+ OceanBase SQL</td><td><span class="err">❌</span></td><td>铁律：必须先调工具</td></tr>
+<tr><td>客户问答专员</td><td>Jaccard + 同义词 + 子串（三轮降级）</td><td><span class="err">❌</span></td><td>1882 条问答对</td></tr>
+<tr><td>舆情分析专员</td><td>关键词 + <strong>SHA-256 指纹去重</strong> + URL 归一化</td><td><span class="err">❌</span></td><td><strong>自学习</strong>：后台自动摄入</td></tr>
+<tr><td>产品参数专员</td><td><strong>复用合同协议的共享 WikiManager</strong> + OceanBase</td><td><span class="err">❌</span></td><td>第二个接入共享 Wiki</td></tr>
+<tr><td>需求管理专员</td><td><strong>ES BM25 + kNN 向量 + RRF</strong></td><td><span class="ok">✅ 唯一</span></td><td>唯一使用向量检索</td></tr>
+</tbody></table></div>
+
+<h4 id="sub-6">三个已验证的"好东西"</h4>
+
+<div class="solution-box">
+<h4>① 共享 Wiki 已有雏形</h4>
+<p><code>agents/shared/wiki/wiki_manager.py</code> 已被合同协议专员和产品参数专员<strong>两个 Agent 复用</strong>。产品参数专员查不到时调 OceanBase，查到后回写 Wiki 缓存，下次秒级命中。统一 Wiki 抽象不是纸上设计，是已有落地实践。</p>
+</div>
+
+<div class="solution-box">
+<h4>② 信任治理已有雏形（且不止一家）</h4>
+<p>信任治理的多个能力已在现有实现中跑通，分散在两家专员：</p>
+<div class="tw"><table>
+<thead><tr><th>治理能力</th><th>实现专员</th><th>实现方式</th></tr></thead>
+<tbody>
+<tr><td><strong>来源绑定</strong></td><td>合同协议</td><td>每条 Wiki 条目绑定 <code>source_doc_id + source_doc_version</code></td></tr>
+<tr><td><strong>生命周期失效</strong></td><td>合同协议</td><td>源文档失效 → 标记 <code>is_current=false</code>，查询时检查并触发重新编译</td></tr>
+<tr><td><strong>字段级失效</strong></td><td>合同协议</td><td><code>invalidate_field()</code> 按字段失效（来函变更场景）</td></tr>
+<tr><td><strong>时间旅行</strong></td><td>合同协议</td><td><code>query_at_date()</code> 查历史时点生效版本</td></tr>
+<tr><td><strong>矛盾检测</strong></td><td>合同协议</td><td><code>detect_contradictions()</code> 版本矛盾/同管理人风险差异</td></tr>
+<tr><td><strong>自学习归档</strong></td><td>合同协议/舆情</td><td>高价值问答自动沉淀</td></tr>
+<tr><td><strong>人工审查三态</strong></td><td>法律法规</td><td><code>learning_review/{confirmed,pending,rejected}</code>，业务人员确认后才进检索</td></tr>
+</tbody></table></div>
+<p><strong>结论</strong>：信任治理的<strong>技术层</strong>（来源/生命周期/时间/矛盾/归档）合同协议已完整实现，<strong>人审层</strong>（pending→confirmed 三态）法律法规已实现——两者合起来正是 Ch9 §9.9.3 完整治理模型的雏形，只是各自分散、缺统一 Web 界面。</p>
+</div>
+
+<div class="solution-box">
+<h4>③ 业务预审 SKILL 已有完整管理后台</h4>
+<p>业务预审专员的 <code>SKILL.md</code> 用 frontmatter 的 <code>pre_review_rules</code> 驱动预审逻辑，且有完整的在线管理 API（新建/编辑/校验/发布/版本化/AI 生成草稿）。验证了"frontmatter 驱动知识行为"的生产可行性。</p>
+</div>
+
+<h4 id="sub-7">但 7 套各自为政</h4>
+<div class="problem-box">
+<h4>⚠️ 五个核心问题</h4>
+<ul>
+<li><strong>无统一抽象</strong>——7 套实现各自有存储/检索/缓存逻辑，无法跨专员共享文档</li>
+<li><strong>向量是稀缺能力</strong>——仅需求管理专员用 ES 向量，其余 6 套停在关键词层</li>
+<li><strong>业务人员无统一入口</strong>——人审三态（pending→confirmed）仅法律法规一家有</li>
+<li><strong>知识格式不统一</strong>——各知识库 frontmatter 字段各异</li>
+<li><strong>无统一权限</strong>——各专员知识库无文档级权限控制</li>
+</ul>
+</div>
+</section>
+
+<hr>
+
+<section id="s3">
+<h3>9.3 问题分析：为什么不直接用向量 RAG</h3>
+
+<h4 id="sub-8">"文档切块 → 向量化 → 向量库检索"够吗？</h4>
+<p>不够。原因有三个：</p>
+
+<div class="problem-box">
+<h4>① 知识变成黑盒</h4>
+<p>文档一旦向量化，就锁在向量库里。业务人员打不开、看不了、改不了。知识是否准确、是否过时、来自哪个文档——全都不可追溯。在金融合规场景这是致命的：回答错了要担责，必须能溯源。</p>
+</div>
+
+<div class="problem-box">
+<h4>② 结构化参数不该向量化</h4>
+<p>费率、风险等级、开放日是<strong>精确数值</strong>，用向量检索是错误工具——"管理费率 0.5%"应该精确匹配，而不是"语义相似"。合同协议专员用字段注册表精确匹配，完全不需要向量。</p>
+</div>
+
+<div class="problem-box">
+<h4>③ 没有变更感知</h4>
+<p>需求管理专员的 ES 向量库，文档更新要手动触发 <code>bulk_ingest()</code>。源文档改了，向量库还是旧的——知识 silently 过时。</p>
+</div>
+
+<h4 id="sub-9">那纯文件式呢？</h4>
+<p>也不行。合同协议专员遵循 LLM Wiki 模式（<code>wiki_manager.py</code> 头注释"遵循 Karpathy LLM Wiki 模式"）——<strong>有文件 + BM25 + 图谱 + 生命周期，但检索层没有"向量语义检索"</strong>（无 embedding/向量库）。</p>
+<p>要澄清的是：LLM Wiki 的"语义理解"来自 <strong>LLM 本身</strong>（模型推理时知道"监督≈限制"），而非检索时的向量匹配。它的语义能力<strong>发生在检索之后</strong>（靠 LLM 读内容后理解），<strong>检索本身仍是字面匹配</strong>（精确/BM25/图谱）：</p>
+<pre><code>用户问"投资监督条款是什么"
+  → 字段/BM25 字面匹配 → "监督"与"限制"字面不同 → 查不到
+  → 抛给文档LLM检索（外部 LLM 读 PDF）→ 此时才靠 LLM 语义理解作答
+     ↑ 检索阶段无向量匹配，语义理解全靠检索后的 LLM</code></pre>
+<p><strong>后果</strong>：开放式问答（措辞千变万化）在<strong>检索阶段</strong>的召回率低——"投资监督"查不到"投资限制"，就得依赖文档LLM检索（黑盒）兜底，返回内容不可追溯。</p>
+
+<h4 id="sub-10">现有代码证明：两者互为反面</h4>
+<div class="tw"><table>
+<thead><tr><th></th><th>文件规范 + 生命周期</th><th>向量语义检索</th></tr></thead>
+<tbody>
+<tr><td>合同协议专员</td><td><span class="ok">✅ 有</span></td><td><span class="err">❌ 无</span> → 检索阶段字面匹配，语义靠文档LLM检索兜底</td></tr>
+<tr><td>需求管理专员</td><td><span class="err">❌ 无</span></td><td><span class="ok">✅ 有</span> → 更新靠手动，无治理</td></tr>
+</tbody></table></div>
+<p><strong>结论：</strong>纯向量或纯文件都不行。最优解是"<strong>以合同协议专员的多原语架构为骨架，把向量检索作为可供各库按需启用的原语</strong>"——各库在注册中心声明自己的检索策略链（retrieval_chain），需要语义检索的库启用 vector 原语（如合同协议补 vector 提升开放式问答召回、需求管理已用 vector），不需要的库不启用。</p>
+</section>
+
+<hr>
+
+<section id="s4">
+<h3>9.4 设计思路：多原语组合检索</h3>
+
+<div class="intro-card">
+<p><strong>核心理念：</strong>知识以文件为规范形态（可审查、可迁移、可治理），向量索引是派生的检索层（可从文件重建）。多种检索原语按知识类型组合，不一刀切。</p>
+</div>
+
+<h4 id="sub-11">四种知识类型，四种检索策略</h4>
+<div class="tw"><table>
+<thead><tr><th>知识类型</th><th>例子</th><th>怎么检索</th><th>向量化</th></tr></thead>
+<tbody>
+<tr><td>结构化参数</td><td>费率/风险等级/开放日</td><td>字段注册表精确匹配 + 生命周期</td><td><span class="err">❌ 不需要</span></td></tr>
+<tr><td>半结构化条款</td><td>合同条款</td><td>编译时切分 + BM25 + 向量混合</td><td><span class="ok">✅ 混合</span></td></tr>
+<tr><td>自由文本问答</td><td>法规/操作指引</td><td>向量 RAG + BM25 混合 + 自学习</td><td><span class="ok">✅ 向量化</span></td></tr>
+</tbody></table></div>
+
+<h4 id="sub-12">与 OKF 的呼应</h4>
+<p>Google Cloud 2026 年发布的 OKF 与本方案理念一致：知识以 Markdown + YAML 文件为规范形态，RAG/向量库是消费者而非知识本体。OKF V0.2 强调的来源/验证/时效性/可信度，本方案的信任治理已覆盖。</p>
+
+<h4 id="sub-13">检索原语库（各库按需组合）</h4>
+<p>检索原语是"检索动作"的通用集合，各库按需启用、组合成自己的策略链（§9.8.2）。以下为主要原语（非固定数量，各库链不同）：</p>
+<div class="tw"><table>
+<thead><tr><th>原语</th><th>干什么</th><th>现有实现</th></tr></thead>
+<tbody>
+<tr><td>精确键值</td><td>product_code 直接命中 JSON</td><td><span class="ok">✅</span> 合同协议</td></tr>
+<tr><td>字段注册表</td><td>按 FIELD_REGISTRY 声明路由</td><td><span class="ok">✅</span> 合同协议</td></tr>
+<tr><td>词法 BM25</td><td>jieba 分词 + BM25 跨维度</td><td><span class="ok">✅</span> 合同协议/法律法规</td></tr>
+<tr><td>结构化条款</td><td>编译时切分的 clauses.json</td><td><span class="ok">✅</span> 合同协议</td></tr>
+<tr><td>问答缓存</td><td>hash 精确命中 + 自学习归档</td><td><span class="ok">✅</span> 合同/舆情</td></tr>
+<tr><td>时间旅行</td><td>查历史时点生效的版本</td><td><span class="ok">✅</span> 合同协议</td></tr>
+<tr><td>知识图谱</td><td>11 种封闭关系，跨实体/文档/时间</td><td><span class="ok">✅</span> 合同协议</td></tr>
+<tr class="hl"><td><strong>向量语义</strong></td><td>ES kNN + BM25 + RRF</td><td><span class="ok">✅</span> 需求管理（P5 合同协议补）</td></tr>
+<tr><td>结构化 SQL</td><td>稽核风控 OceanBase 查询</td><td><span class="ok">✅</span> 稽核风控</td></tr>
+<tr><td>外部编译</td><td>文档LLM检索 / 本地 PDF LLM 兜底</td><td><span class="ok">✅</span> 合同协议</td></tr>
+</tbody></table></div>
+</section>
+
+<hr>
+
+<h2 class="part-title" id="part-2">第二部分 总体架构</h2>
+<section id="s11">
+<h3>9.5 完整架构图与工作流程</h3>
+<h4 id="sub-14">四层总体架构图</h4>
+<div class="mermaid-wrap"><div class="mermaid">
+flowchart TB
+    subgraph L3["L3 访问层：统一知识工具"]
+        direction LR
+        T1[knowledge_search<br/>唯一检索入口]
+        T2[knowledge_ingest<br/>入库]
+        T3[knowledge_review_status<br/>待审查查询]
+        T1 ~~~ T2 ~~~ T3
+    end
+
+    subgraph L2["L2 注册层：知识库注册中心 ★新增"]
+        direction LR
+        R1[统一发现<br/>20 个知识库登记]
+        R2[路由<br/>domain→retrieval_chain]
+        R3[权限<br/>知识库级+文档级]
+        R4[生命周期<br/>失效/重编译]
+        R1 ~~~ R2 ~~~ R3 ~~~ R4
+    end
+
+    subgraph L1["L1 索引层：检索原语库（各库按需组合）"]
+        direction LR
+        P1[exact]
+        P2[field]
+        P3[keyword]
+        P4[clause]
+        P5[cache]
+        P6[timeline]
+        P7[graph]
+        P8[vector]
+        P1 ~~~ P2 ~~~ P3 ~~~ P4 ~~~ P5 ~~~ P6 ~~~ P7 ~~~ P8
+    end
+
+    subgraph L0["L0 存储层：Obsidian Vault"]
+        DIR["银小帆skills/agents（agent 定义·已统一）<br/>合同协议 / 法律法规 / 稽核风控 / 舆情<br/>客户服务 / 系统操作指引 / 托管估值 ...<br/>.obsidian（graph/canvas/backlink 已启用）"]
+    end
+
+    L3 --> L2 --> L1 --> L0
+</div></div>
+<p><em>L3 访问层工具注册为 manager 工具，所有 agent 经 ReAct 循环可调用；L1 为检索原语库，各库在注册中心声明自己的检索策略链（retrieval_chain）按需组合启用。</em></p>
+<p><strong>分层解读（自底向上）：</strong> 四层各自只依赖下一层，下层不感知上层，新增能力不破坏既有层：</p>
+<ul>
+<li><strong>L0 存储层（Obsidian Vault）</strong>——知识的"本体"。知识以 OKF 文件为规范形态（§9.7），可打开、可审查、可版本管理；同一 vault 还存放已统一的 agent 定义（<code>银小帆skills/agents/</code>）。这一层不关心检索，向量索引只是它的派生物。</li>
+<li><strong>L1 索引层（检索原语库）</strong>——8 种原语（exact/field/keyword/clause/cache/timeline/graph/vector）是"检索动作"的最小集合。各库<strong>按需组合</strong>成自己的策略链，而非全库统一一种降级链（§9.8.2）。</li>
+<li><strong>L2 注册层（知识库注册中心 ★新增）</strong>——Ch9 唯一新增组件。20 个知识库在此登记档案，承担统一发现、路由（domain→retrieval_chain）、权限（知识库级+文档级）、生命周期（失效/重编译）四件事，是"多库统一治理"的枢纽（§9.6.3）。</li>
+<li><strong>L3 访问层（统一知识工具）</strong>——对外只暴露 3 个工具：<code>knowledge_search</code>（检索）、<code>knowledge_ingest</code>（入库）、<code>knowledge_review_status</code>（待审查）。任何 agent 经 ReAct 循环调用，不感知下层实现差异。</li>
+</ul>
+<p><strong>数据流向：</strong> 调用自上而下（L3 → L2 → L1 → L0）：子 agent 调 <code>knowledge_search</code> → L2 注册中心按 domain 路由到该库 retrieval_chain → L1 逐级执行原语命中即返回 → 从 L0 vault 读回知识文件。治理自下而上：L0 的 frontmatter（status/trust/来源）经 L2 生命周期/权限过滤，最终决定 L3 返回哪些内容——每层的职责互补，共同构成"文件为规范形态 + 多原语检索 + 注册中心治理"的完整链路。</p>
+
+<h4 id="sub-15">端到端工作流程图（用户提问 → 知识回答）</h4>
+<p><strong>边界</strong>：manager 银小帆<strong>只做意图识别、路由、任务拆解与分配</strong>，<strong>不直接执行检索</strong>——所有知识检索由子 agent（知识问答专员 / 对应业务 agent）实施，manager 只把任务路由下去。</p>
+<div class="mermaid-wrap"><div class="mermaid">
+flowchart TD
+    A["用户提问"] --> B["渠道层<br/>企微/微信/CLI 适配器"]
+    B -->|"Redis Stream"| C["manager 银小帆<br/>意图识别 + 路由 + 任务拆解分配<br/>（不执行检索）"]
+    C -->|"知识类问题 → 路由"| D["子 agent（知识问答专员 / 对应业务 agent）<br/>调用 knowledge_search"]
+    C -->|"业务类问题 → 分配"| E2["对应业务子 agent<br/>执行任务（也可调知识工具）"]
+    D --> F["knowledge_search<br/>L3 访问层（工具注册）"]
+    F --> G["知识库注册中心<br/>L2 注册层 · 路由+权限过滤<br/>按 domain → retrieval_chain"]
+    G --> H["检索策略链执行 RAGProvider<br/>读该库 retrieval_chain 逐级尝试<br/>（cache→field→keyword→vector→...）<br/>命中即返回，chain_path 留痕"]
+    H --> I["L0 存储层 Obsidian Vault<br/>合同/法律/稽核/舆情/客户库...<br/>知识文件（status/trust/来源/时效）"]
+    I --> J["结果返回 tool_call 事件（Ch8 过程回流）<br/>→ 子 agent 汇总 → 出站消息 → 渠道层 → 用户"]
+</div></div>
+
+<h4 id="sub-16">知识全生命周期流程图（入库 → 审查 → 检索 → 失效）</h4>
+<div class="mermaid-wrap"><div class="mermaid">
+flowchart TD
+    A["源文档（PDF/MD/DOCX）<br/>放入 raw/ 目录"] --> B["入库流水线（§9.9.1）<br/>解析 → 编译时结构化 → 切片 → 向量化 → 写库"]
+    B --> C["知识文件生成<br/>status: pending, trust: low"]
+    C --> D["业务人员审查<br/>Obsidian / Web 工作台"]
+    C --> E["生命周期检查<br/>ESB docStatus"]
+    C --> F["检索消费<br/>knowledge_search"]
+    D -->|"确认"| G["confirmed → 索引可见<br/>search 可命中"]
+    D -->|"拒绝"| H["rejected → 从索引剔除"]
+    D -->|"待定"| I["pending → 索引不可见<br/>仅工作台可见"]
+    E -->|"失效"| J["标记 superseded<br/>删除 chunk"]
+    F -->|"未命中"| K["触发重新编译"]
+    J --> K
+    K --> B
+    G --> F
+</div></div>
+
+<h4 id="sub-17">数据流总览（谁写谁读）</h4>
+<div class="mermaid-wrap"><div class="mermaid">
+flowchart TB
+    subgraph PROD["生产者（写入）"]
+        direction LR
+        P1["Agent 编译<br/>（contractQ / 法律等）<br/>→ 知识文件 pending"]
+        P2["业务人员审查<br/>（Obsidian / Web）<br/>→ confirmed / rejected"]
+        P3["生命周期<br/>（ESB API）<br/>→ active / superseded"]
+        P1 ~~~ P2 ~~~ P3
+    end
+    PROD -->|"写入"| VAULT["Obsidian Vault<br/>文件为规范形态"]
+    VAULT -->|"检索"| CON
+    subgraph CON["消费者（读取）"]
+        direction LR
+        C1["子 agent（知识问答/业务）<br/>→ knowledge_search<br/>（manager 只路由不检索）"]
+        C2["业务子 agent<br/>→ 查自己 + 跨库"]
+        C3["分析层（Ch13）<br/>→ 消费 trust / 质量"]
+        C1 ~~~ C2 ~~~ C3
+    end
+</div></div>
+</section>
+
+<hr>
+
+<h2 class="part-title" id="part-3">第三部分 统一治理：知识库注册中心</h2>
+<section id="s10">
+<h3>9.6 全 Agent 知识库统一治理</h3>
+
+<div class="intro-card">
+<p><strong>核心：</strong>前几节解决"单个知识库怎么做"，本节解决"所有知识库怎么统一管"——让任何子 agent（含知识问答专员、业务 agent）都能检索任何有权限的知识库。manager 只做路由（意图识别 → 分配到能检索的子 agent），本身不执行检索。</p>
+</div>
+
+<h4 id="sub-18">全景认知：知识库分两层</h4>
+<p>通读全部代码后发现，"知识库"在系统里是<strong>两层不同性质的东西</strong>：</p>
+<div class="tw"><table>
+<thead><tr><th>层</th><th>内容</th><th>描述什么</th><th>现状</th></tr></thead>
+<tbody>
+<tr><td><strong>第一层：Agent 定义知识库</strong></td><td><code>银小帆skills/agents/{code}/</code>（AGENT.yaml + soul.md + skills/）</td><td><strong>agent 是什么</strong>（能力/提示词/技能）</td><td><span class="ok">✅ 已统一</span>（AgentDefinitionLoader + SkillManager）</td></tr>
+<tr><td><strong>第二层：业务知识文档库</strong></td><td>各专员知识库/（合同/法律/稽核/舆情/客户/操作指引...）</td><td><strong>agent 检索什么</strong>（事实/条款/法规/参数）</td><td><span class="err">❌ 未统一</span>（7 套 RAG 各自为政）</td></tr>
+</tbody></table></div>
+
+<div class="problem-box">
+<h4>⚠️ 反直觉发现</h4>
+<p>已接入第一层统一机制的 agent（估值/TA/行政）大多是<strong>轻量数据型</strong>；没接入的硬编码 agent（合同/法律/稽核/舆情）才是<strong>知识密集型</strong>。最需要治理的重量级 agent 恰恰游离在统一机制之外。</p>
+</div>
+
+<h4 id="sub-19">统一治理目标</h4>
+<div class="mermaid-wrap"><div class="mermaid">
+flowchart LR
+    subgraph NOW["现状：agent 只能查自己库"]
+        A1[agent A] -->|"仅"| K1[知识库 A]
+        A2[agent B] -->|"仅"| K2[知识库 B]
+    end
+    subgraph GOAL["目标：子 agent 经统一入口查任意有权限库（manager 只路由）"]
+        A[子 agent] --> UNI["统一知识访问层 RAGProvider"]
+        UNI -->|"路由"| G1[知识库 A]
+        UNI -->|"路由"| G2[知识库 B]
+        UNI -->|"权限过滤"| G3[知识库 N]
+        M[manager] -.->|"意图识别+路由分配"| A
+    end
+</div></div>
+
+<h4 id="sub-20">知识库注册中心（治理核心，新增组件）</h4>
+<p>每个知识库在注册中心登记一份"档案"，这是 Ch9 唯一的新增组件：</p>
+<pre><code># knowledge_registry.yaml（注册中心）
+knowledge_bases:
+  - id: contract
+    domain: 合同协议
+    path: {KNOWLEDGE_BASE_DIR}/合同协议知识库
+    struct_plugin: contract_clause  # 业务结构化插件（条款切分 + 78 字段）
+    retrieval_chain: [cache, field, clause, keyword, vector, graph, timeline, external]  # 检索策略链
+    knowledge_types: [Parameter, Clause, Relation]
+    embedding: false                # 是否向量化
+    lifecycle: esb                  # 生命周期源
+    permission: [contract_group]    # 可访问的会话/角色
+    tenant: custody_dept            # 租户（部门/团队隔离）
+    owner: 合同协议专员              # 归属 agent
+
+  - id: compliance
+    domain: 法律法规
+    path: {KNOWLEDGE_BASE_DIR}/法律法规知识库
+    struct_plugin: regulation_article  # 法规条文切分 + 条款号提取
+    retrieval_chain: [cache, keyword, concept, entity, article, raw_lookup]  # 五级漏斗 + raw 定位
+    knowledge_types: [Concept, QA]
+    embedding: true
+    permission: [all]
+    owner: 法律法规顾问</code></pre>
+<p><strong>注册中心职责：</strong>统一发现（登记即用）/ 路由（检索走 retrieval_chain + 入库走 struct_plugin）/ 权限（知识库级 + 文档级 + 租户级隔离）/ 生命周期（统一失效调度）/ 治理报表（规模/质量/健康度 + 审计聚合）。</p>
+<p><strong>档案字段说明</strong>（各字段的语义与生效环节）：</p>
+<div class="tw"><table>
+<thead><tr><th>字段</th><th>语义</th><th>生效环节</th></tr></thead>
+<tbody>
+<tr><td><code>id</code> / <code>domain</code></td><td>唯一标识 / 业务域</td><td>检索与路由寻址</td></tr>
+<tr><td><code>path</code></td><td>知识库目录位置</td><td>④ 入库写入处</td></tr>
+<tr><td><code>struct_plugin</code></td><td>入库用什么插件做业务结构化（怎么切）</td><td>入库 L2</td></tr>
+<tr><td><code>retrieval_chain</code></td><td>检索策略链（怎么查）</td><td>检索逐级执行</td></tr>
+<tr><td><code>knowledge_types</code></td><td>知识类型白名单（能存什么，六类枚举的子集）</td><td>入库生成 OKF 时校验 type</td></tr>
+<tr><td><code>embedding</code></td><td>是否向量化</td><td>入库 L3</td></tr>
+<tr><td><code>lifecycle</code></td><td>生命周期来源（esb 接口失效 / file 文件变更 / none）</td><td>失效调度</td></tr>
+<tr><td><code>permission</code></td><td>可访问角色白名单</td><td>检索权限过滤</td></tr>
+<tr><td><code>tenant</code></td><td>租户（部门/团队隔离）</td><td>数据行级隔离</td></tr>
+<tr><td><code>owner</code></td><td>归属 agent</td><td>治理报表归属</td></tr>
+</tbody></table></div>
+<p>其中 <strong><code>knowledge_types</code> 是"该库允许的知识类型白名单"</strong>：全局共六类 <code>Concept | Policy | Parameter | Clause | QA | Relation</code>（frontmatter <code>type</code> 枚举，§9.7.2），每库声明自己的子集。入库流水线 L2 插件产出的结构块映射为 <code>type</code> 后，在生成 OKF 文件前校验 <code>type ∈ knowledge_types</code>——不在名单内的类型被拦截（该库不存此类知识）。它与 <code>struct_plugin</code> 互补：<strong>插件负责"怎么切"（识别），白名单负责"能存什么"（把关）</strong>。</p>
+<p><strong><code>embedding</code> 何时 true / 何时 false</strong>：<code>embedding</code> 是<strong>入库侧开关</strong>——<code>true</code> 则 L3 调用 embedding 模型生成向量并写入 ES 向量索引（检索链可含 <code>vector</code> 原语做语义兜底）；<code>false</code> 则 L3 只生成 OKF 文件、不调模型、不写 ES 向量（检索链不含 <code>vector</code>，靠精确/字段/图谱命中）。判断标准：</p>
+<div class="tw"><table>
+<thead><tr><th>条件</th><th><code>embedding: true</code></th><th><code>embedding: false</code></th></tr></thead>
+<tbody>
+<tr><td>命中方式</td><td>语义（"清算接口怎么调"命中 <code>POST /api/clear</code>）</td><td>精确/结构（费率 0.5%、条款编号、字段名）</td></tr>
+<tr><td>知识类型</td><td>含自由文本（Concept / Policy / QA / Clause）</td><td>纯结构化（Parameter / Relation）为主</td></tr>
+<tr><td>提问方式</td><td>开放式（措辞千变万化，不可枚举）</td><td>固定问法（查费率、查编号）</td></tr>
+<tr><td>检索链</td><td>含 <code>vector</code> 原语</td><td>不含 <code>vector</code> 原语</td></tr>
+<tr><td>代价</td><td>L3 调模型 + 写 ES 向量</td><td>不调模型、不写 ES，更省</td></tr>
+</tbody></table></div>
+<p><strong>选 <code>true</code></strong>（任一满足）：①知识含自由文本（Concept/Policy/QA）；②用户提问措辞 ≠ 文档原文；③检索链需要 <code>vector</code> 原语做语义兜底。<strong>选 <code>false</code></strong>（需同时满足）：①知识以 Parameter（数值/枚举）+ Relation（图谱）为主；②业务问题都能用精确匹配/字段/条款编号命中；③不需要语义泛化兜底。</p>
+<p><strong>与检索链的配合</strong>：<code>embedding</code> 与 <code>retrieval_chain</code> 是否含 <code>vector</code> 应保持一致——<code>true</code> 配含 vector 的链；<code>false</code> 配不含 vector 的链。注意：合同协议目前 <code>embedding: false</code> 但链含 <code>vector</code>（§9.4.4 P5 计划补向量），属"预留未启用"状态，启用前应把 <code>embedding</code> 改为 <code>true</code>。</p>
+<p><strong>文档实例</strong>：研发支持（true，API 语义检索）、法律法规（true，概念/QA 自由文本）、合同协议（false，78 字段 + 条款切分已足够结构化）。</p>
+<p><strong><code>lifecycle</code> 是"知识失效信号的来源"</strong>：回答"系统怎么知道这条知识过期了？"——三种内置选项对应三种失效信号来源，配合时间旅行做到"旧版可查、新版生效"：</p>
+<div class="tw"><table>
+<thead><tr><th>选项</th><th>失效信号来源</th><th>原理</th><th>适用场景</th></tr></thead>
+<tbody>
+<tr><td><strong><code>file</code></strong></td><td>文件变更（mtime 轮询）</td><td>30s 扫描 <code>raw/</code> 目录，源文档 mtime 变化 → 重新走 L0-L3 入库 → 旧版标 superseded 从索引剔除（§9.9.2 mtime 轮询）</td><td>本地文件型知识（研发手册、操作指引）</td></tr>
+<tr><td><strong><code>esb</code></strong></td><td>业务系统接口事件</td><td>ESB 主动推送 <code>docStatus</code> 变更（生效/失效/作废）→ 收到即标记 <code>is_current=false</code>，实时无轮询延迟（§9.9.2 生命周期事件 + §9.9.3 ESB 失效，合同协议已实现）</td><td>业务系统联动型知识（合同随主数据变更）</td></tr>
+<tr><td><strong><code>none</code></strong></td><td>不自动失效</td><td>无失效来源，知识长期有效，直到人工/入库重建覆盖</td><td>静态知识（法规条文、稳定定义）</td></tr>
+</tbody></table></div>
+<p><strong><code>lifecycle</code> 是可扩展机制（不是封闭三选一）</strong>：实现层已抽象为统一检查器接口 <code>RAGProvider.check_freshness(doc_id) → Freshness</code>（详细设计 §1.3/§2），三种内置只是<strong>注册中心允许填的内置值</strong>。<code>Freshness.reason</code> 字段（如 "ESB docStatus=1"）本就是开放式字符串，证明失效原因可承载任意新来源。<strong>新增一种 lifecycle = 三步</strong>，与 <code>struct_plugin</code>（新增 DocStructPlugin）、<code>retrieval_chain</code>（新增原语）同为"注册即用"哲学：</p>
+<pre><code># ① 实现一个检查器（几十行，实现统一接口）
+class DbLifecycleChecker:                       # 例：数据库主数据轮询
+    async def check_freshness(self, doc_id) -> Freshness:
+        # 查上游 DB 该文档版本/状态，与本地比对 → 失效则 reason 写明
+        ...
+
+# ② 注册中心 schema enum 加值（详细设计 §5.1）
+"lifecycle": { "enum": ["esb", "none", "file", "db"] }
+
+# ③ 注册中心加载器补映射：db → DbLifecycleChecker</code></pre>
+<p>后续遇到新需求（数据库版本、消息队列、外部数据源变更）无需改框架，加一个检查器即可。</p>
+<p><strong>文档实例</strong>：研发支持（file，本地 API 手册）、合同协议（esb，费率/开放日随主数据）、法律法规（none 或 file，法规稳定）。</p>
+<p><strong><code>permission</code> / <code>tenant</code> / <code>owner</code> —— 知识库的三层归属</strong>：三个字段回答"这份知识库归谁管、谁能看、谁负责"，共同构成访问与治理的归属声明：</p>
+<div class="tw"><table>
+<thead><tr><th>字段</th><th>问题</th><th>控制</th><th>案例值</th></tr></thead>
+<tbody>
+<tr><td><code>permission</code></td><td>谁能查</td><td><strong>访问白名单</strong>（角色/会话过滤）</td><td><code>[rnd_group]</code> 研发团队</td></tr>
+<tr><td><code>tenant</code></td><td>归哪个部门</td><td><strong>隔离边界</strong>（租户/部门归属）</td><td><code>rnd_dept</code> 研发部</td></tr>
+<tr><td><code>owner</code></td><td>谁负责维护</td><td><strong>治理归属</strong>（归属 agent）</td><td><code>技术支持专员</code></td></tr>
+</tbody></table></div>
+<p><strong>① <code>permission</code> —— 谁可以访问这个库</strong>：检索时按会话/用户角色过滤，<code>permission</code> 为空 = 公开，非空 = 只有命中的角色能查。配合 §9.11.2 构成<strong>多层过滤</strong>：</p>
+<pre><code>permission（库级）      → 谁能进这个库
+rag_doc_whitelist（文档级）   → 进库后看哪些文档
+rag_trust_level_min（可信度） → 低权限会话看不到未确认知识
+rag_relation_whitelist（图谱）→ 哪些关系可查</code></pre>
+<p>案例 <code>[rnd_group]</code>：只有研发团队会话能查该库 API 知识，其他部门问不到。</p>
+<p><strong>② <code>tenant</code> —— 数据隔离边界</strong>：比 permission 更粗的一层<strong>租户隔离</strong>——同一套系统多个部门（研发部/托管部/风控部），各部门知识库分属不同 tenant，<strong>默认跨租户不可见</strong>（防部门间数据泄露）。与 permission 是<strong>两层门</strong>：</p>
+<div class="tw"><table>
+<thead><tr><th>维度</th><th>permission</th><th>tenant</th></tr></thead>
+<tbody>
+<tr><td>粒度</td><td>细（角色/会话）</td><td>粗（部门/租户）</td></tr>
+<tr><td>过滤时机</td><td>检索时按角色</td><td>注册中心发现/路由时按租户</td></tr>
+<tr><td>类比</td><td>"谁能进这栋楼"</td><td>"这栋楼属于哪个园区"</td></tr>
+</tbody></table></div>
+<p>实际顺序：先 <code>tenant</code> 决定"这个部门能不能看到这个库"，再 <code>permission</code> 决定"这个角色能不能查内容"。</p>
+<p><strong>③ <code>owner</code> —— 归属 agent（谁维护）</strong>：治理归属而非访问控制——指定<strong>哪个业务 agent 负责该库的日常维护</strong>（入库、答疑、知识更新）。案例中与②步骤呼应：第②步新建的「技术支持专员」就是这个库的 owner——<strong>登记声明"库归谁"，②步骤把"谁"建出来</strong>。owner 的三大作用：</p>
+<ol>
+<li><strong>路由归属</strong>：用户提问 → manager 按 domain + owner 路由给对应专员</li>
+<li><strong>治理报表归属</strong>：注册中心规模/质量/健康度报表按 owner 聚合（谁负责的库表现如何）</li>
+<li><strong>责任追溯</strong>：知识有问题找 owner（配合 §9.9.3 审计的审查记录）</li>
+</ol>
+<p><strong>三者关系一句话</strong>：<code>tenant</code> 决定"哪个部门能看到这个库"（隔离边界），<code>permission</code> 决定"哪个角色能查内容"（访问白名单），<code>owner</code> 决定"哪个 agent 负责维护"（治理归属）——一个管"看得到吗"，一个管"能查吗"，一个管"谁负责"。</p>
+
+<h4 id="sub-21">原语实现适配（现有 7 套接入统一接口）</h4>
+<p><strong>不推翻现有 7 套，包一层适配器暴露统一接口，逐步收敛</strong>：</p>
+<pre><code>统一入口 knowledge_search(query, knowledge_base=None)
+  │
+  ├─ knowledge_base 指定 → 按该库 retrieval_chain 执行原语
+  │   （每种原语适配一个现有实现，库的链由注册中心声明）
+  │   ├─ cache原语 → 调 WikiManager 缓存层（合同/产品参数）
+  │   ├─ keyword原语 → 调 ComplianceQ TF-IDF / audit 关键词评分
+  │   ├─ vector原语 → 调 demand_management ES 混合
+  │   ├─ graph原语 → 调 contractQ 图谱
+  │   └─ sql原语 → 调 audit OceanBase 查询
+  │
+  └─ knowledge_base 未指定 → 全库检索（跨知识库聚合，各库按自身链执行）</code></pre>
+
+<h4 id="sub-22">manager 的统一知识门户定位</h4>
+<p><strong>边界</strong>：manager 只做意图识别、路由、任务拆解与分配，所有知识检索由子 agent 实施。</p>
+<pre><code>用户提问 → manager 意图识别
+  → 知识类问题 → 路由给知识问答专员/对应业务 agent → 子 agent 调 knowledge_search
+  → 业务类问题 → 路由给对应业务 agent → 子 agent 执行任务（可调 knowledge_search 查自己库）</code></pre>
+
+<h4 id="sub-23">统一治理的价值</h4>
+<div class="tw"><table>
+<thead><tr><th>维度</th><th>现状</th><th>统一后</th></tr></thead>
+<tbody>
+<tr><td>跨库检索</td><td>无，agent 只能查自己库</td><td>子 agent 可查任意有权限库（manager 路由）</td></tr>
+<tr><td>知识复用</td><td>产品参数复用合同 Wiki（手工）</td><td>注册中心自动发现可复用</td></tr>
+<tr><td>权限</td><td>各库各自管理</td><td>统一白名单 + 文档级过滤</td></tr>
+<tr><td>治理报表</td><td>无</td><td>统一规模/质量/健康度</td></tr>
+<tr><td>新增知识库</td><td>需写新检索代码</td><td>注册即用（选 provider）</td></tr>
+<tr><td>业务人员</td><td>无法统一审查</td><td>工作台统一待审查队列</td></tr>
+</tbody></table></div>
+</section>
+
+<hr>
+
+<h2 class="part-title" id="part-4">第四部分 知识本体（OKF 目录规范）</h2>
+<section id="s5">
+<h3>9.7 知识目录规范</h3>
+
+<h4 id="sub-24">目录结构</h4>
+<p><code>托管部知识库</code>已是 Obsidian vault，20 个知识库子目录同处一个 vault：</p>
+<pre><code>{KNOWLEDGE_BASE_DIR}/{业务域}知识库/
+├── index.md              # 知识库索引
+├── log.md                # 变更日志
+├── raw/                  # 原始文档（PDF/MD/DOCX）
+├── wiki/                 # 编译后的知识文件（检索对象）
+│   ├── concepts/         # 概念页
+│   ├── policies/         # 政策/规则页
+│   ├── parameters/       # 结构化参数页（不向量化）
+│   ├── clauses/          # 条款页（编译时结构化切分）
+│   ├── qa/               # 问答对页（自学习归档）
+│   └── relations/        # 关系页（知识图谱）
+├── graphify/             # 关系图谱数据
+├── sources.json          # 来源注册表
+└── files/                # 缓存文件</code></pre>
+
+<h4 id="sub-25">知识文件 frontmatter</h4>
+<p>每个知识文件头部携带元数据（来源/状态/时效/可信度）：</p>
+<pre><code>---
+type: Concept | Policy | Parameter | Clause | QA | Relation
+title: 操作指引-管理人注册流程
+status: stable | superseded | draft
+sources: [doc_lib_id_1]           # 绑定源文档
+source_doc_version: V1.0
+validated_by: 人工确认 | LLM       # 验证方式
+valid_from: 2026-01-01            # 生效日期
+valid_until: null                 # 失效日期
+trust_level: high | medium | low  # 可信度
+retrieval_strategy:               # 字段级检索策略
+  primary_source: llm_wiki | oracle | vector
+  knowledge_type: Parameter | Clause | QA | Relation
+---</code></pre>
+
+<h5 id="six-types">六类知识类型（type）的区别</h5>
+<p><code>type</code> 是知识文件的第一分类维度，回答"这份知识是什么"，与 <code>wiki/</code> 下的子目录一一对应。六类的区别取决于三个维度：<strong>是否可精确匹配的数值/字段</strong>（决定用不用向量）、<strong>是"知识本身"还是"知识之间的关系"</strong>、<strong>怎么生成的</strong>（编译切分 / 自学习 / 图谱构建）：</p>
+<div class="tw"><table>
+<thead><tr><th>类型</th><th>wiki/ 子目录</th><th>是什么</th><th>案例</th><th>检索方式</th></tr></thead>
+<tbody>
+<tr><td><strong>Concept</strong> 概念</td><td><code>concepts/</code></td><td>名词解释、术语、流程</td><td>"什么是清算流程"</td><td>词法 + 向量（语义）</td></tr>
+<tr><td><strong>Policy</strong> 政策/规则</td><td><code>policies/</code></td><td>制度、规则、监管要求</td><td>"运作指引对投资比例的要求"</td><td>词法 + 向量</td></tr>
+<tr><td><strong>Parameter</strong> 结构化参数</td><td><code>parameters/</code></td><td>可精确匹配的数值/枚举</td><td>费率 0.5%、风险等级、开放日</td><td><strong>精确匹配（不向量化）</strong></td></tr>
+<tr><td><strong>Clause</strong> 条款</td><td><code>clauses/</code></td><td>合同中可切分的条款</td><td>"第三条 管理费率"</td><td>编译切分 + 字段精确 + BM25 + 向量混合</td></tr>
+<tr><td><strong>QA</strong> 问答对</td><td><code>qa/</code></td><td>一问一答的知识沉淀</td><td>"清算法怎么开通？→ 步骤…"</td><td>缓存 + 词法 + 向量</td></tr>
+<tr><td><strong>Relation</strong> 关系</td><td><code>relations/</code></td><td>实体之间的关系</td><td>管理人 A ↔ 产品 B（同管理人）</td><td><strong>图谱检索（不向量化）</strong></td></tr>
+</tbody></table></div>
+<p><strong>与 §9.4.1 三种检索策略的关系</strong>（按检索方式分 vs 按内容形态分，两者不冲突）：</p>
+<div class="tw"><table>
+<thead><tr><th>检索策略（§9.4.1）</th><th>覆盖的 type</th></tr></thead>
+<tbody>
+<tr><td>结构化参数 → 精确匹配</td><td>Parameter</td></tr>
+<tr><td>半结构化条款 → 切分 + BM25 + 向量</td><td>Clause</td></tr>
+<tr><td>自由文本问答 → 向量 RAG + BM25</td><td>Concept / Policy / QA</td></tr>
+<tr><td>（图谱）→ 关系检索</td><td>Relation</td></tr>
+</tbody></table></div>
+<p><strong>最直观的分辨方法</strong>——按顺序问：</p>
+<ol>
+<li>它是一个<strong>数值/枚举</strong>吗？→ <code>Parameter</code></li>
+<li>它是一条<strong>合同/法规条文</strong>（有编号可切）吗？→ <code>Clause</code></li>
+<li>它是<strong>实体之间的关系</strong>吗？→ <code>Relation</code></li>
+<li>它是<strong>一问一答</strong>形式吗？→ <code>QA</code></li>
+<li>它是<strong>名词/术语的解释</strong>吗？→ <code>Concept</code></li>
+<li>否则是<strong>政策/规则条文</strong>→ <code>Policy</code></li>
+</ol>
+<p><strong>与 <code>knowledge_types</code> 白名单的关系</strong>（§9.6.3）：每个知识库在注册中心声明自己的 type 子集，入库生成 OKF 文件时校验 <code>type ∈ knowledge_types</code>——不在名单内的类型被拦截，保证"库只存该存的"（如合同协议库只存 Parameter/Clause/Relation，不存 QA/Policy）。</p>
+
+<h4 id="sub-26">现有代码对照</h4>
+<div class="tw"><table>
+<thead><tr><th>规范要素</th><th>现状</th><th>位置</th></tr></thead>
+<tbody>
+<tr><td>目录结构</td><td><span class="ok">✅</span> 合同协议六维 + 法律法规五维</td><td>wiki_manager.py</td></tr>
+<tr><td>frontmatter</td><td><span class="warn">⚠️</span> 部分实现（缺 trust_level/validated_by）</td><td>各 agent ingest</td></tr>
+<tr><td>来源注册表</td><td><span class="ok">✅</span> 合同协议 sources 绑定</td><td>field_tools.py</td></tr>
+<tr><td>关系图谱</td><td><span class="ok">✅</span> 合同协议 graphify（11 种关系）</td><td>graph/graphify.py</td></tr>
+<tr><td>检索策略声明</td><td><span class="ok">✅</span> 合同协议 FIELD_REGISTRY（78 字段）</td><td>field_definitions.py</td></tr>
+</tbody></table></div>
+</section>
+
+<hr>
+
+<h2 class="part-title" id="part-5">第五部分 检索设计（多原语）</h2>
+<section id="s6">
+<h3>9.8 检索设计</h3>
+
+<h4 id="sub-27">检索原语与统一入口</h4>
+<p>所有知识库检索统一走 <code>RAGProvider</code>。但检索不是"固定 8 种原语 + 统一降级链"——而是<strong>检索原语接口通用，检索策略（用哪些原语、什么顺序）由每个知识库在注册中心声明</strong>：</p>
+<pre><code>检索原语（通用接口，8 种）—— 每种原语是"一种检索动作"
+    ↑ 各库可按需实现/启用（不是所有库都有全部原语）
+
+检索策略（每库声明）—— 用哪些原语、什么顺序、什么阈值
+    knowledge_registry.yaml 声明 retrieval_chain
+    ↑ 每库一条策略链，不再统一
+
+降级执行（通用引擎）—— 按该库策略链顺序逐级尝试，命中即返回
+    RAGProvider.search() 读策略，执行对应原语</code></pre>
+<p><strong>检索原语接口：</strong></p>
+<pre><code>class RetrievalPrimitive(Protocol):
+    """检索原语：一种检索动作。各库可按需实现/启用。"""
+
+    name: str  # cache / field / clause / keyword / vector / graph / timeline / external / sql ...
+
+    async def retrieve(self, query: str, **kwargs) -&gt; list[Chunk]:
+        """执行一种检索动作"""</code></pre>
+<p><strong>RAGProvider 核心方法</strong>（统一入口 + 生命周期，检索动作由原语承担）：</p>
+<div class="tw"><table>
+<thead><tr><th>方法</th><th>用途</th></tr></thead>
+<tbody>
+<tr><td><code>search(query, knowledge_base)</code></td><td>统一入口：读该库 retrieval_chain，按序执行原语，命中即返回</td></tr>
+<tr><td><code>ingest(doc_path)</code></td><td>入库（走四层流水线 §9.9.1）</td></tr>
+<tr><td><code>check_freshness / invalidate</code></td><td>生命周期检查 / 标记失效</td></tr>
+<tr><td><code>archive(question, answer)</code></td><td>自学习归档</td></tr>
+</tbody></table></div>
+
+<h4 id="sub-28">检索策略链（每库声明，非全库统一）</h4>
+<p><strong>关键修正</strong>：原先的"六级检索降级链"是 contractQ 这一种库的实例，不是全库统一。各库的实际检索路径本就不同（法律法规五级漏斗、客户三轮 Jaccard、稽核关键词+SQL），因此降级链改为<strong>每库在注册中心声明的检索策略链</strong>：</p>
+<div class="tw"><table>
+<thead><tr><th>知识库</th><th>retrieval_chain（检索策略链）</th><th>原语实现</th></tr></thead>
+<tbody>
+<tr class="hl"><td><strong>合同协议</strong></td><td>cache → field → clause → keyword → vector → graph → timeline → external</td><td>现有全套 7+1 种</td></tr>
+<tr><td>法律法规</td><td>cache → keyword(TF-IDF) → concept → entity → article → raw_lookup</td><td>五级漏斗 + raw 定位</td></tr>
+<tr><td>稽核风控</td><td>keyword → sql</td><td>关键词评分 + OceanBase</td></tr>
+<tr><td>客户问答</td><td>cache → jaccard → substring</td><td>三轮降级</td></tr>
+<tr><td>需求管理</td><td>keyword → vector</td><td>ES 混合检索</td></tr>
+<tr><td>舆情</td><td>keyword → fingerprint</td><td>关键词 + 指纹去重</td></tr>
+<tr><td>产品参数</td><td>cache → wiki → oracle</td><td>复用共享 Wiki</td></tr>
+</tbody></table></div>
+<p><strong>各检索原语的含义与实现差异：</strong></p>
+<div class="tw"><table>
+<thead><tr><th>原语</th><th>接口含义（通用）</th><th>各库实现差异</th></tr></thead>
+<tbody>
+<tr><td>cache</td><td>问答缓存命中</td><td>通用（hash + 自学习归档）</td></tr>
+<tr><td>field</td><td>字段精确检索</td><td>合同：78 字段；法规：条款号</td></tr>
+<tr><td>clause</td><td>结构化条目检索</td><td>合同：条款；法规：条文；客户：问答对</td></tr>
+<tr><td>keyword</td><td>词法检索</td><td>合同：BM25；法规：TF-IDF；稽核：关键词评分</td></tr>
+<tr><td>vector</td><td>向量语义检索</td><td>通用（复用 AgentScope 2.0 store）</td></tr>
+<tr><td>graph</td><td>关系检索</td><td>仅合同有图谱</td></tr>
+<tr><td>timeline</td><td>时间旅行</td><td>仅有时序概念的库</td></tr>
+<tr><td>external</td><td>外部编译兜底</td><td>仅合同有文档LLM检索</td></tr>
+</tbody></table></div>
+<p><strong>设计要点：</strong></p>
+<ul>
+<li><strong>原语可选择性启用</strong>：graph/timeline/external 只有对应能力的库才在链上（合同全有，客户只有 cache/jaccard/substring）</li>
+<li><strong>顺序是策略而非定式</strong>：合同场景"词法先于向量"（命中率高、延迟低），其他库可不同</li>
+<li><strong>chain_path 记录实际路径</strong>：供分析层做质量分析（无论策略链多长，执行后记录实际走过的原语）</li>
+</ul>
+
+<h4 id="sub-29">向量库选型：Elasticsearch</h4>
+<div class="tw"><table>
+<thead><tr><th>候选</th><th>结论</th><th>理由</th></tr></thead>
+<tbody>
+<tr class="hl"><td><strong>Elasticsearch</strong></td><td><span class="ok">✅ 定稿</span></td><td>需求管理专员已生产验证；企业已有 ES 运维</td></tr>
+<tr><td>Redis Search</td><td>备选</td><td>设计文档已确定 Redis，但向量能力弱</td></tr>
+<tr><td>Chroma/Milvus</td><td>不选</td><td>不可扩展 / 运维成本高</td></tr>
+</tbody></table></div>
+</section>
+
+<hr>
+
+<h2 class="part-title" id="part-6">第六部分 知识入库与人工审查</h2>
+<section id="s7">
+<h3>9.9 入库与治理</h3>
+
+<h4 id="sub-30">入库流水线</h4>
+<pre><code>文档放入 raw/ 目录
+    ↓ 变更感知（mtime 轮询 30s）
+L0 文档解析（通用）—— AgentScope 2.0 readers / PyMuPDF / MinerU OCR / markdown
+    ↓
+L1 通用切块（通用）—— 按标题/段落/表格智能分块（1500字/10%重叠）
+    ↓
+L2 业务结构化（插件化）—— 各 agent 注册 DocStructPlugin，叠加业务理解
+  · 合同协议 → 条款切分 + 78 字段注册（ClauseSegmenter 示例）
+  · 法律法规 → 法规条文切分 + 条款号/生效日期
+  · 客户问答 → 问答对识别（无条款概念）
+  · 需求管理 → 无业务结构化（纯自由文本）
+    ↓
+L3 向量化 + 索引（通用）—— DashScope text-embedding-v3（1024维）
+    ↓
+写入 ES + 生成 OKF 知识文件 + 更新来源注册表 + 构建图谱</code></pre>
+
+<p><strong>四层分层的设计意图</strong>：</p>
+<div class="tw"><table>
+<thead><tr><th>层</th><th>性质</th><th>内容</th><th>复用方</th></tr></thead>
+<tbody>
+<tr><td>L0 文档解析</td><td>通用</td><td>文档 → 纯文本（PDF/Word/Excel/PPT/图片）</td><td>所有 agent 共用；复用 AgentScope 2.0 readers</td></tr>
+<tr><td>L1 通用切块</td><td>通用</td><td>纯文本 → 语义块（标题/段落/表格，1500字/10%重叠）</td><td>所有 agent 共用；demand_management 已验证</td></tr>
+<tr class="hl"><td><strong>L2 业务结构化</strong></td><td><strong>插件化</strong></td><td>语义块 → 领域结构（条款/条文/问答对）+ 字段提取</td><td><strong>各 agent 各自注册 DocStructPlugin</strong></td></tr>
+<tr><td>L3 向量化索引</td><td>通用</td><td>向量化 + 写库 + 生成 OKF 文件</td><td>所有 agent 共用</td></tr>
+</tbody></table></div>
+
+<p><strong>L2 业务结构化插件的意义</strong>：通用切块解决"所有知识都能被索引"，业务插件解决"每个领域知识都被正确理解"。各 agent 在通用切块基础上叠加自己的业务理解：</p>
+<pre><code>class DocStructPlugin(Protocol):
+    """文档结构化插件：各 agent 在通用切块之上叠加业务理解"""
+
+    def can_handle(self, doc_type: str) -&gt; bool:
+        """该插件是否处理此文档类型（如 fund_contract / regulation / qa_pairs）"""
+
+    def structure(self, chunks: list[Chunk], doc: Document) -&gt; list[StructuredBlock]:
+        """业务切分：把通用语义块切成领域结构（条款/条文/问答对）"""
+
+    def extract_fields(self, blocks: list[StructuredBlock]) -&gt; list[FieldValue]:
+        """字段提取：从结构化块里抽出业务字段（费率/生效日期/问答主题）"""</code></pre>
+<div class="tw"><table>
+<thead><tr><th>Agent</th><th>can_handle</th><th>structure（业务切分）</th><th>extract_fields（字段提取）</th></tr></thead>
+<tbody>
+<tr><td>合同协议</td><td>fund_contract</td><td>条款切分（编号/标题/类型/层级）</td><td>78 字段（费率/风险/开放日）</td></tr>
+<tr><td>法律法规</td><td>regulation</td><td>法规条文切分（条文号/章节）</td><td>条款号/生效日期/监管机构</td></tr>
+<tr><td>客户问答</td><td>qa_pairs</td><td>问答对识别</td><td>问题/答案/主题</td></tr>
+<tr><td>需求管理</td><td>operation_guide</td><td>无（自由文本）</td><td>无</td></tr>
+<tr><td>稽核风控</td><td>audit_docs</td><td>概念/规则分类</td><td>概念定义/规则编号</td></tr>
+</tbody></table></div>
+<p><strong>新增 agent 只需实现一个 DocStructPlugin（几十行），通用流水线（L0/L1/L3）直接跑通。</strong></p>
+
+<h4 id="sub-31">变更感知</h4>
+<div class="tw"><table>
+<thead><tr><th>方式</th><th>实现</th><th>场景</th></tr></thead>
+<tbody>
+<tr><td>mtime 轮询</td><td>30s 扫描目录</td><td>本地文件变更</td></tr>
+<tr><td>手动 API</td><td><code>reload_wiki_indexes()</code></td><td>运维主动刷新</td></tr>
+<tr><td>生命周期事件</td><td>ESB API docStatus 变更 → 自动失效</td><td>文档生效/失效</td></tr>
+</tbody></table></div>
+
+<h4 id="sub-32">信任与生命周期治理</h4>
+<div class="tw"><table>
+<thead><tr><th>治理能力</th><th>实现</th><th>现有代码</th></tr></thead>
+<tbody>
+<tr><td>来源绑定</td><td>每条知识绑定 source_doc_id + version</td><td><span class="ok">✅</span> 合同协议</td></tr>
+<tr><td>生命周期失效</td><td>ESB docStatus 变更 → 标记 is_current=false</td><td><span class="ok">✅</span> 合同协议</td></tr>
+<tr><td>时间旅行</td><td>as_of_date → 查历史生效版本</td><td><span class="ok">✅</span> 合同协议</td></tr>
+<tr><td>验证机制</td><td>pending → 人工确认 → confirmed</td><td><span class="ok">✅</span> 法律法规 learning_review</td></tr>
+<tr><td>可信度分层</td><td>trust_level: high/medium/low</td><td><span class="err">❌</span> 新增</td></tr>
+<tr><td>自学习归档</td><td>高价值问答自动沉淀为 QA</td><td><span class="ok">✅</span> 合同协议/舆情</td></tr>
+<tr><td>矛盾检测</td><td>版本矛盾/同管理人风险差异</td><td><span class="ok">✅</span> 合同协议</td></tr>
+</tbody></table></div>
+<p><strong>④ 审计（补全）</strong>：知识的动态使用治理——谁在何时用了哪条知识、用对了吗。这是治理闭环的最后一块，依托 Ch8 过程回流 + Ch13 分析层：</p>
+<div class="tw"><table>
+<thead><tr><th>审计记录</th><th>内容</th><th>依托</th></tr></thead>
+<tbody>
+<tr><td><strong>检索留痕</strong></td><td>谁（会话/agent）何时用 knowledge_search 查了什么、命中哪些 chunk、chain_path 走了哪几级</td><td>Ch8 tool_call 事件 + chain_path</td></tr>
+<tr><td><strong>注入留痕</strong></td><td>Context 注入的固定知识条目 + 注入时长</td><td>AgentScope 2.0 middleware 钩子</td></tr>
+<tr><td><strong>审查记录</strong></td><td>谁确认/修改/拒绝了哪条知识、时间、理由</td><td>工作台操作日志</td></tr>
+<tr><td><strong>质量报表</strong></td><td>confirmed 率、rejected 率、失效占比、检索未命中率</td><td>注册中心治理报表 + Ch13</td></tr>
+</tbody></table></div>
+<blockquote><p><strong>审计的意义</strong>：没有审计，"知识可信"就无从验证——不知道 Agent 实际用了哪些知识、效果如何。审计让治理闭环可检验。</p></blockquote>
+
+<h4 id="sub-33">现有代码缺口</h4>
+<div class="tw"><table>
+<thead><tr><th>能力</th><th>现状</th><th>落地动作</th></tr></thead>
+<tbody>
+<tr><td>变更感知</td><td>需求管理 <span class="err">❌</span> 缺失</td><td>补 mtime 轮询</td></tr>
+<tr><td>BatchCompiler</td><td>合同协议 <span class="warn">⚠️</span> stub</td><td>补全异步调用</td></tr>
+<tr><td>自动增量入库</td><td>7 套均无</td><td>按流水线实现</td></tr>
+<tr><td>trust_level</td><td>无</td><td>新增 frontmatter 字段</td></tr>
+<tr><td>知识工作台 Web 页签</td><td><span class="err">❌</span> 无（控制台 Wiki 页签为半成品）</td><td>新增 knowledge_workbench 页签（§9.10.4）</td></tr>
+<tr><td>知识库注册中心</td><td><span class="err">❌</span> 无</td><td>新增 knowledge_registry.yaml + 管理界面（§9.6.3）</td></tr>
+<tr><td>审计记录</td><td><span class="err">❌</span> 无</td><td>检索留痕/审查记录/质量报表（§9.9.3 ④）</td></tr>
+</tbody></table></div>
+</section>
+
+<hr>
+
+<section id="s8">
+<h3>9.10 知识库工作台：业务人员要做什么</h3>
+
+<div class="intro-card">
+<p><strong>核心：</strong>Agent 编译出的知识可能有错——必须有人工审查环节，确认后才能进入检索。知识库不只是 Agent 的工具，也是业务人员的工作台。</p>
+</div>
+
+<h4 id="sub-34">为什么业务人员要参与</h4>
+<p>Agent 编译出的知识可能有错——费率提取错了、条款理解偏了。<strong>必须有人工审查环节</strong>，确认后才能进入检索。</p>
+<pre><code>Agent（生产者）：编译知识 → 写入 vault（status: pending）
+        ↓
+业务人员（审查者）：阅读 → 确认 / 修改 / 拒绝
+        ↓
+RAGProvider（消费者）：感知 status 变更 → 更新索引可见性</code></pre>
+
+<h4 id="sub-35">工作台形态：Obsidian + Web 服务</h4>
+<p><strong>现状：</strong><code>托管部知识库</code>已是 Obsidian vault，合同协议专员已生成覆盖全部产品的 Obsidian 产品页。5095 统一控制台是成熟 Web 平台（已内置 marked.js Markdown 渲染）。</p>
+<p><strong>方案：</strong></p>
+<ul>
+<li><strong>Obsidian 侧</strong>（零开发）：业务人员本地用 Obsidian 打开 vault，通过枢纽页浏览/审查</li>
+<li><strong>Web 侧</strong>（复用 5095 控制台）：业务人员浏览器访问，无需安装 Obsidian，<strong>复刻 Obsidian 核心能力</strong>（方向 A 确认，2026-08-11）</li>
+</ul>
+
+<h4 id="sub-36">枢纽页（Obsidian 侧）</h4>
+<div class="tw"><table>
+<thead><tr><th>页面</th><th>内容</th></tr></thead>
+<tbody>
+<tr><td>知识库总览</td><td>20 个知识库索引 + 规模统计</td></tr>
+<tr class="hl"><td><strong>待审查队列</strong></td><td>status: pending 的全部条目</td></tr>
+<tr><td>知识健康度</td><td>失效/矛盾/缺口</td></tr>
+<tr><td>图谱导航</td><td>全库关系图谱</td></tr>
+<tr><td>变更日志</td><td>各库 log.md 汇总</td></tr>
+</tbody></table></div>
+
+<h4 id="sub-37">Web 工作台页签（接入 5095 控制台）</h4>
+<div class="tw"><table>
+<thead><tr><th>页签</th><th>功能</th></tr></thead>
+<tbody>
+<tr class="hl"><td>待审查队列</td><td>列出 pending → 确认/修改/拒绝</td></tr>
+<tr><td>知识概览</td><td>各库规模/类型/信任度统计</td></tr>
+<tr><td>知识健康度</td><td>生命周期失效/矛盾/缺口</td></tr>
+<tr><td>图谱导航</td><td>关系图谱可视化</td></tr>
+<tr><td>检索实验台</td><td>试跑 RAG search</td></tr>
+</tbody></table></div>
+
+<h4 id="sub-38">Web 端融合 Obsidian 功能（方向 A：复刻核心）</h4>
+<p><strong>决策：</strong>Web 工作台<strong>复刻 Obsidian 核心能力</strong>（Markdown 渲染 / 知识图谱 / 双链跳转），不追求插件生态等价。数据与 Obsidian <strong>同源</strong>（同一 vault），业务人员两种方式二选一，能力互补。</p>
+<div class="tw"><table>
+<thead><tr><th>Obsidian 能力</th><th>本质</th><th>Web 端实现</th><th>复用/新增</th></tr></thead>
+<tbody>
+<tr><td>Markdown 阅读模式</td><td>Markdown 渲染</td><td><code>marked.js</code> 渲染 OKF 知识文件</td><td><span class="ok">✅</span> 5095 已内置</td></tr>
+<tr><td>知识图谱（Graph View）</td><td>文件关系可视化</td><td>开源图库（vis-network / cytoscape.js / ECharts graph）读 <code>graphify/</code> 数据</td><td>新增（引入图库）</td></tr>
+<tr><td>双链跳转（<code>[[SET829]]</code>）</td><td>文件间链接</td><td>Web 端解析 <code>[[...]]</code> → 点击跳转对应知识文件</td><td>新增（解析逻辑）</td></tr>
+<tr><td>Backlink（反链）</td><td>谁引用了我</td><td>图谱反查：读 sources/graphify 找反向引用</td><td>新增（API 聚合）</td></tr>
+<tr><td>Dataview 查询</td><td>按 frontmatter 查笔记</td><td>调 <code>/api/knowledge/pending</code> 等 API（等价实现）</td><td><span class="ok">✅</span> 已有 API 设计</td></tr>
+<tr><td>Canvas / 插件生态</td><td>Obsidian 专有</td><td>不兼容，业务场景由页签覆盖</td><td>不追求</td></tr>
+</tbody></table></div>
+<p><strong>技术选型：</strong></p>
+<pre><code>knowledge-workbench/index.html（Web 工作台前端）
+├── marked.js         ← 已有（5095 static），渲染 OKF Markdown
+├── vis-network 或 cytoscape.js  ← 新增，渲染知识图谱（graphify/ 数据）
+├── 双链解析器         ← 新增，[[wiki-link]] → 知识文件跳转
+└── API 客户端        ← 调 5095 /api/knowledge/*（待审查/概览/健康度/检索/图谱）</code></pre>
+<p><strong>数据同源同步：</strong>Web 端与 Obsidian 读写<strong>同一 vault</strong>（文件为规范形态），无独立数据副本；业务人员在 Obsidian 确认的知识，Web 端经 mtime 感知立即可见，反之亦然；图谱数据源 <code>graphify/</code> 由 Agent 编译时更新，Web 端读取最新数据渲染。</p>
+<p><strong>能力对照（业务人员选择）：</strong></p>
+<div class="tw"><table>
+<thead><tr><th>场景</th><th>推荐方式</th><th>理由</th></tr></thead>
+<tbody>
+<tr><td>日常待审查/确认/拒绝</td><td>Web 工作台</td><td>无需安装、随处访问</td></tr>
+<tr><td>深度知识浏览/图谱探索</td><td>Obsidian</td><td>完整图谱 + 插件生态</td></tr>
+<tr><td>知识库巡检/健康度</td><td>Web 工作台</td><td>页签化、聚合统计</td></tr>
+<tr><td>高级 Dataview 查询</td><td>Obsidian</td><td>灵活查询语法</td></tr>
+</tbody></table></div>
+
+<h4 id="sub-39">审查工作流</h4>
+<pre><code>Agent 编译新知识 → status: pending, trust_level: low
+    ↓
+业务人员阅读知识条目 + 来源文档 → 三选一：
+    ├─ 确认 → status: confirmed, trust_level 提升
+    ├─ 修改 → 编辑后确认
+    └─ 拒绝 → status: rejected（不进入检索）
+    ↓
+RAGProvider 感知变更：
+    confirmed → 索引可见（search 可命中）
+    pending   → 索引不可见（仅工作台可见）
+    rejected  → 从索引剔除</code></pre>
+<p>法律法规顾问的 <code>learning_review/</code> 三态目录已验证此模式，只是缺统一 Web 界面。</p>
+
+<h4 id="sub-40">frontmatter 的业务人员使用</h4>
+<p><strong>关键认知：业务人员不直接读写 YAML——frontmatter 对他们是"隐藏的标签"，通过工作台可视化呈现。</strong> 业务人员通过徽章、属性表单、列表间接使用它，全程不手写一行 YAML。</p>
+<p><strong>Obsidian 中的呈现</strong>（业务人员本地打开 vault，Properties 面板把 YAML 渲染成可视化字段表单）：</p>
+<div class="tw"><table>
+<thead><tr><th>frontmatter 字段</th><th>Obsidian 呈现</th><th>业务人员的作用</th></tr></thead>
+<tbody>
+<tr><td><code>type</code></td><td>页面属性区（Properties）</td><td>一眼看出"条款/参数/问答"</td></tr>
+<tr><td><code>status</code></td><td>Dataview 查询 <code>WHERE status="pending"</code> → 待审查队列</td><td><strong>核心使用</strong>：找待审知识</td></tr>
+<tr><td><code>trust_level</code></td><td>属性显示 low/medium/high</td><td><strong>判断可信度</strong>：low 重点核对</td></tr>
+<tr><td><code>sources</code></td><td>显示来源文档 ID，点击跳转</td><td><strong>追溯来源</strong>：打开原文核对</td></tr>
+<tr><td><code>valid_from/until</code></td><td>显示生效/失效日期</td><td><strong>判断时效</strong>：过期知识不用</td></tr>
+<tr><td><code>reviewed_by/at</code></td><td>显示确认人/时间</td><td><strong>责任追踪</strong>：谁确认的</td></tr>
+</tbody></table></div>
+<p><strong>Obsidian 审查操作流程：</strong></p>
+<pre><code>1. 打开 vault → 看"待审查队列"页（Dataview 自动列出 pending 知识）
+2. 点击一条 → 知识正文 + frontmatter 渲染的属性区
+3. 核对：trust_level=low？→ 内容对不对；sources 是什么文档？→ 点开原文对照；valid_from？→ 是否在有效期
+4. 属性区下拉改 status: pending → confirmed（或改 trust_level: low → high）
+5. 保存 → mtime 感知 → 索引更新 → 知识可检索</code></pre>
+<p><strong>Web 工作台中的呈现</strong>（frontmatter 变卡片/徽章）：</p>
+<div class="tw"><table>
+<thead><tr><th>工作台页面</th><th>frontmatter 的使用</th></tr></thead>
+<tbody>
+<tr><td>待审查队列</td><td>每行 status=pending + trust_level 徽章（红=low/黄=medium/绿=high）+ 来源文档</td></tr>
+<tr><td>审查操作</td><td>点"确认"→ 自动改 status→confirmed、trust_level 提升、记录 reviewed_by；"拒绝"→ rejected</td></tr>
+<tr><td>知识概览</td><td>按 type 统计（条款/参数/问答）；按 trust_level 统计</td></tr>
+<tr><td>知识健康度</td><td>按 valid_until 找出已过期/即将过期知识</td></tr>
+<tr><td>图谱导航</td><td>按 sources 关系显示来源文档链接</td></tr>
+</tbody></table></div>
+<p><strong>业务人员不需要理解的字段</strong>：<code>retrieval_strategy</code>（检索策略，Agent 用）、<code>source_doc_version</code>（系统维护）、<code>compiled_at/compiled_by</code>（编译记录，系统写）——这些对业务人员无感，不展示在审查界面。</p>
+<blockquote><p><strong>一句话</strong>：frontmatter 是"给系统的标签、给业务人员的判断依据"——业务人员通过工作台的徽章/下拉框/列表间接使用它（看 trust_level 判断可信度、按 status 筛选待审、点 sources 追溯原文、改 status/trust_level 完成审查）。</p></blockquote>
+
+<h4 id="sub-41">人审补全：SLA / 批量 / 反哺 / 责任留痕</h4>
+<p>业务人员是知识的<strong>最终权威</strong>。基础审查流（9.10.3）之上，补全 4 项保障：</p>
+<div class="tw"><table>
+<thead><tr><th>补全项</th><th>问题</th><th>设计</th></tr></thead>
+<tbody>
+<tr><td><strong>审查 SLA</strong></td><td>pending 知识堆多久没人看？</td><td>待审查队列超时提醒：pending 超 N 天 → 工作台高亮 + 通知责任人；超 2N 天 → 升级提醒</td></tr>
+<tr><td><strong>批量审查</strong></td><td>知识多时逐个确认太慢</td><td>分级审查：高风险（trust=low/来源不明）<strong>必审</strong>；低风险（LLM 编译高置信）<strong>批量/抽样审</strong>（抽 10%~20%）</td></tr>
+<tr><td><strong>知识反哺</strong></td><td>业务人员发现缺知识怎么办？</td><td>工作台"补知识"入口：直接编辑知识文件 / 补充 raw 源文档 / 提交"待收录"提示（Agent 后续编译）</td></tr>
+<tr><td><strong>责任留痕</strong></td><td>谁确认的、追责谁？</td><td>审查记录含确认人/时间/理由（写入 frontmatter <code>reviewed_by/reviewed_at</code>，纳入④审计）</td></tr>
+</tbody></table></div>
+<p><strong>分级审查规则</strong>（批量 vs 必审）：</p>
+<pre><code>Agent 编译知识 → 风险分级：
+  ├─ 高风险（trust=low / 无来源 / 数值型字段） → 必审（逐一人工确认）
+  ├─ 中风险（LLM 编译高置信 + 有来源）         → 抽审（抽样 10%~20%）
+  └─ 低风险（confirmed 过的高频主题重复归档）    → 自动通过（trust 维持）</code></pre>
+
+<h4 id="sub-42">vault 直接读写</h4>
+<p>RAGProvider 直接以 vault 目录为知识目录（不建独立镜像）：</p>
+<ul>
+<li>Agent 写：临时文件 + rename 原子替换</li>
+<li>业务人员写：Obsidian 自动保存，30s 轮询感知</li>
+<li>冲突：人工标注（validated_by: 人工确认）不被 Agent 覆盖</li>
+</ul>
+
+<h4 id="sub-43">frontmatter 分阶段统一</h4>
+<div class="tw"><table>
+<thead><tr><th>阶段</th><th>范围</th><th>动作</th></tr></thead>
+<tbody>
+<tr><td>P5</td><td>新建知识</td><td>强制使用标准 frontmatter</td></tr>
+<tr><td>P6</td><td>合同协议/法律法规</td><td>存量迁移（全部产品页 + 384 法规）</td></tr>
+<tr><td>P7</td><td>其余 18 个知识库</td><td>逐步迁移</td></tr>
+</tbody></table></div>
+
+<h4 id="sub-44">现有代码对照</h4>
+<div class="tw"><table>
+<thead><tr><th>工作台组件</th><th>现状</th><th>复用/新增</th></tr></thead>
+<tbody>
+<tr><td>Obsidian 页面生成</td><td><span class="ok">✅</span> 合同协议 Obsidian 产品页（全量）</td><td>复用 + 推广</td></tr>
+<tr><td>FastAPI 看板</td><td><span class="ok">✅</span> 合同协议 api_contractQ</td><td>复用为 API 基础</td></tr>
+<tr><td>统一控制台</td><td><span class="ok">✅</span> console_gateway 5095</td><td>复用为 Web 入口</td></tr>
+<tr><td>审查工作流</td><td><span class="ok">✅</span> 法律法规 learning_review</td><td>升级为全库标准</td></tr>
+<tr><td>Markdown 渲染（Web）</td><td><span class="ok">✅</span> marked.js 已在 5095</td><td>复用（渲染 OKF 文件）</td></tr>
+<tr><td>图谱图库（Web）</td><td><span class="err">❌</span></td><td>新增（vis-network / cytoscape.js）</td></tr>
+<tr><td>双链解析（Web）</td><td><span class="err">❌</span></td><td>新增（[[wiki-link]] → 跳转）</td></tr>
+<tr><td>待审查队列</td><td><span class="err">❌</span></td><td>新增</td></tr>
+<tr><td>vault 原子写</td><td><span class="err">❌</span></td><td>新增</td></tr>
+<tr><td>审查 SLA/批量</td><td><span class="err">❌</span></td><td>新增（分级审查 + 超时提醒）</td></tr>
+<tr><td>知识反哺入口</td><td><span class="err">❌</span></td><td>新增（补知识/待收录）</td></tr>
+</tbody></table></div>
+</section>
+
+<hr>
+
+<h2 class="part-title" id="part-7">第七部分 集成与实施</h2>
+<section id="s9">
+<h3>9.11 集成与权限</h3>
+
+<h4 id="sub-45">集成方式：工具为主 + Context 注入为辅（双轨）</h4>
+<p><strong>核心决策</strong>："Agent 怎么拿到知识"不是"工具还是注入"二选一，而是<strong>按需检索走工具（可审计、省 token），高频必用走注入（零延迟、模型必用）</strong>。</p>
+<p><strong>① 工具注册（主，问答场景）</strong>——检索统一收敛为单一入口，原 graph/field/timeline 不再是独立工具（它们已是 search() 内部原语，由策略链自动路由）：</p>
+<div class="tw"><table>
+<thead><tr><th>工具</th><th>用途</th></tr></thead>
+<tbody>
+<tr class="hl"><td><code>knowledge_search</code></td><td><strong>唯一检索入口</strong>：读该库 retrieval_chain，按序执行原语（cache→field→clause→keyword→vector→graph→timeline→external），命中即返回</td></tr>
+<tr><td><code>knowledge_ingest</code></td><td>入库（走四层流水线 §9.9.1；管理操作，非问答）</td></tr>
+<tr><td><code>knowledge_review_status</code></td><td>待审查队列查询（业务人员/运维用）</td></tr>
+</tbody></table></div>
+<p><strong>② Context 注入（辅，高频场景）</strong>——复用 AgentScope 2.0 的 Context middleware，固定注入：</p>
+<div class="tw"><table>
+<thead><tr><th>注入内容</th><th>场景</th><th>理由</th></tr></thead>
+<tbody>
+<tr><td>manager 路由模板</td><td>每次意图识别</td><td>必用、零延迟</td></tr>
+<tr><td>会话高频产品参数</td><td>产品专员对话</td><td>反复用，省一次工具调用</td></tr>
+<tr><td>会话级白名单知识</td><td>会话绑定知识</td><td>固定可见性</td></tr>
+</tbody></table></div>
+<p><strong>③ 适用场景划分</strong>：</p>
+<div class="tw"><table>
+<thead><tr><th>知识类型</th><th>注入方式</th><th>理由</th></tr></thead>
+<tbody>
+<tr><td>用户明确提问的知识</td><td>工具检索</td><td>省 token、可审计</td></tr>
+<tr><td>manager 路由模板</td><td>Context 注入</td><td>每次必用，固定注入零延迟</td></tr>
+<tr><td>会话高频产品参数</td><td>Context 注入</td><td>省一次工具调用</td></tr>
+<tr><td>文档类深度问答</td><td>工具检索</td><td>内容多，注入爆上下文，按需取 chunk</td></tr>
+<tr><td>待审查/管理操作</td><td>工具检索</td><td>运维场景，不注入</td></tr>
+</tbody></table></div>
+<p><strong>与 AgentScope 2.0 的关系</strong>：工具注册用其 Toolkit（项目已在用），固定注入用其 Context middleware，两者互补不冲突。</p>
+
+<h4 id="sub-46">权限</h4>
+<div class="tw"><table>
+<thead><tr><th>权限对象</th><th>控制</th><th>实现</th></tr></thead>
+<tbody>
+<tr><td>工具调用</td><td>RAG 工具在白名单中</td><td>Ch10 manager_tool（已有）</td></tr>
+<tr><td>文档白名单</td><td>每个会话可访问的文档集不同</td><td>rag_doc_whitelist 配置</td></tr>
+<tr><td>trust_level 过滤</td><td>未确认知识不对低权限会话可见</td><td>rag_trust_level_min 配置</td></tr>
+<tr><td>关系图谱</td><td>按关系类型白名单过滤</td><td>rag_relation_whitelist 配置</td></tr>
+<tr class="hl"><td><strong>租户级</strong></td><td>部门/团队间知识隔离</td><td>permission 增加 tenant 维度（呼应 AgentScope 2.0 多租户）</td></tr>
+</tbody></table></div>
+</section>
+
+<hr>
+
+<section id="s12">
+<h3>9.12 实施路径</h3>
+
+<h4 id="sub-47">排期（RAG 从 P7 提前至 P4~P5）</h4>
+<div class="tw"><table>
+<thead><tr><th>阶段</th><th>内容</th><th>依赖</th></tr></thead>
+<tbody>
+<tr><td>P4a</td><td>工具池框架 + 本地工具</td><td>P3</td></tr>
+<tr><td>P4b</td><td>RAGProvider 抽象 + 知识目录规范 + RAG 工具注册 + <strong>检索策略链机制</strong></td><td>P4a</td></tr>
+<tr class="hl"><td>P5</td><td><strong>知识库注册中心</strong>（统一登记/路由/权限/租户隔离）</td><td>P4b</td></tr>
+<tr><td>P5</td><td>多原语实现 + ES 向量 + 切片流水线 + <strong>DocStructPlugin 插件机制</strong> + 变更感知</td><td>P4b</td></tr>
+<tr><td>P5</td><td>Obsidian 枢纽页 + vault 原子写 + 待审查 API</td><td>P5 基础</td></tr>
+<tr><td>P6</td><td>知识问答接入 ReAct；demand/ComplianceQ 迁移；Web 工作台接入 5095 + <strong>Web 端融合（图谱图库/双链解析）</strong>；<strong>人审补全（SLA/批量/反哺）</strong></td><td>P5</td></tr>
+<tr><td>P7</td><td>7 套全部收敛 + 信任治理 + 自学习归档 + frontmatter 全库迁移 + <strong>审计记录</strong>（检索留痕/质量报表）</td><td>P6</td></tr>
+</tbody></table></div>
+
+<h4 id="sub-48">7 套现有实现迁移策略</h4>
+<div class="tw"><table>
+<thead><tr><th>Agent</th><th>迁移策略</th><th>优先级</th></tr></thead>
+<tbody>
+<tr class="hl"><td><strong>合同协议</strong></td><td><strong>保留为范本</strong>；补 vector 原语（ES 向量）减少文档LLM检索依赖</td><td>P5</td></tr>
+<tr><td>需求管理</td><td>ES 向量作为 L4 原语接入；补文件规范 + 生命周期</td><td>P5</td></tr>
+<tr><td>法律法规</td><td>目录对齐 OKF；保留 learning_review 作为验证层</td><td>P6</td></tr>
+<tr><td>产品参数</td><td>已复用共享 Wiki，直接接入 RAGProvider</td><td>P6</td></tr>
+<tr><td>客户问答</td><td>JSONL → OKF QA 页</td><td>P7</td></tr>
+<tr><td>舆情</td><td>保留自学习，接入接口</td><td>P7</td></tr>
+<tr><td>稽核风控</td><td>raw → 统一格式，接入索引层</td><td>P7</td></tr>
+</tbody></table></div>
+
+<h4 id="sub-49">交叉章节更新</h4>
+<div class="tw"><table>
+<thead><tr><th>章节</th><th>更新内容</th></tr></thead>
+<tbody>
+<tr><td>Ch6 工具池</td><td>新增第四类工具来源 RAG</td></tr>
+<tr><td>Ch2 技术底座</td><td>自研范围补充 RAG 组件 + 知识工作台</td></tr>
+<tr><td>Ch5 意图识别</td><td>manager 只做路由（三层路由选子 agent），RAG 工具由子 agent 调用，不经 manager 检索</td></tr>
+<tr><td>Ch15 实施计划</td><td>RAG 从 P7 提前至 P4~P5</td></tr>
+<tr><td>Ch12 配置管理</td><td>新增 rag + workbench + knowledge_registry 配置块</td></tr>
+<tr><td>Ch10 权限模型</td><td>新增 knowledge_review 审查角色 + 知识库级 permission</td></tr>
+</tbody></table></div>
+</section>
+</div><!-- end tab-design -->
+
+<div id="tab-case" style="display:none">
+<h2 class="part-title" id="part-8">第八部分 实际案例</h2>
+<section id="s13">
+<h3>9.13 实际案例：研发支持知识库 + 技术支持专员</h3>
+<div class="intro-card"><p><strong>案例定位：</strong>本案例串联本章全部设计（除 9.12 实施路径），展示"从零新建一个知识库 + 新建一个业务智能体"的完整流程。</p></div>
+
+<h4>案例整体流程图</h4>
+<div class="mermaid-wrap"><div class="mermaid-case" id="case-flow">
+</div></div>
+<p><em>流程对应：声明（1-3）→ 入库（4-5）→ 消费（6-7）→ 运维（8），覆盖除 9.12 外的全部设计章节。</em></p>
+
+<h4>第 ① 步：注册中心登记新库（<a href="#" class="chap-link" data-chap="§9.6.3" onclick="gotoChapter('§9.6.3', this);return false">§9.6.3</a>）</h4>
+<p>在 <code>knowledge_registry.yaml</code> 登记一条档案，<strong>声明这个库怎么存、怎么查、谁能用</strong>：</p>
+<pre><code># knowledge_registry.yaml 新增
+- id: rnd_support
+  domain: 研发支持
+  path: {KNOWLEDGE_BASE_DIR}/研发支持知识库
+  struct_plugin: api_doc_plugin         # 入库用什么插件做业务结构化（第③步实现）
+  retrieval_chain: [cache, field, clause, keyword, vector]  # 检索按此顺序逐级尝试
+  knowledge_types: [Concept, Parameter, Clause, QA]
+  embedding: true                       # 需要向量化（API 文档语义检索）
+  lifecycle: file                       # 生命周期按文件变更感知
+  permission: [rnd_group]               # 可访问角色白名单
+  tenant: rnd_dept                      # 租户：研发部
+  owner: 技术支持专员</code></pre>
+<p><strong>各字段在案例中的含义</strong>（登记 = 声明能力，后续步骤按此执行；通用语义见 §9.6.3 档案字段说明）：</p>
+<div class="tw"><table>
+<thead><tr><th>字段</th><th>值</th><th>声明了什么</th><th>在案例中的作用</th></tr></thead>
+<tbody>
+<tr><td><code>id</code></td><td>rnd_support</td><td>知识库唯一标识</td><td>检索/路由用它寻址该库</td></tr>
+<tr><td><code>domain</code></td><td>研发支持</td><td>业务域</td><td>⑥ 日常问答时意图识别路由到本库</td></tr>
+<tr><td><code>path</code></td><td><code>.../研发支持知识库</code></td><td>知识库存放位置</td><td>④ 入库写入的目录</td></tr>
+<tr><td><code>struct_plugin</code></td><td>api_doc_plugin</td><td>入库用什么插件结构化</td><td>③ 实现的 ApiDocPlugin，④ 入库 L2 调用</td></tr>
+<tr><td><code>retrieval_chain</code></td><td>[cache,field,clause,keyword,vector]</td><td>检索策略链</td><td>⑥ 检索时按此顺序执行，命中即返回</td></tr>
+<tr><td><code>knowledge_types</code></td><td>[Concept,Parameter,Clause,QA]</td><td>知识类型白名单</td><td>生成 OKF 文件时校验 type</td></tr>
+<tr><td><code>embedding</code></td><td>true</td><td>是否向量化</td><td>④ L3 向量化</td></tr>
+<tr><td><code>lifecycle</code></td><td>file</td><td>生命周期来源</td><td>⑧ 文档更新时按文件变更失效</td></tr>
+<tr><td><code>permission</code></td><td>[rnd_group]</td><td>谁可访问</td><td>⑥ 权限过滤（使用者需 rnd_group）</td></tr>
+<tr><td><code>tenant</code></td><td>rnd_dept</td><td>租户隔离</td><td>与其他部门知识库隔离</td></tr>
+<tr><td><code>owner</code></td><td>技术支持专员</td><td>归属 agent</td><td>② 新建的专员，负责本库</td></tr>
+</tbody></table></div>
+<p><strong>注册即用：</strong>登记后，银小帆（经子 agent 路由）自动可查此库，无需写新检索代码。</p>
+
+<h4>第 ② 步：新建技术支持专员（<a href="#" class="chap-link" data-chap="§9.6.1" onclick="gotoChapter('§9.6.1', this);return false">§9.6.1</a> 第一层 agent 定义）</h4>
+<pre><code># 银小帆skills/agents/tech_support_agent/AGENT.yaml
+name: 技术支持专员
+description: 回答托管业务系统 API 调用、数据库设计、研发辅助问题
+capabilities: [研发支持知识库检索, API 参数查询, 数据库表结构查询]</code></pre>
+<p><strong>对应关系：</strong>第①步登记的 <code>owner: 技术支持专员</code> 即指向本步新建的专员——登记声明"这个库归谁管"，本步把"谁"建出来。</p>
+
+<h4>第 ③ 步：实现 DocStructPlugin（<a href="#" class="chap-link" data-chap="§9.4" onclick="gotoChapter('§9.4', this);return false">§9.4</a>/<a href="#" class="chap-link" data-chap="§9.9.2" onclick="gotoChapter('§9.9.2', this);return false">§9.9.2</a> 插件机制）</h4>
+<p><strong>插件机制是什么：</strong>通用流水线（L0 解析 / L1 切块 / L3 向量化）对<strong>所有知识库都相同</strong>，但它不知道"哪几块拼起来是一个接口、一个表"。插件就是告诉系统"这份文档该怎么切成业务结构、切完抽什么字段"——把技术支持专员读文档时的专业眼光，写成一段代码交给流水线（入库 L2 环节调用）。通用流水线解决"所有知识都能被索引"，插件解决"每个领域知识都被正确理解"。</p>
+<p><strong>定义插件只做三件事（对应三个方法）：</strong></p>
+<div class="tw"><table>
+<thead><tr><th>方法</th><th>管什么</th><th>要回答的问题</th></tr></thead>
+<tbody>
+<tr><td><code>can_handle(doc_type)</code></td><td>认领文档</td><td>这份文档是不是我管的类型？</td></tr>
+<tr><td><code>structure(chunks)</code></td><td>业务切分</td><td>一堆通用块里，哪几块拼起来是一个接口/表？</td></tr>
+<tr><td><code>extract_fields(blocks)</code></td><td>字段提取</td><td>这个接口的 endpoint/参数、表的字段是什么？</td></tr>
+</tbody></table></div>
+<p><strong>第一步：先看原始文档长什么样</strong>（决定 can_handle 和 structure）。《托管系统 API 手册.pdf》大致内容是：</p>
+<pre><code>## 清算接口
+POST /api/clear
+参数：fund_code, amount, order_id
+返回：{ "code": 0, "data": { "status": "success" } }
+说明：发起基金清算</code></pre>
+<p><strong>第二步：写 can_handle —— 认领文档</strong></p>
+<pre><code>def can_handle(self, doc_type):
+    # 流水线按文档识别出的类型分发：文件名/首部含"API手册/接口"→ api_manual
+    # 含"数据库设计/表结构"→ db_design；都不含 → 交给别的插件
+    return doc_type in ("api_manual", "db_design")</code></pre>
+<p><strong>第三步：写 structure —— 把通用块切成"接口块/表块"</strong>。输入是 L1 切出的通用块，你要识别"一组的边界"，把相关块归并成一个 StructuredBlock：</p>
+<pre><code>import re
+
+def structure(self, chunks, source_doc_id):
+    blocks = []
+    current = None
+    for chunk in chunks:
+        text = chunk.content.strip()
+        # 接口边界的标志：HTTP 方法开头（POST/GET/PUT/DELETE）→ 新接口开始
+        if re.match(r'^(POST|GET|PUT|DELETE)\s+/', text):
+            current = StructuredBlock(
+                block_id=f"api-{len(blocks)+1:03d}",
+                block_type="api_endpoint",
+                title=text.split('\n')[0],        # "POST /api/clear"
+                content=text,
+                source_chunks=[chunk.chunk_index],
+            )
+            blocks.append(current)
+        elif current is not None:
+            # 紧跟在接口后面的行（参数/返回/说明）归入当前接口块
+            current.content += '\n' + text
+            current.source_chunks.append(chunk.chunk_index)
+    return blocks</code></pre>
+<p><strong>关键思维：</strong>你写的不是"通用规则"，是<strong>你读这份手册时的眼睛</strong>——看到 <code>POST /api/clear</code> 就知道"新接口开始了"，看到下面几行就知道"这是它的参数"。插件就是把这双眼睛复制给系统。若文档是数据库设计（<code>CREATE TABLE</code> / 表名开头），同理识别"表块"边界。</p>
+<p><strong>第四步：写 extract_fields —— 从接口块里抽可精确检索字段</strong></p>
+<pre><code>def extract_fields(self, blocks):
+    fields = []
+    for b in blocks:
+        if b.block_type == "api_endpoint":
+            first_line = b.content.split('\n')[0]
+            method, endpoint = first_line.split(' ', 1)
+            # 抽参数：匹配"参数：xxx, yyy"行
+            m = re.search(r'参数[：:]\s*(.+)', b.content)
+            fields.append(FieldValue(field_name="endpoint", field_value=endpoint.strip(), field_type="str"))
+            fields.append(FieldValue(field_name="method", field_value=method.strip(), field_type="str"))
+            if m:
+                fields.append(FieldValue(field_name="params",
+                                         field_value=[p.strip() for p in m.group(1).split(',')],
+                                         field_type="list"))
+    return fields</code></pre>
+<p><strong>第五步：把插件指向注册中心</strong>（第①步的 struct_plugin 字段）：</p>
+<pre><code>struct_plugin: api_doc_plugin    # ← 就指向 ApiDocPlugin 这个类</code></pre>
+<p><strong>插件做完后系统怎么用：</strong><code>structure</code> 产出的 <code>StructuredBlock</code> 变成 OKF 知识文件（第④步），<code>extract_fields</code> 产出的 <code>FieldValue</code> 注册成可精确检索字段——如 <code>endpoint=/api/clear</code> 进入字段索引，用户问"清算接口的参数"时 field 原语精确命中。</p>
+<p><strong>"几十行"的真相：</strong>插件难的不是代码量，而是<strong>先回答两个问题</strong>——①这份文档里什么标志代表"一组"开始？（合同：<code>第X条</code>；法规：<code>第X条</code>；API：HTTP 方法+路径；DB 设计：<code>CREATE TABLE</code>/表名）→ 这是 <code>structure</code> 的切分规则；②业务问题会按什么字段问？（"清算接口怎么调"→按 endpoint；"有没有 openid 字段"→按字段名）→ 这是 <code>extract_fields</code> 抽什么。想清楚这两点，插件基本就是"正则 + 分组"几十行。</p>
+<p><strong>对应关系：</strong>第①步登记的 <code>struct_plugin: api_doc_plugin</code> 即指向本步实现的插件——登记声明"入库用什么插件"，本步把插件实现出来，④ 入库时才可用。</p>
+
+<h4>第 ④ 步：放置文档 → 自动触发入库流水线（<a href="#" class="chap-link" data-chap="§9.7" onclick="gotoChapter('§9.7', this);return false">§9.7</a> / <a href="#" class="chap-link" data-chap="§9.9.1" onclick="gotoChapter('§9.9.1', this);return false">§9.9.1</a>）</h4>
+<p><strong>创建者唯一动作：</strong>把《API手册.pdf》《数据库设计规范.docx》放进 <code>raw/</code> 目录。</p>
+<p>放置即触发——系统自动执行入库流水线：</p>
+<pre><code>创建者放文档进 raw/ → 系统 mtime 变更感知（30s 轮询）
+  → L0 解析 → L1 通用切块（1500字/10%）→ L2 ApiDocPlugin 结构化（第③步）
+  → L3 向量化 + 生成 OKF 文件 + 更新 sources.json + 构建图谱
+产出：OKF 知识文件（status: pending, trust_level: low）——待审查</code></pre>
+<p><strong>目录骨架怎么来的：</strong>它不是手工创建的，而是入库流水线 L3 的产物——首次入库时自动生成 <code>wiki/</code>、<code>graphify/</code>、<code>sources.json</code> 等目录与文件：</p>
+<pre><code>研发支持知识库/
+├── index.md              # 知识库索引
+├── log.md                # 变更日志
+├── raw/                  # 原始研发文档（API 手册/数据库设计）
+├── wiki/                 # 编译后的知识文件
+│   ├── concepts/         # 概念页（如"清算流程"）
+│   ├── parameters/       # 结构化参数页（如 API 端点参数）
+│   ├── clauses/          # 接口定义页（编译时结构化）
+│   └── qa/               # 问答对页（自学习归档）
+├── graphify/             # 关系图谱数据
+├── sources.json          # 来源注册表
+└── files/                # 缓存文件</code></pre>
+<p>每个知识文件带 OKF frontmatter（type/sources/trust_level 等，见 §9.7.2）。</p>
+<p><strong>逐层过程演绎（《API手册.pdf》为例，系统全自动）：</strong></p>
+<div class="tw"><table>
+<thead><tr><th>环节</th><th>输入</th><th>处理</th><th>输出</th></tr></thead>
+<tbody>
+<tr><td>① mtime 变更感知</td><td>raw/ 目录</td><td>每 30s 扫描，发现新增文件</td><td>判定"有文档要入库"→ 启动流水线</td></tr>
+<tr><td>② L0 解析</td><td><code>API手册.pdf</code></td><td>PyMuPDF 抽文本</td><td>纯文本（保留标题层级）</td></tr>
+<tr><td>③ L1 通用切块</td><td>纯文本</td><td>按标题/段落切块（≤1500字/10%重叠）</td><td>通用块 chunk0/chunk1/...（无业务含义）</td></tr>
+<tr><td>④ L2 ApiDocPlugin 结构化</td><td>通用块</td><td>can_handle 认领 → structure 按"HTTP方法开头=新接口"归并 → extract_fields 抽取</td><td>api-001/api-002 结构块 + endpoint/method/params 字段</td></tr>
+<tr><td>⑤ L3 向量化+写库</td><td>结构块</td><td>调用 embedding 转向量写 ES + 生成 OKF 文件 + 建图谱 + 更新 sources.json</td><td>OKF 文件（pending）+ 向量索引 + 图谱 + 来源注册表</td></tr>
+</tbody></table></div>
+<p>L2 的具体效果（第③步插件生效）：</p>
+<pre><code>can_handle("api_manual") → True，认领
+structure：POST /api/clear 开头 → 新接口开始，把后续参数/返回行并入
+  api-001: POST /api/clear   （chunk0+chunk1 合并）
+  api-002: GET /api/query    （chunk2+chunk3 合并）
+extract_fields：
+  api-001 → endpoint=/api/clear, method=POST, params=[fund_code, amount, order_id]
+  api-002 → endpoint=/api/query,  method=GET,  params=[product_code]</code></pre>
+<p><strong>L3 向量化"体现在哪里"：</strong>向量化之后的"向量"<strong>并不出现在 vault 目录里</strong>——目录骨架里只有文件、没有向量文件。向量是<strong>派生的检索层</strong>，存放在外部向量库 ES：</p>
+<div class="tw"><table>
+<thead><tr><th>位置</th><th>内容</th><th>可否读</th></tr></thead>
+<tbody>
+<tr><td>vault 目录（文件为规范形态）</td><td><code>wiki/clauses/api-001.md</code>、<code>sources.json</code></td><td>✅ 可打开/审查/重建</td></tr>
+<tr><td>ES 向量库（派生检索层）</td><td>api-001 → <code>[0.0123, ...]</code>（1024 维，DashScope text-embedding-v3）</td><td>❌ 数字数组，只做相似度计算</td></tr>
+</tbody></table></div>
+<ul>
+<li><strong>向量不落 vault 的原因：</strong>向量是数字数组，进目录会让知识变"黑盒"（§9.3.1①）；且向量可由 OKF 文件<strong>随时重建</strong>（§9.4.1"向量索引是派生的检索层，可从文件重建"）</li>
+<li><strong>向量何时生效：</strong>第⑥步检索链走到 <code>vector</code> 原语时——用户问"清算接口怎么调"，cache/field/clause/keyword 字面未命中（"清算"≠"clear"），vector 原语把问题转向量与 ES 中 api-001 的向量算余弦相似度，语义命中</li>
+<li><strong>开关：</strong>注册表 <code>embedding: true</code> 才启用向量化；填 <code>false</code> 则 L3 只生成 OKF 文件、不调 embedding、不写 ES 向量（纯结构化参数库适用）</li>
+</ul>
+
+<h4>第 ⑤ 步：业务人员工作台审查（<a href="#" class="chap-link" data-chap="§9.10" onclick="gotoChapter('§9.10', this);return false">§9.10</a>）</h4>
+<p><strong>承接上一步：</strong>④ 步入库产生的 API 知识点全部处于 <code>pending</code>（待审查）状态——已生成但<strong>不可检索</strong>，必须人工确认后才放行（§9.10.1）。</p>
+<p><strong>审查者的动作（创建者）：</strong>研发团队中的<strong>审查者</strong>（需 <code>knowledge_review</code> 角色，通常由团队指定）打开工作台（Obsidian 或 Web 页签）→ 进入待审查队列：</p>
+<p><strong>系统自动执行：</strong></p>
+<ol>
+<li>列出全部 <code>status: pending</code> 条目（如"POST /api/clear 参数"），标注来源文档、trust_level 徽章（low=红）</li>
+<li>审查者点开条目 → 阅读知识正文 + frontmatter 属性区 + 对照《API手册.pdf》原文</li>
+<li>审查者三选一：<strong>确认</strong> → status: confirmed, trust_level 提升 → <strong>可检索</strong>；<strong>修改</strong> → 编辑后确认；<strong>拒绝</strong> → status: rejected → <strong>不进入检索</strong></li>
+<li>系统感知 status 变更 → 更新索引可见性 + 写入 <code>reviewed_by</code>/<code>reviewed_at</code>（§9.10.4）</li>
+<li>同时触发人审补全（§9.10.5）：高风险（无来源 API 参数）必审，低风险批量/抽样审</li>
+</ol>
+<p><strong>产出：</strong>confirmed 的知识进入索引——<strong>从这一步起，第⑥步的检索才可能命中</strong>。</p>
+
+<h4>第 ⑥ 步：日常问答（<a href="#" class="chap-link" data-chap="§9.5.2" onclick="gotoChapter('§9.5.2', this);return false">§9.5.2</a>/<a href="#" class="chap-link" data-chap="§9.8" onclick="gotoChapter('§9.8', this);return false">§9.8</a>）</h4>
+<p><strong>承接上一步：</strong>⑤ 步审查确认后，知识已可检索——知识库正式投入使用。</p>
+<p><strong>使用者的动作（创建者）：</strong>研发团队中的<strong>使用者</strong>（需 <code>rnd_group</code> 白名单）问："<strong>清算接口怎么调？返回什么字段？</strong>"</p>
+<p><strong>系统自动执行</strong>（manager 只路由不检索）：</p>
+<pre><code>用户 → 渠道层 → manager 意图识别
+  → 识别为研发支持类 → 路由给技术支持专员（manager 不检索）
+  → 技术支持专员 ReAct 循环 → 调 knowledge_search
+    → 注册中心按 domain 路由到 rnd_support 库
+    → 读取第①步声明的 retrieval_chain: cache → field → clause → keyword → vector 逐级尝试
+      ├─ cache: 命中此前归档的问答 → 直接返回
+      ├─ field: 精确匹配 endpoint="clear" → 命中接口定义（第④步 extract_fields 产物）
+      ├─ keyword/vector: 语义泛化（"清算"vs"clear"）→ 语义命中
+    → 命中 chunk：接口定义 + 参数 + 返回字段
+  → 技术支持专员汇总 → 返回使用者</code></pre>
+<p><strong>产出：</strong>使用者获得"清算接口怎么调"的答案（接口定义 + 参数 + 返回字段）；本次检索留痕写入审计（供第⑧步质量报表）。</p>
+
+<h4>第 ⑦ 步：跨库场景（<a href="#" class="chap-link" data-chap="§9.6" onclick="gotoChapter('§9.6', this);return false">§9.6</a> 统一治理）</h4>
+<p><strong>承接上一步：</strong>⑥ 是单库检索（只查 rnd_support）。⑦ 展示<strong>跨库</strong>——问题需要同时查多个知识库。</p>
+<p><strong>使用者的动作（创建者）：</strong>问："<strong>清算接口对应的数据库表是哪张？</strong>"</p>
+<p><strong>系统自动执行：</strong></p>
+<pre><code>manager → 技术支持专员
+  → 调 knowledge_search(knowledge_base 不指定) → 全库检索
+    → 注册中心路由：各库按自身 retrieval_chain 执行
+    → 研发支持库命中 API 接口定义（POST /api/clear）
+  → 图谱反查：graphify 中该接口关联的数据库设计（API→表 关系）
+  → 跨库聚合返回：接口定义 + 表结构</code></pre>
+<p><strong>产出：</strong>一次回答聚合返回<strong>接口定义 + 对应表结构</strong>（来自两个知识库的内容）；manager 全程只路由、由技术支持专员执行检索（§9.6.5 边界）。</p>
+
+<h4>第 ⑧ 步：文档更新/失效 + 审计（<a href="#" class="chap-link" data-chap="§9.9.3" onclick="gotoChapter('§9.9.3', this);return false">§9.9.3</a>）</h4>
+<p><strong>承接上一步：</strong>知识库已投入生产使用，进入运维期。</p>
+<p><strong>创建者的动作：</strong>上传 v2 手册（触发更新）、定期查看审计/质量报表。</p>
+<p><strong>系统自动执行：</strong></p>
+<ul>
+<li><strong>增量入库：</strong>上传 v2 手册 → mtime 感知 → 自动跑 L0-L3 入库流水线 → 新知识 confirmed</li>
+<li><strong>生命周期失效：</strong>v1 相关知识点标记 <code>superseded</code> → 从索引剔除（§9.9.3）</li>
+<li><strong>时间旅行：</strong>查"v1 的清算接口参数" → 返回历史版本（含 valid_until 标注）</li>
+<li><strong>审计留痕：</strong>检索留痕（谁查了清算接口、命中哪些 chunk、chain_path 走哪几级）；审查记录（confirmed/rejected 及责任人）；质量报表（confirmed 率、检索未命中率）→ 供 Ch13 分析层做知识质量分析</li>
+</ul>
+<p><strong>产出：</strong>知识库随文档演进保持最新（superseded 剔除 + 历史可查），所有使用可追溯可审计。</p>
+
+<h4>案例与全章对照</h4>
+<div class="tw"><table>
+<thead><tr><th>步骤</th><th>覆盖章节</th></tr></thead>
+<tbody>
+<tr><td>① 注册中心登记</td><td><a href="#" class="chap-link" data-chap="§9.6.3" onclick="gotoChapter('§9.6.3', this);return false">§9.6.3</a> 知识库注册中心</td></tr>
+<tr><td>② 新建专员</td><td><a href="#" class="chap-link" data-chap="§9.6.1" onclick="gotoChapter('§9.6.1', this);return false">§9.6.1</a> 第一层 agent 定义</td></tr>
+<tr><td>③ DocStructPlugin</td><td><a href="#" class="chap-link" data-chap="§9.4" onclick="gotoChapter('§9.4', this);return false">§9.4</a> 设计思路 / <a href="#" class="chap-link" data-chap="§9.9.2" onclick="gotoChapter('§9.9.2', this);return false">§9.9.2</a> 插件机制</td></tr>
+<tr><td>④ 放置文档→自动入库</td><td><a href="#" class="chap-link" data-chap="§9.7" onclick="gotoChapter('§9.7', this);return false">§9.7</a> 知识目录规范 / <a href="#" class="chap-link" data-chap="§9.9.1" onclick="gotoChapter('§9.9.1', this);return false">§9.9.1</a> 入库流水线（L0-L3）</td></tr>
+<tr><td>⑤ 工作台审查</td><td><a href="#" class="chap-link" data-chap="§9.10" onclick="gotoChapter('§9.10', this);return false">§9.10</a> 知识库工作台</td></tr>
+<tr><td>⑥ 日常问答</td><td><a href="#" class="chap-link" data-chap="§9.5.2" onclick="gotoChapter('§9.5.2', this);return false">§9.5.2</a> 端到端流程 / <a href="#" class="chap-link" data-chap="§9.8" onclick="gotoChapter('§9.8', this);return false">§9.8</a> 检索设计 / <a href="#" class="chap-link" data-chap="§9.11" onclick="gotoChapter('§9.11', this);return false">§9.11</a> 集成权限</td></tr>
+<tr><td>⑦ 跨库</td><td><a href="#" class="chap-link" data-chap="§9.6" onclick="gotoChapter('§9.6', this);return false">§9.6</a> 统一治理</td></tr>
+<tr><td>⑧ 生命周期+审计</td><td><a href="#" class="chap-link" data-chap="§9.9.3" onclick="gotoChapter('§9.9.3', this);return false">§9.9.3</a> 信任与生命周期治理</td></tr>
+</tbody></table></div>
+</section>
+</div><!-- end tab-case -->
+
+<footer class="footer">
+  核心层 · 第 9 章 知识库与 RAG（✅ 定稿）· v3.4 · 2026-08-11
+  ｜ 从问题到方案，由浅入深 ｜ 全 Agent 统一治理 + 完整架构图 + 实际案例
+</footer>
+
+</main>
+</div>
+
+<script>
+// Tab 切换：整体设计 / 实际案例 / 开发级详细设计
+function switchTab(name){
+  const design=document.getElementById('tab-design');
+  const caseBox=document.getElementById('tab-case');
+  const detailBox=document.getElementById('tab-detail');
+  const btns=document.querySelectorAll('.tab-btn');
+  design.style.display = (name==='design') ? 'block' : 'none';
+  caseBox.style.display = (name==='case') ? 'block' : 'none';
+  detailBox.style.display = (name==='detail') ? 'block' : 'none';
+  btns.forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
+  window.scrollTo(0, 0);
+  setTimeout(buildToc,50);
+  // 切到实际案例时，手动渲染案例流程图（iframe/隐藏容器中 mermaid 无法自动渲染）
+  if(name==='case'){
+    setTimeout(renderCaseFlow,100);
+  }
+  // 用户手动切换 tab 时隐藏返回按钮
+  hideBackBtn();
+}
+// 案例页签章节引用跳转：切换到整体设计并滚动到目标章节（支持二级子节）
+var _CHAP_MAP={'9.1':'s1','9.2':'s2','9.3':'s3','9.4':'s4','9.5':'s11','9.6':'s10','9.7':'s5','9.8':'s6','9.9':'s7','9.10':'s8','9.11':'s9','9.12':'s12'};
+function gotoChapter(chap, linkEl){
+  // 记录来源：案例页签内链接的绝对位置，并显示返回按钮
+  if(linkEl){
+    var linkTop = linkEl.getBoundingClientRect().top + window.scrollY;
+    _caseReturnPos = linkTop - 80;   // 留一点上方空间，露出被点击的链接
+    showBackBtn();
+  }
+  // 直接切到设计 tab（不走 switchTab 的 scrollTo，避免干扰）
+  document.getElementById('tab-design').style.display='block';
+  document.getElementById('tab-case').style.display='none';
+  document.getElementById('tab-detail').style.display='none';
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab==='design');});
+  setTimeout(buildToc,50);
+  // 等布局稳定（切换 tab 高度变化大）
+  setTimeout(function(){
+    var clean=chap.replace('§','');
+    var parts=clean.split('.');
+    var ch=parts[0]+'.'+parts[1];
+    var secId=_CHAP_MAP[ch];
+    var target=document.getElementById(secId);
+    if(!target) return;
+    var scrollTarget=target;
+    if(parts.length>=3){
+      var subIdx=parseInt(parts[2],10);
+      var h3s=target.querySelectorAll(':scope > h4');
+      if(subIdx>=1 && subIdx<=h3s.length){
+        scrollTarget=h3s[subIdx-1];
+      }
+    }
+    // 强制一次布局后直接定位（instant，无动画）
+    void scrollTarget.offsetHeight;
+    scrollTarget.scrollIntoView({behavior:'auto',block:'start'});
+  },300);}
+var _caseFlowRendered=false;
+function renderCaseFlow(){
+  const el=document.getElementById('case-flow');
+  if(!el) return;
+  if(_caseFlowRendered && el.querySelector('svg')) return;
+  const src=`flowchart TD
+    subgraph BUILD["建设期"]
+        A1["1. 注册中心登记<br/>id: rnd_support / tenant: rnd_dept<br/>声明怎么存/怎么查/谁能用（§9.6.3）"]
+        A2["2. 新建技术支持专员<br/>AGENT.yaml + soul.md<br/>对应 owner 字段（§9.6.1）"]
+        A3["3. 实现 ApiDocPlugin<br/>DocStructPlugin<br/>对应 struct_plugin 字段（§9.4/§9.9.2）"]
+        A1 --> A2 --> A3
+    end
+    subgraph INGEST["知识入库（放文档即触发）"]
+        B1["4. 放置文档 → 自动入库流水线<br/>raw/ → L0-L3 → OKF文件(pending)（§9.7/§9.9.1）"]
+        B2["5. 业务人员工作台审查<br/>Obsidian/Web → confirmed（§9.10）"]
+        A3 --> B1 --> B2
+    end
+    subgraph CONSUME["知识消费"]
+        C1["6. 日常问答<br/>清算接口怎么调？（§9.5.2/§9.8）"]
+        C2["7. 跨库场景<br/>接口对应哪张表？（§9.6）"]
+        B2 --> C1
+        C1 --> C2
+    end
+    subgraph OPS["运维治理"]
+        D1["8. API v2 → 生命周期失效 + 时间旅行<br/>+ 审计留痕（§9.9.3）"]
+        C2 --> D1
+    end`;
+  if(window.mermaid){
+    mermaid.render('case-flow-svg', src).then(r=>{
+      const svgStr = typeof r==='string' ? r : (r && r.svg ? r.svg : '');
+      el.innerHTML = svgStr;
+      _caseFlowRendered=true;
+    }).catch(e=>{
+      el.innerHTML='<p style="color:#dc2626">流程图渲染失败: '+String(e).substring(0,80)+'</p>';
+    });
+  }else{
+    el.innerHTML='<p style="color:#dc2626">mermaid 未加载</p>';
+  }
+}
+function buildToc(){
+  const toc=document.getElementById('toc');
+  toc.innerHTML='';
+  // 按 DOM 顺序遍历 tab-design / tab-case 的直接子元素：part-title 输出分组，section 输出小节
+  const containers=['tab-design','tab-case'];
+  const visibleSections=[];
+  containers.forEach(cid=>{
+    const box=document.getElementById(cid);
+    if(!box || box.offsetParent===null) return;
+    [...box.children].forEach(el=>{
+      if(el.classList && el.classList.contains('part-title')){
+        const li=document.createElement('li');
+        const a=document.createElement('a');
+        a.href='#'+el.id;a.className='l0';a.textContent=el.textContent.trim();a.dataset.t='part';
+        li.appendChild(a);toc.appendChild(li);
+        return;
+      }
+      if(el.tagName==='SECTION'){
+        const h2=el.querySelector('h3');if(!h2)return;
+        const txt=h2.textContent.trim();
+        const li=document.createElement('li');
+        const a=document.createElement('a');
+        a.href='#'+el.id;a.className='l1';a.textContent=txt;a.dataset.t=el.id;
+        li.appendChild(a);toc.appendChild(li);
+        visibleSections.push(el);
+        el.querySelectorAll('h4').forEach(h3=>{
+          const li2=document.createElement('li');
+          const a2=document.createElement('a');
+          a2.href='#'+el.id;a2.className='l2';
+          a2.textContent=h3.textContent.replace(/【定稿】|定稿|v2\.\d|v3\.\d/g,'').trim();
+          a2.dataset.t=el.id;
+          li2.appendChild(a2);toc.appendChild(li2);
+        });
+      }
+    });
+  });
+  // tab-detail 内联内容的 h2/h3（详细设计）
+  const detailBox=document.getElementById('tab-detail');
+  if(detailBox && detailBox.offsetParent!==null){
+    let detailH2=0;
+    detailBox.querySelectorAll(':scope > section h2, :scope > h2').forEach(h2=>{
+      const txt=h2.textContent.trim();
+      const li=document.createElement('li');
+      const a=document.createElement('a');
+      a.href='#'+h2.id;a.className='l1';a.textContent=txt;a.dataset.t=detailBox.id;
+      li.appendChild(a);toc.appendChild(li);
+      detailH2++;
+      // 该 h2 下的 h3
+      let el=h2.nextElementSibling;
+      while(el && el.tagName!=='H2'){
+        if(el.tagName==='H3'){
+          const li2=document.createElement('li');
+          const a2=document.createElement('a');
+          a2.href='#'+el.id;a2.className='l2';a2.textContent=el.textContent.trim();a2.dataset.t=detailBox.id;
+          li2.appendChild(a2);toc.appendChild(li2);
+        }
+        el=el.nextElementSibling;
+      }
+    });
+  }
+  const obs=new IntersectionObserver(es=>{
+    es.forEach(e=>{if(e.isIntersecting){
+      document.querySelectorAll('.toc a').forEach(l=>l.classList.remove('active'));
+      const t=e.target.id;
+      const link=toc.querySelector('a[href="#'+t+'"]');
+      if(link)link.classList.add('active');
+    }});
+  },{rootMargin:'-10% 0px -70% 0px'});
+  visibleSections.forEach(s=>obs.observe(s));
+  if(document.getElementById('tab-detail') && document.getElementById('tab-detail').offsetParent!==null){
+    document.querySelectorAll('#tab-detail h2[id], #tab-detail h3[id]').forEach(h=>obs.observe(h));
+  }
+  // scroll 兜底高亮
+  function updateActive(){
+    const h2s=document.querySelectorAll('main section[id] h3');
+    let current=null;
+    const pos=window.scrollY+window.innerHeight*0.2;
+    h2s.forEach(h=>{ if(h.offsetTop<=pos) current=h; });
+    document.querySelectorAll('.toc a').forEach(l=>l.classList.remove('active'));
+    if(current){
+      const secId=current.closest('section')?current.closest('section').id:null;
+      const link=toc.querySelector('a[data-t="'+secId+'"]');
+      if(link)link.classList.add('active');
+    }
+  }
+  window.removeEventListener('scroll', window._kbActive);
+  window._kbActive=updateActive;
+  window.addEventListener('scroll', updateActive, {passive:true});
+}
+buildToc();
+</script>
+
+<!-- Mermaid Lightbox -->
+<div class="mermaid-modal" id="mermaid-modal">
+  <div class="mermaid-modal-toolbar">
+    <div class="mermaid-modal-title">🔍 架构图预览</div>
+    <div class="mermaid-modal-actions">
+      <button id="mm-zoomin" title="放大">＋ 放大</button>
+      <button id="mm-zoomout" title="缩小">－ 缩小</button>
+      <button id="mm-reset" title="复位">⟲ 复位</button>
+      <button id="mm-close" title="关闭">✕ 关闭</button>
+    </div>
+  </div>
+  <div class="mermaid-modal-body">
+    <div class="mermaid-modal-stage" id="mm-stage"></div>
+  </div>
+</div>
+
+<script>
+(function () {
+  const modal = document.getElementById('mermaid-modal');
+  const stage = document.getElementById('mm-stage');
+  const zoomin = document.getElementById('mm-zoomin');
+  const zoomout = document.getElementById('mm-zoomout');
+  const reset = document.getElementById('mm-reset');
+  const close = document.getElementById('mm-close');
+
+  let scale = 1, tx = 0, ty = 0;
+  let dragging = false, sx = 0, sy = 0;
+  let baseW = 0, baseH = 0;
+
+  function currentSvg() { return stage.querySelector('svg'); }
+
+  function apply() {
+    const svg = currentSvg();
+    if (!svg) return;
+    svg.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')';
+    svg.style.transformOrigin = '0 0';
+  }
+
+  function parseViewBox(svg) {
+    const vb = svg.getAttribute('viewBox');
+    if (vb) {
+      const parts = vb.split(/[\s,]+/).map(Number);
+      if (parts.length === 4) return { w: parts[2], h: parts[3] };
+    }
+    // 无 viewBox 时用实际渲染尺寸
+    return { w: svg.clientWidth || 800, h: svg.clientHeight || 600 };
+  }
+
+  function fitToStage() {
+    const svg = currentSvg();
+    if (!svg) return;
+    // 用 viewBox 原始尺寸，去掉 width="100%" 拉伸
+    const vb = parseViewBox(svg);
+    baseW = vb.w;
+    baseH = vb.h;
+    svg.setAttribute('width', baseW);
+    svg.setAttribute('height', baseH);
+    svg.style.width = baseW + 'px';
+    svg.style.height = baseH + 'px';
+    svg.style.maxWidth = 'none';
+
+    const rect = stage.getBoundingClientRect();
+    const padX = rect.width * 0.05;
+    const padY = rect.height * 0.05;
+    scale = Math.min((rect.width - padX * 2) / baseW, (rect.height - padY * 2) / baseH, 1.5);
+    tx = (rect.width - baseW * scale) / 2;
+    ty = (rect.height - baseH * scale) / 2;
+    apply();
+  }
+
+  function open(svg) {
+    const clone = svg.cloneNode(true);
+    clone.removeAttribute('id');
+    stage.innerHTML = '';
+    stage.appendChild(clone);
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    requestAnimationFrame(function () { requestAnimationFrame(fitToStage); });
+  }
+
+  function closeModal() {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    setTimeout(function () { stage.innerHTML = ''; }, 250);
+  }
+
+  // 点击图 → 打开
+  document.addEventListener('click', function (e) {
+    const svg = e.target.closest('.mermaid svg, .mermaid-case svg');
+    if (svg && !modal.classList.contains('open')) open(svg);
+  });
+
+  // 关闭
+  close.addEventListener('click', closeModal);
+  modal.addEventListener('click', function (e) { if (e.target === modal) closeModal(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && modal.classList.contains('open')) closeModal(); });
+
+  // 缩放按钮（以舞台中心为锚点）
+  function zoomAt(anchorX, anchorY, factor) {
+    const rect = stage.getBoundingClientRect();
+    const mx = anchorX - rect.left, my = anchorY - rect.top;
+    const ns = Math.min(8, Math.max(0.2, scale * factor));
+    tx = mx - (mx - tx) * (ns / scale);
+    ty = my - (my - ty) * (ns / scale);
+    scale = ns;
+    apply();
+  }
+
+  zoomin.addEventListener('click', function () {
+    const rect = stage.getBoundingClientRect();
+    zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 1.3);
+  });
+  zoomout.addEventListener('click', function () {
+    const rect = stage.getBoundingClientRect();
+    zoomAt(rect.left + rect.width / 2, rect.top + rect.height / 2, 1 / 1.3);
+  });
+  reset.addEventListener('click', fitToStage);
+
+  // 滚轮缩放（以光标为中心）
+  stage.addEventListener('wheel', function (e) {
+    e.preventDefault();
+    const rect = stage.getBoundingClientRect();
+    const factor = e.deltaY < 0 ? 1.2 : 1 / 1.2;
+    zoomAt(e.clientX, e.clientY, factor);
+  }, { passive: false });
+
+  // 触摸板双指缩放（pinch）
+  let pinchDist = 0;
+  stage.addEventListener('touchstart', function (e) {
+    if (e.touches.length === 2) {
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      pinchDist = Math.sqrt(dx * dx + dy * dy);
+    }
+  }, { passive: true });
+  stage.addEventListener('touchmove', function (e) {
+    if (e.touches.length === 2) {
+      e.preventDefault();
+      const dx = e.touches[0].clientX - e.touches[1].clientX;
+      const dy = e.touches[0].clientY - e.touches[1].clientY;
+      const dist = Math.sqrt(dx * dx + dy * dy);
+      if (pinchDist > 0) {
+        zoomAt((e.touches[0].clientX + e.touches[1].clientX) / 2,
+               (e.touches[0].clientY + e.touches[1].clientY) / 2,
+               dist / pinchDist);
+      }
+      pinchDist = dist;
+    }
+  }, { passive: false });
+
+  // 拖拽平移
+  stage.addEventListener('mousedown', function (e) {
+    if (e.button !== 0) return;
+    dragging = true;
+    sx = e.clientX; sy = e.clientY;
+    stage.classList.add('dragging');
+    e.preventDefault();
+  });
+  window.addEventListener('mousemove', function (e) {
+    if (!dragging) return;
+    tx += e.clientX - sx;
+    ty += e.clientY - sy;
+    sx = e.clientX; sy = e.clientY;
+    apply();
+  });
+  window.addEventListener('mouseup', function () {
+    dragging = false;
+    stage.classList.remove('dragging');
+  });
+
+  // 双击复位
+  stage.addEventListener('dblclick', fitToStage);
+})();
+</script>
+
+<!-- 案例返回浮动按钮 -->
+<button id="back-to-case" title="返回实际案例" style="display:none;position:fixed;right:24px;bottom:24px;z-index:9990;background:#2563eb;color:#fff;border:none;border-radius:50px;padding:10px 18px;font-size:14px;font-weight:600;cursor:pointer;box-shadow:0 4px 16px rgba(37,99,235,0.4);transition:all .2s" onclick="backToCase()">
+  ↩ 返回实际案例
+</button>
+
+<script>
+// 案例页签 → 整体设计跳转后，浮动返回按钮
+var _caseReturnPos = 0;   // 案例页签内被点击链接的位置
+var _caseReturnShown = false;
+function showBackBtn(){
+  var btn=document.getElementById('back-to-case');
+  btn.style.display='block';
+  _caseReturnShown=true;
+}
+function hideBackBtn(){
+  var btn=document.getElementById('back-to-case');
+  if(btn) btn.style.display='none';
+  _caseReturnShown=false;
+}
+function backToCase(){
+  // 切回案例 tab（保持位置，不用 scrollTo(0,0)）
+  document.getElementById('tab-design').style.display='none';
+  document.getElementById('tab-case').style.display='block';
+  document.getElementById('tab-detail').style.display='none';
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab==='case');});
+  setTimeout(buildToc,50);
+  // 滚动回案例页签被点击链接的位置
+  setTimeout(function(){
+    window.scrollTo(0, _caseReturnPos);
+    setTimeout(renderCaseFlow,100);
+  },120);
+  hideBackBtn();
+}
+</script>
+
+</body>
+</html>
