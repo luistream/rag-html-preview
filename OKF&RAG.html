@@ -94,9 +94,56 @@
   blockquote p{margin:4px 0}
 
   hr{border:none;border-top:1px solid var(--border);margin:40px 0}
-  .ok{color:var(--ok);font-weight:600}
-  .warn{color:var(--warn);font-weight:600}
-  .err{color:var(--err);font-weight:600}
+.ok{color:var(--ok);font-weight:600}
+.warn{color:var(--warn);font-weight:600}
+.err{color:var(--err);font-weight:600}
+
+  /* 干货版页签样式 */
+  .card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px;margin:16px 0}
+  .card-grid .card{margin:0}
+  .card .icon{display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;border-radius:8px;background:var(--primary-light);color:var(--primary);font-size:16px;margin-bottom:10px}
+  .arch{background:#0f172a;color:#e2e8f0;border-radius:12px;padding:24px 28px;margin:18px 0;font-family:"JetBrains Mono",Consolas,monospace;font-size:13px;line-height:1.7;overflow-x:auto;white-space:pre}
+  .arch .hl{color:#60a5fa}
+  .arch .hl2{color:#34d399}
+  .arch .hl3{color:#fbbf24}
+  .arch .hl4{color:#f472b6}
+  .timeline{display:flex;gap:0;margin:18px 0;border-radius:10px;overflow:hidden;border:1px solid var(--border)}
+  .phase{flex:1;padding:14px 16px;background:var(--bg-soft);border-right:1px solid var(--border);position:relative}
+  .phase:last-child{border-right:none}
+  .phase .pn{font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+  .phase .pt{font-size:14px;font-weight:600;color:var(--text)}
+  .phase .pd{font-size:12px;color:var(--muted);margin-top:4px}
+  .phase.now{background:var(--primary);color:#fff}
+  .phase.now .pn,.phase.now .pt,.phase.now .pd{color:#fff}
+  .tag-ok{display:inline-block;background:#dcfce7;color:#166534;font-size:12px;font-weight:600;padding:2px 10px;border-radius:12px}
+  .tag-info{display:inline-block;background:#dbeafe;color:#1e40af;font-size:12px;font-weight:600;padding:2px 10px;border-radius:12px}
+  .tag-warn{display:inline-block;background:#fef3c7;color:#92400e;font-size:12px;font-weight:600;padding:2px 10px;border-radius:12px}
+  .muted{color:var(--muted);font-size:13px}
+
+  /* 干货版架构图 (CSS grid, 生产上/消费下/治理中/存储右) */
+  .kb-arch{position:relative;display:flex;gap:14px;margin:16px 0}
+  .kb-arrow-svg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:5;overflow:visible}
+  .kb-left{flex:1;display:flex;flex-direction:column;gap:12px;min-width:0}
+  .kb-right{width:230px;min-width:230px;display:flex;flex-direction:column;justify-content:center}
+  .kb-lane{border:1px solid #93c5fd;background:#eff6ff;border-radius:10px;padding:10px 14px}
+  .kb-lane-key{border-color:#3b82f6;background:#eff6ff}
+  .kb-lane-title{font-size:13px;font-weight:700;color:#1e40af;margin-bottom:8px}
+  .kb-flow{display:flex;align-items:stretch;justify-content:center;gap:8px;flex-wrap:wrap}
+  .kb-flow-col{flex-direction:column;align-items:stretch}
+  .kb-node{border:1px solid #60a5fa;background:#dbeafe;border-radius:8px;padding:6px 12px;font-size:13px;text-align:center;position:relative;min-width:118px;min-height:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+  .kb-node.kb-key{border-color:#3b82f6;background:#bfdbfe;font-weight:600}
+  .kb-seq{position:absolute;top:-9px;left:-9px;width:19px;height:19px;border-radius:50%;background:#2563eb;color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,0.25);line-height:1}
+  .kb-sub{font-size:11px;color:#475569;font-weight:400}
+  .kb-arr{color:#64748b;font-size:14px;flex:none}
+  .kb-entry-tag{display:inline-block;background:#fef3c7;color:#92400e;font-size:11px;font-weight:700;padding:1px 8px;border-radius:10px;margin-left:6px;vertical-align:middle}
+  .kb-node-entry{border-color:#f59e0b;background:#fef3c7}
+  #kbLaneGov .kb-flow .kb-node{flex:1;min-width:0}
+  .kb-note{font-size:12px;color:#475569;margin:8px 0 0;line-height:1.7}
+  .kb-flow-list{list-style:none;margin:6px 0 0;padding:0;font-size:13px;line-height:1.9}
+  .kb-flow-list li{color:#1e293b;padding-left:2px}
+  .kb-flow-list strong{color:#1e40af}
+  .kb-role{display:inline-block;background:#e2e8f0;color:#475569;font-size:11px;font-weight:600;padding:0 8px;border-radius:9px;margin:0 4px;vertical-align:middle}
+  @media (max-width:900px){.kb-arch{flex-direction:column}.kb-right{width:auto;min-width:0}}
 
   /* 高亮行 */
   .hl{background:#dbeafe !important}
@@ -179,6 +226,7 @@ document.addEventListener('DOMContentLoaded', function () {
   <button class="tab-btn active" data-tab="design" onclick="switchTab('design')">📖 整体设计（9.1-9.12）</button>
   <button class="tab-btn" data-tab="case" onclick="switchTab('case')">📄 实际案例（9.13）</button>
   <button class="tab-btn" data-tab="detail" onclick="switchTab('detail')">📐 开发级详细设计</button>
+<button class="tab-btn" data-tab="dry" onclick="switchTab('dry')">⚡ 干货版</button>
 </div>
 
 <div id="tab-detail" style="display:none">
@@ -1526,6 +1574,7 @@ reviewed_by: null               # 审查后填确认人
 <div class="tw"><table>
 <thead><tr><th>知识类型</th><th>例子</th><th>怎么检索</th><th>向量化</th></tr></thead>
 <tbody>
+<tr><td>概念定义</td><td>术语/规则定义/业务概念</td><td>语义向量 + 图谱关联（双链）</td><td><span class="ok">✅ 向量化</span></td></tr>
 <tr><td>结构化参数</td><td>费率/风险等级/开放日</td><td>字段注册表精确匹配 + 生命周期</td><td><span class="err">❌ 不需要</span></td></tr>
 <tr><td>半结构化条款</td><td>合同条款</td><td>编译时切分 + BM25 + 向量混合</td><td><span class="ok">✅ 混合</span></td></tr>
 <tr><td>自由文本问答</td><td>法规/操作指引</td><td>向量 RAG + BM25 混合 + 自学习</td><td><span class="ok">✅ 向量化</span></td></tr>
@@ -2609,6 +2658,74 @@ extract_fields：
 </section>
 </div><!-- end tab-case -->
 
+<div id="tab-dry" style="display:none">
+
+<h2 id="dry-0" class="part-title">知识库与 RAG · 干货版</h2>
+
+<blockquote style="background:linear-gradient(135deg,#eff6ff,#f8fafc);border-left:5px solid #2563eb;border-radius:0 10px 10px 0;padding:18px 22px;font-size:15px;color:#1e293b;margin:14px 0 18px">
+<p style="margin:0"><strong>一句话概括：</strong>以 <strong>OKF 文件</strong>为知识本体，以<strong>多原语检索</strong>为查询手段，以 <strong>Obsidian 和 Web 服务</strong>为人工界面，以<strong>注册中心</strong>为全局治理——让托管业务知识成为银小帆多智能体共享、业务人员可审查的<strong>组织级资产</strong>。</p>
+</blockquote>
+
+<div class="intro-card">
+<p><strong>核心理念：</strong>采用 <strong>OKF（Open Knowledge Format）</strong>——知识以 Markdown + YAML 文件为规范形态（可审查、可迁移、可治理），向量索引是派生的检索层（可从文件重建）。<br>
+<strong>来源：</strong>Google Cloud 2026 年发布 OKF V0.2，强调来源/验证/时效性/可信度，本方案的信任治理已覆盖。</p>
+</div>
+
+<h2 id="dry-2">一、核心架构</h2>
+<div class="kb-arch" id="kbArch">
+  <svg class="kb-arrow-svg" id="kbArrowSvg" xmlns="http://www.w3.org/2000/svg"></svg>
+  <div class="kb-left">
+    <div class="kb-lane" id="kbLaneProd">
+      <div class="kb-lane-title">知识生产 <span class="kb-sub">（创建者提供知识）</span></div>
+      <div class="kb-flow">
+        <div class="kb-node" id="kbNodeWrite"><span class="kb-seq">③</span>📥 源文档放入 raw/<br><span class="kb-sub">系统自动编译<br>生成 OKF 知识文件</span></div>
+      </div>
+    </div>
+    <div class="kb-lane kb-lane-key" id="kbLaneGov">
+      <div class="kb-lane-title">治理中枢 · 控制台 <span class="kb-entry-tag">▶ 流程入口</span></div>
+      <div class="kb-flow">
+        <div class="kb-node kb-node-entry" id="kbNodeReg"><span class="kb-seq">①</span>📝 登记知识库档案<br><span class="kb-sub">知识工作台 · 创建者操作</span></div><span class="kb-arr">→</span>
+        <div class="kb-node" id="kbNodeRc"><span class="kb-seq">②</span>🏛️ 注册中心<br><span class="kb-sub">系统自动：校验→建骨架→接路由</span></div><span class="kb-arr">→</span>
+        <div class="kb-node kb-key" id="kbNodeIng"><span class="kb-seq">④</span>⚙️ 入库流水线<br><span class="kb-sub">系统自动 · raw→wiki/+ES<br>生成 pending 知识</span></div><span class="kb-arr">→</span>
+        <div class="kb-node kb-key" id="kbNodeReview"><span class="kb-seq">⑤</span>🛂 待审 → 审核<br><span class="kb-sub">确认/修改/拒绝</span></div>
+      </div>
+    </div>
+    <div class="kb-lane" id="kbLaneCon">
+      <div class="kb-lane-title">检索与消费</div>
+      <div class="kb-flow">
+        <div class="kb-node">🤖 子 agent</div><span class="kb-arr">→</span>
+        <div class="kb-node kb-key" id="kbNodeRp"><span class="kb-seq">⑥</span>🔍 RAGProvider<br><span class="kb-sub">7 类检索原语</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="kb-right">
+    <div class="kb-lane" id="kbLaneKb">
+      <div class="kb-lane-title">知识存储</div>
+      <div class="kb-flow kb-flow-col">
+        <div class="kb-node" id="kbNodeRaw">📥 raw/<br><span class="kb-sub">原始文档</span></div>
+        <div class="kb-node" id="kbNodeWiki">📚 wiki/<br><span class="kb-sub">OKF 知识文件</span></div>
+        <div class="kb-node kb-key" id="kbNodeEs">🗄️ ES 向量库</div>
+      </div>
+    </div>
+  </div>
+</div>
+<p class="kb-note">▶ <strong>流程流转（序号对应图中标注）：</strong> <a class="chap-link" href="#" onclick="gotoChapter('9.5.1',this);return false">📖 四层总体架构图</a></p>
+<ol class="kb-flow-list">
+<li><strong>① 登记知识库档案</strong> <span class="kb-role">创建者</span>：到控制台知识工作台登记；<em>加知识无需再登记</em></li>
+<li><strong>② 注册中心</strong> <span class="kb-role">系统自动</span>：校验 → 建骨架 → 接路由 <a class="chap-link" href="#" onclick="gotoChapter('9.6.3',this);return false">▶ 注册中心职责</a></li>
+<li><strong>③ 提供知识</strong> <span class="kb-role">创建者</span>：源文档（PDF/Word/MD）放入 <code>raw/</code> → 系统自动编译成 OKF 知识文件（frontmatter 系统生成）；少量人工条目可直接手写 OKF 文件</li>
+<li><strong>④ 入库流水线</strong> <span class="kb-role">系统自动</span>：30s mtime 轮询 → L0-L3 编译 → 生成 <code>status=pending</code> 待审知识（产出 <code>wiki/</code> 知识文件 + <code>ES</code> 向量）<a class="chap-link" href="#" onclick="gotoChapter('9.9.1',this);return false">▶ 入库流水线</a> <a class="chap-link" href="#" onclick="gotoChapter('9.9.1',this);return false">▶ DocStructPlugin</a></li>
+<li><strong>⑤ 待审 → 审核</strong> <span class="kb-role">审核者</span>：确认 / 修改 / 拒绝，<code>confirmed</code> 才可检索</li>
+<li><strong>⑥ RAGProvider 检索</strong> <span class="kb-role">消费</span>：子 agent 经统一入口（7 类检索原语）命中 wiki/ 或 ES；manager 只做路由
+<a class="chap-link" href="#" onclick="gotoChapter('9.4',this);return false">▶ 多原语组合检索</a>
+<a class="chap-link" href="#" onclick="gotoChapter('9.8.1',this);return false">▶ 检索原语库</a>
+<a class="chap-link" href="#" onclick="gotoChapter('9.8.1',this);return false">▶ RAGProvider 核心方法</a>
+<a class="chap-link" href="#" onclick="gotoChapter('9.8.2',this);return false">▶ 检索策略链</a>
+<a class="chap-link" href="#" onclick="gotoChapter('9.7',this);return false">▶ 六类知识类型（type）</a></li>
+</ol>
+<p class="kb-note">📦 <strong>知识存储三层：</strong><code>raw/</code> 源文档 · <code>wiki/</code> 知识文件（OKF + frontmatter）· <code>ES</code> 向量库 —— 均以文件/索引形态可审查、可溯源，可由文件重建。</p>
+</div><!-- end tab-dry -->
+
 <footer class="footer">
   核心层 · 第 9 章 知识库与 RAG（✅ 定稿）· v3.4 · 2026-08-11
   ｜ 从问题到方案，由浅入深 ｜ 全 Agent 统一治理 + 完整架构图 + 实际案例
@@ -2619,14 +2736,147 @@ extract_fields：
 
 <script>
 // Tab 切换：整体设计 / 实际案例 / 开发级详细设计
+function drawKbArrows(){
+  var arch=document.getElementById('kbArch');
+  var svg=document.getElementById('kbArrowSvg');
+  if(!arch||!svg||arch.offsetParent===null)return;
+  var ar=arch.getBoundingClientRect();
+  var W=ar.width,H=ar.height;
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);
+  svg.innerHTML='';
+  var mk='<marker id="kbArr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#475569"/></marker>';
+  var ns='http://www.w3.org/2000/svg';
+  function rect(sel){
+    var el=arch.querySelector(sel);if(!el)return null;
+    var r=el.getBoundingClientRect();
+    return {x:r.left-ar.left,y:r.top-ar.top,w:r.width,h:r.height};
+  }
+  var prod=rect('#kbLaneProd'),gov=rect('#kbLaneGov'),con=rect('#kbLaneCon'),kb=rect('#kbLaneKb');
+  if(!prod||!gov||!con||!kb)return;
+  // 节点级锚点: 入库流水线 / RAGProvider / wiki / ES
+  function nodeRect(sel){
+    var el=arch.querySelector(sel);if(!el)return null;
+    var r=el.getBoundingClientRect();
+    return {x:r.left-ar.left,y:r.top-ar.top,w:r.width,h:r.height};
+  }
+  var govIng=nodeRect('#kbLaneGov .kb-node:nth-child(5)')||{x:gov.x+gov.w-60,y:gov.y+gov.h/2,w:60,h:1};
+  var regNode=nodeRect('#kbNodeReg')||{x:gov.x,y:gov.y,w:gov.w/4,h:1};
+  var conRp=nodeRect('#kbLaneCon .kb-node:nth-child(3)')||{x:con.x+con.w-60,y:con.y+con.h/2,w:60,h:1};
+  var kbWiki=nodeRect('#kbNodeWiki')||{x:kb.x,y:kb.y+kb.h/2,w:1,h:1};
+  var kbEs=nodeRect('#kbNodeEs')||{x:kb.x,y:kb.y+kb.h*0.8,w:1,h:1};
+  function line(x1,y1,x2,y2,label,dash){
+    var g=document.createElementNS(ns,'g');
+    var p=document.createElementNS(ns,'path');
+    p.setAttribute('d','M'+x1+','+y1+' C'+(x1+(x2-x1)*0.5)+','+y1+' '+(x1+(x2-x1)*0.5)+','+y2+' '+x2+','+y2);
+    p.setAttribute('fill','none');
+    p.setAttribute('stroke','#475569');
+    p.setAttribute('stroke-width','1.6');
+    p.setAttribute('marker-end','url(#kbArr)');
+    if(dash)p.setAttribute('stroke-dasharray','5,4');
+    g.appendChild(p);
+    if(label){
+      var t=document.createElementNS(ns,'text');
+      t.setAttribute('x',(x1+x2)/2);t.setAttribute('y',(y1+y2)/2-4);
+      t.setAttribute('text-anchor','middle');t.setAttribute('font-size','11');
+      t.setAttribute('fill','#1e40af');t.setAttribute('font-weight','600');
+      var span=document.createElementNS(ns,'tspan');
+      span.textContent=label;
+      t.appendChild(span);
+      var bb=t.getBBox();
+      var r2=document.createElementNS(ns,'rect');
+      r2.setAttribute('x',bb.x-3);r2.setAttribute('y',bb.y-1);r2.setAttribute('width',bb.width+6);r2.setAttribute('height',bb.height+2);
+      r2.setAttribute('rx','3');r2.setAttribute('fill','rgba(255,255,255,0.9)');
+      g.insertBefore(r2,g.children[1]);
+      g.appendChild(t);
+    }
+    svg.appendChild(g);
+  }
+  function polyline(pts,label,dash,labelSeg){
+    var g=document.createElementNS(ns,'g');
+    var p=document.createElementNS(ns,'path');
+    var d='M'+pts[0][0]+','+pts[0][1];
+    for(var i=1;i<pts.length;i++){ d+=' L'+pts[i][0]+','+pts[i][1]; }
+    p.setAttribute('d',d);
+    p.setAttribute('fill','none');
+    p.setAttribute('stroke','#475569');
+    p.setAttribute('stroke-width','1.6');
+    p.setAttribute('marker-end','url(#kbArr)');
+    if(dash)p.setAttribute('stroke-dasharray','5,4');
+    g.appendChild(p);
+    if(label){
+      var si=(labelSeg==null)?1:labelSeg;
+      var ax=pts[si][0],ay=pts[si][1],bx=pts[si+1][0],by=pts[si+1][1];
+      var t=document.createElementNS(ns,'text');
+      t.setAttribute('x',(ax+bx)/2);t.setAttribute('y',Math.min(ay,by)-4);
+      t.setAttribute('text-anchor','middle');t.setAttribute('font-size','11');
+      t.setAttribute('fill','#1e40af');t.setAttribute('font-weight','600');
+      var span=document.createElementNS(ns,'tspan');
+      span.textContent=label;
+      t.appendChild(span);
+      var bb=t.getBBox();
+      var r2=document.createElementNS(ns,'rect');
+      r2.setAttribute('x',bb.x-3);r2.setAttribute('y',bb.y-1);r2.setAttribute('width',bb.width+6);r2.setAttribute('height',bb.height+2);
+      r2.setAttribute('rx','3');r2.setAttribute('fill','rgba(255,255,255,0.9)');
+      g.insertBefore(r2,g.children[1]);
+      g.appendChild(t);
+    }
+    svg.appendChild(g);
+  }
+  function customPath(d,label,lx,ly){
+    var g=document.createElementNS(ns,'g');
+    var p=document.createElementNS(ns,'path');
+    p.setAttribute('d',d);
+    p.setAttribute('fill','none');
+    p.setAttribute('stroke','#475569');
+    p.setAttribute('stroke-width','1.6');
+    p.setAttribute('marker-end','url(#kbArr)');
+    g.appendChild(p);
+    if(label){
+      var t=document.createElementNS(ns,'text');
+      t.setAttribute('x',lx);t.setAttribute('y',ly);
+      t.setAttribute('text-anchor','middle');t.setAttribute('font-size','11');
+      t.setAttribute('fill','#1e40af');t.setAttribute('font-weight','600');
+      var span=document.createElementNS(ns,'tspan');
+      span.textContent=label;
+      t.appendChild(span);
+      var bb=t.getBBox();
+      var r2=document.createElementNS(ns,'rect');
+      r2.setAttribute('x',bb.x-3);r2.setAttribute('y',bb.y-1);r2.setAttribute('width',bb.width+6);r2.setAttribute('height',bb.height+2);
+      r2.setAttribute('rx','3');r2.setAttribute('fill','rgba(255,255,255,0.9)');
+      g.insertBefore(r2,g.children[1]);
+      g.appendChild(t);
+    }
+    svg.appendChild(g);
+  }
+  // ① 入口: 创建者准备知识 → 到控制台登记 (垂直进入治理中枢)
+  line(prod.x+prod.w/2, prod.y+prod.h, gov.x+gov.w/2, gov.y, '到控制台登记', false);
+  // ② 审核管理: 治理底中 → 消费顶中 (虚线)
+  line(gov.x+gov.w/2, gov.y+gov.h, con.x+con.w/2, con.y, '审核管理', true);
+  // ③ 入库: 平滑曲线陡降绕过⑤待审节点, 末端水平进入 wiki（与检索线曲线风格统一）
+  var sx=govIng.x+govIng.w, sy=govIng.y+govIng.h/2;
+  var lowY2=Math.max(sy+58, gov.y+gov.h+6);
+  var ax=kbWiki.x-28, amy=kbWiki.y+kbWiki.h/2;
+  var d='M'+sx+','+sy
+    +' C'+sx+','+(sy+73)+' '+(sx+80)+','+(sy+73)+' '+(sx+160)+','+lowY2
+    +' L'+ax+','+lowY2
+    +' C'+ax+','+(lowY2-30)+' '+ax+','+(amy+30)+' '+ax+','+amy
+    +' L'+kbWiki.x+','+amy;
+  customPath(d,'入库',Math.round((sx+160+ax)/2),lowY2-4);
+  // ④ 检索: 消费"RAGProvider"右 → 存储 ES
+  line(conRp.x+conRp.w, conRp.y+conRp.h/2, kbEs.x, kbEs.y+kbEs.h/2, '检索', false);
+}
+window.addEventListener('resize',function(){ if(document.getElementById('tab-dry') && document.getElementById('tab-dry').offsetParent!==null){ setTimeout(drawKbArrows,50);} });
+
 function switchTab(name){
   const design=document.getElementById('tab-design');
   const caseBox=document.getElementById('tab-case');
   const detailBox=document.getElementById('tab-detail');
+  const dryBox=document.getElementById('tab-dry');
   const btns=document.querySelectorAll('.tab-btn');
   design.style.display = (name==='design') ? 'block' : 'none';
   caseBox.style.display = (name==='case') ? 'block' : 'none';
   detailBox.style.display = (name==='detail') ? 'block' : 'none';
+  dryBox.style.display = (name==='dry') ? 'block' : 'none';
   btns.forEach(b=>b.classList.toggle('active', b.dataset.tab===name));
   window.scrollTo(0, 0);
   setTimeout(buildToc,50);
@@ -2634,22 +2884,28 @@ function switchTab(name){
   if(name==='case'){
     setTimeout(renderCaseFlow,100);
   }
+  // 切到干货版时，绘制架构图连线（隐藏容器中 SVG 需在显示后计算位置）
+  if(name==='dry'){
+    setTimeout(drawKbArrows,100);
+  }
   // 用户手动切换 tab 时隐藏返回按钮
   hideBackBtn();
 }
 // 案例页签章节引用跳转：切换到整体设计并滚动到目标章节（支持二级子节）
 var _CHAP_MAP={'9.1':'s1','9.2':'s2','9.3':'s3','9.4':'s4','9.5':'s11','9.6':'s10','9.7':'s5','9.8':'s6','9.9':'s7','9.10':'s8','9.11':'s9','9.12':'s12'};
 function gotoChapter(chap, linkEl){
-  // 记录来源：案例页签内链接的绝对位置，并显示返回按钮
+  // 记录来源：案例/干货版页签内链接的绝对位置，并显示返回按钮
   if(linkEl){
     var linkTop = linkEl.getBoundingClientRect().top + window.scrollY;
     _caseReturnPos = linkTop - 80;   // 留一点上方空间，露出被点击的链接
+    _returnTab = (document.getElementById('tab-dry') && document.getElementById('tab-dry').offsetParent!==null) ? 'dry' : 'case';
     showBackBtn();
   }
   // 直接切到设计 tab（不走 switchTab 的 scrollTo，避免干扰）
   document.getElementById('tab-design').style.display='block';
   document.getElementById('tab-case').style.display='none';
   document.getElementById('tab-detail').style.display='none';
+  document.getElementById('tab-dry').style.display='none';
   document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab==='design');});
   setTimeout(buildToc,50);
   // 等布局稳定（切换 tab 高度变化大）
@@ -2771,6 +3027,17 @@ function buildToc(){
       }
     });
   }
+  // tab-dry 干货版内联 h2
+  const dryBox=document.getElementById('tab-dry');
+  if(dryBox && dryBox.offsetParent!==null){
+    dryBox.querySelectorAll(':scope > h2[id]').forEach(function(h2){
+      const li=document.createElement('li');
+      const a=document.createElement('a');
+      a.href='#'+h2.id;a.className=h2.classList.contains('part-title')?'l0':'l1';
+      a.textContent=h2.textContent.trim();a.dataset.t='tab-dry';
+      li.appendChild(a);toc.appendChild(li);
+    });
+  }
   const obs=new IntersectionObserver(es=>{
     es.forEach(e=>{if(e.isIntersecting){
       document.querySelectorAll('.toc a').forEach(l=>l.classList.remove('active'));
@@ -2782,6 +3049,9 @@ function buildToc(){
   visibleSections.forEach(s=>obs.observe(s));
   if(document.getElementById('tab-detail') && document.getElementById('tab-detail').offsetParent!==null){
     document.querySelectorAll('#tab-detail h2[id], #tab-detail h3[id]').forEach(h=>obs.observe(h));
+  }
+  if(document.getElementById('tab-dry') && document.getElementById('tab-dry').offsetParent!==null){
+    document.querySelectorAll('#tab-dry h2[id]').forEach(h=>obs.observe(h));
   }
   // scroll 兜底高亮
   function updateActive(){
@@ -2985,10 +3255,14 @@ buildToc();
 
 <script>
 // 案例页签 → 整体设计跳转后，浮动返回按钮
-var _caseReturnPos = 0;   // 案例页签内被点击链接的位置
+var _caseReturnPos = 0;   // 案例/干货版页签内被点击链接的位置
+var _returnTab = 'case';  // 来源页签: case=实际案例 / dry=干货版
 var _caseReturnShown = false;
 function showBackBtn(){
   var btn=document.getElementById('back-to-case');
+  var label=(_returnTab==='dry')?'返回干货版':'返回实际案例';
+  btn.textContent='↩ '+label;
+  btn.title=label;
   btn.style.display='block';
   _caseReturnShown=true;
 }
@@ -2998,13 +3272,15 @@ function hideBackBtn(){
   _caseReturnShown=false;
 }
 function backToCase(){
-  // 切回案例 tab（保持位置，不用 scrollTo(0,0)）
+  // 切回来源 tab（案例或干货版，保持位置，不用 scrollTo(0,0)）
+  var isDry = (_returnTab==='dry');
   document.getElementById('tab-design').style.display='none';
-  document.getElementById('tab-case').style.display='block';
+  document.getElementById('tab-case').style.display=isDry?'none':'block';
+  document.getElementById('tab-dry').style.display=isDry?'block':'none';
   document.getElementById('tab-detail').style.display='none';
-  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab==='case');});
+  document.querySelectorAll('.tab-btn').forEach(function(b){b.classList.toggle('active',b.dataset.tab===(isDry?'dry':'case'));});
   setTimeout(buildToc,50);
-  // 滚动回案例页签被点击链接的位置
+  // 滚动回来源页签被点击链接的位置
   setTimeout(function(){
     window.scrollTo(0, _caseReturnPos);
     setTimeout(renderCaseFlow,100);
