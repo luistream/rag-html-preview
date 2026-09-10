@@ -199,6 +199,7 @@ tr:last-child td { border-bottom: none; }
 
   <div class="card" style="margin-top:16px;">
     <div class="card-title">🗺️ 三种对接的权限流转<span style="font-size:.72em;color:#2563eb;font-weight:600;">每行一条链路，从左往右看</span></div>
+  <p style="margin:0 2px 10px;color:#475569;font-size:.88rem;line-height:1.7;">📌 <strong>工具按调用路径分两类</strong>：<strong>平台接口工具</strong>＝调用要经过管理人平台接口（平台在接口层按「菜单-接口对应表」拦，银小管透传即可）；<strong>直连工具</strong>＝银小管直接调数据源/内部逻辑、不经过平台（平台拦不着，由银小管调用前代问平台权限接口）。</p>
     <div id="authFlowDiagram" style="margin:14px 0 4px 0;"></div>
     <script>
     (function(){
@@ -211,7 +212,7 @@ tr:last-child td { border-bottom: none; }
       function fadd(n){ svg3.appendChild(n); }
 
       fadd(ftxt(800, 38, '三种对接＋演示备用方案的权限流转全景', {size:26, weight:'bold', fill:'#0f172a'}));
-      fadd(ftxt(800, 68, '前三行＝正式对接：功能闸判定归管理人平台（类①对应表拦 · 类②权限接口判），银小管只筛不闸；第四行＝演示备用方案（平台零改造过渡态）', {size:15, fill:'#64748b'}));
+      fadd(ftxt(800, 68, '前三行＝正式对接：功能闸判定归管理人平台（平台接口工具→平台拦 · 直连工具→银小管代问），银小管只筛不闸；第四行＝演示备用方案（平台零改造过渡态）', {size:15, fill:'#64748b'}));
 
       // 三列表头
       var heads = [[60,300,'谁在调用'],[390,560,'管理人平台（账号 · 菜单 · 授权 · 代理）'],[980,560,'智能体平台：银小管（执行 · 筛子 · 数据闸 · 审计）——功能闸判定归管理人平台']];
@@ -224,22 +225,22 @@ tr:last-child td { border-bottom: none; }
         {y:140, band:'#f8fafc', ac:'#2563eb', chip:'对接方式 A · 内嵌（平台页面 · 已登录）',
          caller:['张三 · 某某基金','在管理人平台页面里用 AI','菜单：查净值 ✓ · 查合同 ✓ · 录单 ✗','打开页面就能用——零配置'],
          mp:['① 平台认得张三，不用再登录','② 平台凭 API Key 代为转发请求','③ 只带「这是张三」——菜单/产品范围权限判定由平台负责','平台三角色：认人·定功能·代转发'],
-         agt:['① 核对 API Key——只认平台不认人','② 筛子：按张三权限预过滤可见工具（fail-open）','③ 类①工具：透传身份调平台接口，平台按对应表拦','④ 类②工具：先问平台权限接口，无权限 403','⑤ 数据闸 org_id；审计记「张三（平台代问）」'],
+         agt:['① 核对 API Key——只认平台不认人','② 筛子：按张三权限预过滤可见工具（fail-open）','③ 平台接口工具：透传身份调平台接口，平台按对应表拦','④ 直连工具：先问平台权限接口，无权限 403','⑤ 数据闸 org_id；审计记「张三（平台代问）」'],
          ex:'例：查 SGP509 ✅　录单 ❌ 未开通　查 FT999 ❌ 越权'},
         {y:380, band:'#ffffff', ac:'#8b5cf6', chip:'对接方式 B · 桌面智能体工具（有浏览器 · 有用户）',
          caller:['Trae · 张三桌面的 AI 工具','接入编号 tr_88…（绑张三名下）','粘贴 MCP 链接即可用'],
          mp:['① 首连被拒（401）→ 打开官方授权页','② 登录并点「同意」（PKCE）——功能权限管理员已预配置，页仅确认','③ 发两张凭证：访问凭证（约1h）＋续期凭证（约30d·可吊销）','凭证只装身份：张三·某某基金（scope 六域已退役）'],
-         agt:['① 验 token——解出张三·某某基金（scope 已退役）','② 筛子：按预配置权限预过滤可见工具','③ 类①平台拦 · 类②问平台权限接口（同 A 行）','④ 数据闸 org_id；审计记「张三（经 Trae · tr_88…）」'],
+         agt:['① 验 token——解出张三·某某基金（scope 已退役）','② 筛子：按预配置权限预过滤可见工具','③ 平台接口工具→平台拦 · 直连工具→代问权限接口（同 A 行）','④ 数据闸 org_id；审计记「张三（经 Trae · tr_88…）」'],
          ex:'例：问净值 ✅　录单 ❌　查 FT999 ❌ 越权——与 A 行同一套'},
         {y:620, band:'#f8fafc', ac:'#0d9488', chip:'对接方式 C · 管理人自建智能体平台（直连）',
          caller:['XX资管自建智能体平台','机构机房后端系统','全程无人参与·没有浏览器'],
          mp:['① 在线申请：盖章授权书＋三岗审批','② 审批通过自动开户：clientId＋clientSecret','③ 拿 secret 直接换 access_token（无需登录）','④ 核定清单按「工具」批——审批通过即开通'],
-         agt:['① 验 token——解出 XX资管·服务账号（机构身份）','② 筛子：按核定工具清单预过滤','③ 类①平台拦 · 类②平台权限接口按核定判','④ 数据闸：只查本机构产品；审计记「XX资管·服务账号」'],
+         agt:['① 验 token——解出 XX资管·服务账号（机构身份）','② 筛子：按核定工具清单预过滤','③ 平台接口工具→平台拦 · 直连工具→权限接口按核定判','④ 数据闸：只查本机构产品；审计记「XX资管·服务账号」'],
          ex:'例：定时拉净值 ✅　未申请办理类 → 403'},
         {y:860, band:'#fff7ed', ac:'#ea580c', chip:'演示备用方案 · 全权限演示 → 灰度白名单（平台零改造过渡态）',
          caller:['插件 · 预演通道（已实现）','全权限演示：自己人工牌跑全部场景','灰度：1~2 家真实客户'],
          mp:['① 平台零改造：不建对应表、不建权限功能','② 全权限演示：功能闸现状全通——验证功能链路','③ 灰度：银小管侧白名单圈定每家开放的场景/工具','④ 切换：平台权限机制上线后，白名单平移为接口判定'],
-         agt:['① 数据闸强制：org_id 隔离，A 家查不到 B 家','② 每家独立 API Key——审计可辨、可单独吊销','③ 类①共享 token 的 org 过滤须在银小管链上注入','④ 演示全通 ≠ 权限已验证——正式链路另行验收'],
+         agt:['① 数据闸强制：org_id 隔离，A 家查不到 B 家','② 每家独立 API Key——审计可辨、可单独吊销','③ 平台接口工具共享 token 的 org 过滤须在银小管链上注入','④ 演示全通 ≠ 权限已验证——正式链路另行验收'],
          ex:'例：全权限演示 77 场景全通；灰度客户只见白名单内工具'}
       ];
 
@@ -296,15 +297,15 @@ tr:last-child td { border-bottom: none; }
           a_chip:{n:'A', t:'对接方式 A · 内嵌（平台页面·已登录）', w:'内部信任边界 · 不走 OAuth', s:'have', b:'张三在管理人平台页面里用 AI——已登录、零配置零授权。平台代理转发（服务间 API Key），转发只带「这是张三」；功能与数据权限判定由平台负责（银小管只按身份问询执行）。本通道不发 token。'},
           a_caller:{n:'A·调用方', t:'张三 · 某某基金（平台页面）', w:'谁在调用', s:'have', b:'已登录平台的用户。功能权限按工具判定（工具即权限单元）——能用哪些工具由平台权限数据决定。'},
           a_mp:{n:'A·平台', t:'管理人平台：认人 · 定功能 · 代转发', w:'平台做什么', s:'have', b:'①平台会话认人；②fmp-ai-proxy 凭预先约定的 API Key 代理转发，证明请求来自平台；③转发时只带「这是张三」的用户标识——菜单、产品范围的权限判定由平台自己负责（数据源与判定均在平台；银小管按身份问询·目标设计·尚未实现）。平台三角色：账号（认人）· 菜单（定功能）· 代理（转发）。'},
-          a_agt:{n:'A·智能体平台', t:'银小管：只认平台 → 功能闸 → 数据闸', w:'怎么判定', s:'have', b:'①核对 API Key——只认平台、不认人；②筛子：tools/list 按张三权限预过滤可见工具（fail-open）；③功能闸：类①工具透传身份由平台按对应表拦，类②工具先问平台权限接口（fail-closed·403 转述）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（平台代问）」。'},
+          a_agt:{n:'A·智能体平台', t:'银小管：只认平台 → 功能闸 → 数据闸', w:'怎么判定', s:'have', b:'①核对 API Key——只认平台、不认人；②筛子：tools/list 按张三权限预过滤可见工具（fail-open）；③功能闸按调用路径分两类：平台接口工具（经过平台）透传身份由平台按对应表拦；直连工具（不经过平台）先问平台权限接口（fail-closed·403 转述）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（平台代问）」。'},
           b_chip:{n:'B', t:'对接方式 B · 桌面智能体工具', w:'跨信任边界 · OAuth 2.1', s:'todo', b:'张三自己电脑上的 AI 工具（Trae / WorkBuddy / 千问办公 / 豆包 / 客户自建）。有浏览器、有用户，走授权码＋PKCE；认证全程经管理人平台。'},
           b_caller:{n:'B·调用方', t:'Trae · 张三桌面的 AI 工具', w:'谁在调用', s:'todo', b:'接入编号 clientId 绑张三名下；粘贴 MCP 链接即用（首连 401 指路 → 官方授权页）；少数不支持自动注册的工具走用户中心手动开通。'},
           b_mp:{n:'B·平台', t:'管理人平台：授权页＋发两张凭证', w:'平台做什么', s:'todo', b:'①首连被拒（401），按提示打开官方授权页；②张三用平台账号登录并点「同意」——功能权限管理员已预配置，页仅确认，PKCE 防截获；③发放两张凭证：访问凭证（约 1 小时·每次调用都带）＋续期凭证（约 30 天·换新用·可吊销）。凭证只装身份：张三 · 某某基金（scope 六域已退役）——菜单明细不进凭证。'},
-          b_agt:{n:'B·智能体平台', t:'银小管：验 token → 功能闸 → 数据闸', w:'怎么判定', s:'todo', b:'①验凭证，解出张三 · 某某基金（身份·机构）；②筛子：按管理员预配置权限预过滤可见工具；③功能闸：类①平台拦 · 类②问平台权限接口（同 A 行）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（经 Trae · tr_88…）」。'},
+          b_agt:{n:'B·智能体平台', t:'银小管：验 token → 功能闸 → 数据闸', w:'怎么判定', s:'todo', b:'①验凭证，解出张三 · 某某基金（身份·机构）；②筛子：按管理员预配置权限预过滤可见工具；③功能闸：平台接口工具→平台拦 · 直连工具→代问权限接口（同 A 行）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（经 Trae · tr_88…）」。'},
           c_chip:{n:'C', t:'对接方式 C · 管理人自建智能体平台（直连）', w:'跨信任边界 · client_credentials', s:'todo', b:'机构部署在自己机房的后端系统——全程无人参与、没有浏览器，代表机构不代表某个员工。典型场景：夜间定时批量同步净值。申请流程与页面原型见「权限认证需求设计」页签 · 第四章 C 通道。'},
           c_caller:{n:'C·调用方', t:'XX资管自建智能体平台', w:'谁在调用', s:'todo', b:'机构服务器对服务器直连。没有浏览器也没有人，因此不走授权页——身份来自经三岗审批开户的机构服务账号（clientId＋clientSecret）。'},
           c_mp:{n:'C·平台', t:'管理人平台：在线申请＋自动开户＋换票', w:'平台做什么', s:'todo', b:'①机构在线申请：盖章授权书＋三岗审批；②审批通过自动开户：clientId＋clientSecret 生成并邮件送达（secret 只显一次）；③平台拿 secret 直接换 access_token（client_credentials，无需任何人登录）；④核定清单按「工具」批：公共工具免申请，其余逐工具申请核定——审批通过即开通。'},
-          c_agt:{n:'C·智能体平台', t:'银小管：验 token → 核定清单 → 数据闸', w:'怎么判定', s:'todo', b:'①验 token，解出 XX资管 · 服务账号（机构身份，不是个人）；②筛子：按核定工具清单预过滤；③功能闸：类①平台拦 · 类②平台权限接口按核定工具清单判；④数据闸：仅本机构产品（org_id）；⑤审计记「XX资管 · 自建平台服务账号」。'}
+          c_agt:{n:'C·智能体平台', t:'银小管：验 token → 核定清单 → 数据闸', w:'怎么判定', s:'todo', b:'①验 token，解出 XX资管 · 服务账号（机构身份，不是个人）；②筛子：按核定工具清单预过滤；③功能闸：平台接口工具→平台拦 · 直连工具→权限接口按核定工具清单判；④数据闸：仅本机构产品（org_id）；⑤审计记「XX资管 · 自建平台服务账号」。'}
         };
         var FORDER3 = ['a_chip','a_caller','a_mp','a_agt','b_chip','b_caller','b_mp','b_agt','c_chip','c_caller','c_mp','c_agt'];
         var w3 = createWalkable(wrap3, FS3, FORDER3, '<div style="font-size:13.5px;line-height:1.8;color:#334155;">👆 <strong>点击图中任意方块</strong>查看说明：这格是谁、做什么、怎么判定。也可以点按钮<strong>顺序走读</strong>（A→B→C 三行顺序）。</div>');
@@ -328,7 +329,7 @@ tr:last-child td { border-bottom: none; }
 <div class="tab-content" id="tab-authdesign">
   <div class="card" id="authDesignOutline">
     <div class="card-title">🔐 权限认证需求设计 · 总纲<span style="font-size:.72em;color:#2563eb;font-weight:600;">四章定架：架构方案 → 接口服务 → 平台对接 → 页面与业务逻辑</span></div>
-    <p style="margin:0 2px 12px;color:#475569;font-size:.92rem;line-height:1.8;">A/B/C 三条对接通道涉及认证与权限，管理人平台需配套实施（授权页、我的授权、机构服务账号申请审批等页面与接口）。本页签按四章组织，配图与页面原型编入所属章节。定稿基线（2026-09-10 功能闸新口径）：<strong>工具即权限单元</strong>——权限按工具批、按工具判，77 场景层退役为展示维度；<strong>功能闸判定权威＝管理人平台</strong>——类①工具由平台接口层按「菜单-接口对应表」拦，类②工具由银小管调用时前置查平台权限接口（fail-closed · 可短缓存 · 无权限 403 结构化转述）；银小管侧 <strong>tools/list 预过滤为筛子（fail-open · 覆盖类①＋类②全部工具）</strong>＋调用时兜底为闸；<strong>B 通道凭证只装身份</strong>（功能权限管理员预配置·授权页仅确认，scope 六域退役）；<strong>C 通道核定清单按工具批</strong>；<strong>数据闸</strong>＝机构产品范围（org_id 隔离 · fail-closed）；<strong>办理双出口</strong>——有 prepare 出票自动填充（提交由用户本人在平台完成），无授权降级出填单卡（显式告知·不发票·审计记降级·最后一环平台 ACL）；通道字母全司一套：A＝内嵌 · B＝用户智能体端 · C＝机构智能体平台。</p>
+    <p style="margin:0 2px 12px;color:#475569;font-size:.92rem;line-height:1.8;">A/B/C 三条对接通道涉及认证与权限，管理人平台需配套实施（授权页、我的授权、机构服务账号申请审批等页面与接口）。本页签按四章组织，配图与页面原型编入所属章节。定稿基线（2026-09-10 功能闸新口径）：<strong>工具即权限单元</strong>——权限按工具批、按工具判，77 场景层退役为展示维度；<strong>功能闸判定权威＝管理人平台</strong>——平台接口工具由平台接口层按「菜单-接口对应表」拦，直连工具由银小管调用时前置查平台权限接口（fail-closed · 可短缓存 · 无权限 403 结构化转述）；银小管侧 <strong>tools/list 预过滤为筛子（fail-open · 覆盖两类工具全集）</strong>＋调用时兜底为闸；<strong>B 通道凭证只装身份</strong>（功能权限管理员预配置·授权页仅确认，scope 六域退役）；<strong>C 通道核定清单按工具批</strong>；<strong>数据闸</strong>＝机构产品范围（org_id 隔离 · fail-closed）；<strong>办理双出口</strong>——有 prepare 出票自动填充（提交由用户本人在平台完成），无授权降级出填单卡（显式告知·不发票·审计记降级·最后一环平台 ACL）；通道字母全司一套：A＝内嵌 · B＝用户智能体端 · C＝机构智能体平台。</p>
     <div class="table-wrap">
     <table>
       <tr><th>问题</th><th>答案索引</th></tr>
@@ -341,7 +342,7 @@ tr:last-child td { border-bottom: none; }
   </div>
   <div class="card" style="margin-top:16px;" id="authChapter1">
     <div class="card-title">一、架构方案<span style="font-size:.72em;color:#2563eb;font-weight:600;">本章三张配图 · 凭证模型与两道闸总述</span></div>
-    <p style="margin:0 2px 4px;color:#475569;font-size:.92rem;line-height:1.8;">一句话总述：<strong>功能闸判定权威＝管理人平台，银小管执筛子与闸；数据闸＝机构产品范围（org_id · fail-closed）</strong>——类①工具：平台接口层按「菜单-接口对应表」拦；类②工具：银小管调用时前置查平台权限接口（fail-closed · 短缓存 · 403 结构化转述）；tools/list 预过滤为筛子（fail-open · 覆盖全部工具）。<strong>工具即权限单元</strong>：权限按工具批、按工具判（77 场景层退役为展示维度）；办理类双出口——有 prepare 出票自动填充、无授权降级出填单卡（显式告知·不发票·审计记降级·最后一环平台 ACL）。本章按「全景 → 认证 → 总装」三张配图展开：</p>
+    <p style="margin:0 2px 4px;color:#475569;font-size:.92rem;line-height:1.8;">一句话总述：<strong>功能闸判定权威＝管理人平台，银小管执筛子与闸；数据闸＝机构产品范围（org_id · fail-closed）</strong>——平台接口工具（调用经过平台）：平台接口层按「菜单-接口对应表」拦；直连工具（银小管直连数据源）：调用时前置查平台权限接口（fail-closed · 短缓存 · 403 结构化转述）；tools/list 预过滤为筛子（fail-open · 覆盖全部工具）。<strong>工具即权限单元</strong>：权限按工具批、按工具判（77 场景层退役为展示维度）；办理类双出口——有 prepare 出票自动填充、无授权降级出填单卡（显式告知·不发票·审计记降级·最后一环平台 ACL）。本章按「全景 → 认证 → 总装」三张配图展开：</p>
     <div class="table-wrap">
     <table>
       <tr><th style="width:230px;">配图</th><th>回答什么问题</th></tr>
@@ -353,6 +354,7 @@ tr:last-child td { border-bottom: none; }
   </div>
   <details class="card" style="margin-top:16px;">
     <summary class="card-title">🗺️ 配图① 三种对接的权限流转<span style="font-size:.72em;color:#2563eb;font-weight:600;">每行一条链路，从左往右看</span></summary>
+  <p style="margin:0 2px 10px;color:#475569;font-size:.88rem;line-height:1.7;">📌 <strong>工具按调用路径分两类</strong>：<strong>平台接口工具</strong>＝调用要经过管理人平台接口（平台在接口层按「菜单-接口对应表」拦，银小管透传即可）；<strong>直连工具</strong>＝银小管直接调数据源/内部逻辑、不经过平台（平台拦不着，由银小管调用前代问平台权限接口）。</p>
     <div id="authFlowDiagramB" style="margin:14px 0 4px 0;"></div>
     <script>
     (function(){
@@ -365,7 +367,7 @@ tr:last-child td { border-bottom: none; }
       function fadd(n){ svg3.appendChild(n); }
 
       fadd(ftxt(800, 38, '三种对接＋演示备用方案的权限流转全景', {size:26, weight:'bold', fill:'#0f172a'}));
-      fadd(ftxt(800, 68, '前三行＝正式对接：功能闸判定归管理人平台（类①对应表拦 · 类②权限接口判），银小管只筛不闸；第四行＝演示备用方案（平台零改造过渡态）', {size:15, fill:'#64748b'}));
+      fadd(ftxt(800, 68, '前三行＝正式对接：功能闸判定归管理人平台（平台接口工具→平台拦 · 直连工具→银小管代问），银小管只筛不闸；第四行＝演示备用方案（平台零改造过渡态）', {size:15, fill:'#64748b'}));
 
       // 三列表头
       var heads = [[60,300,'谁在调用'],[390,560,'管理人平台（账号 · 菜单 · 授权 · 代理）'],[980,560,'智能体平台：银小管（执行 · 筛子 · 数据闸 · 审计）——功能闸判定归管理人平台']];
@@ -378,22 +380,22 @@ tr:last-child td { border-bottom: none; }
         {y:140, band:'#f8fafc', ac:'#2563eb', chip:'对接方式 A · 内嵌（平台页面 · 已登录）',
          caller:['张三 · 某某基金','在管理人平台页面里用 AI','菜单：查净值 ✓ · 查合同 ✓ · 录单 ✗','打开页面就能用——零配置'],
          mp:['① 平台认得张三，不用再登录','② 平台凭 API Key 代为转发请求','③ 只带「这是张三」——菜单/产品范围权限判定由平台负责','平台三角色：认人·定功能·代转发'],
-         agt:['① 核对 API Key——只认平台不认人','② 筛子：按张三权限预过滤可见工具（fail-open）','③ 类①工具：透传身份调平台接口，平台按对应表拦','④ 类②工具：先问平台权限接口，无权限 403','⑤ 数据闸 org_id；审计记「张三（平台代问）」'],
+         agt:['① 核对 API Key——只认平台不认人','② 筛子：按张三权限预过滤可见工具（fail-open）','③ 平台接口工具：透传身份调平台接口，平台按对应表拦','④ 直连工具：先问平台权限接口，无权限 403','⑤ 数据闸 org_id；审计记「张三（平台代问）」'],
          ex:'例：查 SGP509 ✅　录单 ❌ 未开通　查 FT999 ❌ 越权'},
         {y:380, band:'#ffffff', ac:'#8b5cf6', chip:'对接方式 B · 桌面智能体工具（有浏览器 · 有用户）',
          caller:['Trae · 张三桌面的 AI 工具','接入编号 tr_88…（绑张三名下）','粘贴 MCP 链接即可用'],
          mp:['① 首连被拒（401）→ 打开官方授权页','② 登录并点「同意」（PKCE）——功能权限管理员已预配置，页仅确认','③ 发两张凭证：访问凭证（约1h）＋续期凭证（约30d·可吊销）','凭证只装身份：张三·某某基金（scope 六域已退役）'],
-         agt:['① 验 token——解出张三·某某基金（scope 已退役）','② 筛子：按预配置权限预过滤可见工具','③ 类①平台拦 · 类②问平台权限接口（同 A 行）','④ 数据闸 org_id；审计记「张三（经 Trae · tr_88…）」'],
+         agt:['① 验 token——解出张三·某某基金（scope 已退役）','② 筛子：按预配置权限预过滤可见工具','③ 平台接口工具→平台拦 · 直连工具→代问权限接口（同 A 行）','④ 数据闸 org_id；审计记「张三（经 Trae · tr_88…）」'],
          ex:'例：问净值 ✅　录单 ❌　查 FT999 ❌ 越权——与 A 行同一套'},
         {y:620, band:'#f8fafc', ac:'#0d9488', chip:'对接方式 C · 管理人自建智能体平台（直连）',
          caller:['XX资管自建智能体平台','机构机房后端系统','全程无人参与·没有浏览器'],
          mp:['① 在线申请：盖章授权书＋三岗审批','② 审批通过自动开户：clientId＋clientSecret','③ 拿 secret 直接换 access_token（无需登录）','④ 核定清单按「工具」批——审批通过即开通'],
-         agt:['① 验 token——解出 XX资管·服务账号（机构身份）','② 筛子：按核定工具清单预过滤','③ 类①平台拦 · 类②平台权限接口按核定判','④ 数据闸：只查本机构产品；审计记「XX资管·服务账号」'],
+         agt:['① 验 token——解出 XX资管·服务账号（机构身份）','② 筛子：按核定工具清单预过滤','③ 平台接口工具→平台拦 · 直连工具→权限接口按核定判','④ 数据闸：只查本机构产品；审计记「XX资管·服务账号」'],
          ex:'例：定时拉净值 ✅　未申请办理类 → 403'},
         {y:860, band:'#fff7ed', ac:'#ea580c', chip:'演示备用方案 · 全权限演示 → 灰度白名单（平台零改造过渡态）',
          caller:['插件 · 预演通道（已实现）','全权限演示：自己人工牌跑全部场景','灰度：1~2 家真实客户'],
          mp:['① 平台零改造：不建对应表、不建权限功能','② 全权限演示：功能闸现状全通——验证功能链路','③ 灰度：银小管侧白名单圈定每家开放的场景/工具','④ 切换：平台权限机制上线后，白名单平移为接口判定'],
-         agt:['① 数据闸强制：org_id 隔离，A 家查不到 B 家','② 每家独立 API Key——审计可辨、可单独吊销','③ 类①共享 token 的 org 过滤须在银小管链上注入','④ 演示全通 ≠ 权限已验证——正式链路另行验收'],
+         agt:['① 数据闸强制：org_id 隔离，A 家查不到 B 家','② 每家独立 API Key——审计可辨、可单独吊销','③ 平台接口工具共享 token 的 org 过滤须在银小管链上注入','④ 演示全通 ≠ 权限已验证——正式链路另行验收'],
          ex:'例：全权限演示 77 场景全通；灰度客户只见白名单内工具'}
       ];
 
@@ -449,15 +451,15 @@ tr:last-child td { border-bottom: none; }
           a_chip:{n:'A', t:'对接方式 A · 内嵌（平台页面·已登录）', w:'内部信任边界 · 不走 OAuth', s:'have', b:'张三在管理人平台页面里用 AI——已登录、零配置零授权。平台代理转发（服务间 API Key），转发只带「这是张三」；功能与数据权限判定由平台负责（银小管只按身份问询执行）。本通道不发 token。'},
           a_caller:{n:'A·调用方', t:'张三 · 某某基金（平台页面）', w:'谁在调用', s:'have', b:'已登录平台的用户。功能权限按工具判定（工具即权限单元）——能用哪些工具由平台权限数据决定。'},
           a_mp:{n:'A·平台', t:'管理人平台：认人 · 定功能 · 代转发', w:'平台做什么', s:'have', b:'①平台会话认人；②fmp-ai-proxy 凭预先约定的 API Key 代理转发，证明请求来自平台；③转发时只带「这是张三」的用户标识——菜单、产品范围的权限判定由平台自己负责（数据源与判定均在平台；银小管按身份问询·目标设计·尚未实现）。平台三角色：账号（认人）· 菜单（定功能）· 代理（转发）。'},
-          a_agt:{n:'A·智能体平台', t:'银小管：只认平台 → 功能闸 → 数据闸', w:'怎么判定', s:'have', b:'①核对 API Key——只认平台、不认人；②筛子：tools/list 按张三权限预过滤可见工具（fail-open）；③功能闸：类①工具透传身份由平台按对应表拦，类②工具先问平台权限接口（fail-closed·403 转述）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（平台代问）」。'},
+          a_agt:{n:'A·智能体平台', t:'银小管：只认平台 → 功能闸 → 数据闸', w:'怎么判定', s:'have', b:'①核对 API Key——只认平台、不认人；②筛子：tools/list 按张三权限预过滤可见工具（fail-open）；③功能闸按调用路径分两类：平台接口工具（经过平台）透传身份由平台按对应表拦；直连工具（不经过平台）先问平台权限接口（fail-closed·403 转述）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（平台代问）」。'},
           b_chip:{n:'B', t:'对接方式 B · 桌面智能体工具', w:'跨信任边界 · OAuth 2.1', s:'todo', b:'张三自己电脑上的 AI 工具（Trae / WorkBuddy / 千问办公 / 豆包 / 客户自建）。有浏览器、有用户，走授权码＋PKCE；认证全程经管理人平台。'},
           b_caller:{n:'B·调用方', t:'Trae · 张三桌面的 AI 工具', w:'谁在调用', s:'todo', b:'接入编号 clientId 绑张三名下；粘贴 MCP 链接即用（首连 401 指路 → 官方授权页）；少数不支持自动注册的工具走用户中心手动开通。'},
           b_mp:{n:'B·平台', t:'管理人平台：授权页＋发两张凭证', w:'平台做什么', s:'todo', b:'①首连被拒（401），按提示打开官方授权页；②张三用平台账号登录并点「同意」——功能权限管理员已预配置，页仅确认，PKCE 防截获；③发放两张凭证：访问凭证（约 1 小时·每次调用都带）＋续期凭证（约 30 天·换新用·可吊销）。凭证只装身份：张三 · 某某基金（scope 六域已退役）——菜单明细不进凭证。'},
-          b_agt:{n:'B·智能体平台', t:'银小管：验 token → 功能闸 → 数据闸', w:'怎么判定', s:'todo', b:'①验凭证，解出张三 · 某某基金（身份·机构）；②筛子：按管理员预配置权限预过滤可见工具；③功能闸：类①平台拦 · 类②问平台权限接口（同 A 行）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（经 Trae · tr_88…）」。'},
+          b_agt:{n:'B·智能体平台', t:'银小管：验 token → 功能闸 → 数据闸', w:'怎么判定', s:'todo', b:'①验凭证，解出张三 · 某某基金（身份·机构）；②筛子：按管理员预配置权限预过滤可见工具；③功能闸：平台接口工具→平台拦 · 直连工具→代问权限接口（同 A 行）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（经 Trae · tr_88…）」。'},
           c_chip:{n:'C', t:'对接方式 C · 管理人自建智能体平台（直连）', w:'跨信任边界 · client_credentials', s:'todo', b:'机构部署在自己机房的后端系统——全程无人参与、没有浏览器，代表机构不代表某个员工。典型场景：夜间定时批量同步净值。申请流程与页面原型见「权限认证需求设计」页签 · 第四章 C 通道。'},
           c_caller:{n:'C·调用方', t:'XX资管自建智能体平台', w:'谁在调用', s:'todo', b:'机构服务器对服务器直连。没有浏览器也没有人，因此不走授权页——身份来自经三岗审批开户的机构服务账号（clientId＋clientSecret）。'},
           c_mp:{n:'C·平台', t:'管理人平台：在线申请＋自动开户＋换票', w:'平台做什么', s:'todo', b:'①机构在线申请：盖章授权书＋三岗审批；②审批通过自动开户：clientId＋clientSecret 生成并邮件送达（secret 只显一次）；③平台拿 secret 直接换 access_token（client_credentials，无需任何人登录）；④核定清单按「工具」批：公共工具免申请，其余逐工具申请核定——审批通过即开通。'},
-          c_agt:{n:'C·智能体平台', t:'银小管：验 token → 核定清单 → 数据闸', w:'怎么判定', s:'todo', b:'①验 token，解出 XX资管 · 服务账号（机构身份，不是个人）；②筛子：按核定工具清单预过滤；③功能闸：类①平台拦 · 类②平台权限接口按核定工具清单判；④数据闸：仅本机构产品（org_id）；⑤审计记「XX资管 · 自建平台服务账号」。'}
+          c_agt:{n:'C·智能体平台', t:'银小管：验 token → 核定清单 → 数据闸', w:'怎么判定', s:'todo', b:'①验 token，解出 XX资管 · 服务账号（机构身份，不是个人）；②筛子：按核定工具清单预过滤；③功能闸：平台接口工具→平台拦 · 直连工具→权限接口按核定工具清单判；④数据闸：仅本机构产品（org_id）；⑤审计记「XX资管 · 自建平台服务账号」。'}
         };
         var FORDER3 = ['a_chip','a_caller','a_mp','a_agt','b_chip','b_caller','b_mp','b_agt','c_chip','c_caller','c_mp','c_agt'];
         var w3 = createWalkable(wrap3, FS3, FORDER3, '<div style="font-size:13.5px;line-height:1.8;color:#334155;">👆 <strong>点击图中任意方块</strong>查看说明：这格是谁、做什么、怎么判定。也可以点按钮<strong>顺序走读</strong>（A→B→C 三行顺序）。</div>');
@@ -546,7 +548,7 @@ tr:last-child td { border-bottom: none; }
   </details>
   <div class="card" style="margin-top:16px;" id="authApiServices">
     <div class="card-title">二、智能体平台的接口服务<span style="font-size:.72em;color:#2563eb;font-weight:600;">银小管对外提供的服务 · 契约全文：《对外接口文档》v1.13</span></div>
-    <p style="margin:0 2px 12px;color:#475569;font-size:.92rem;line-height:1.8;">回答「接口服务是什么」：<strong>智能体平台（银小管）向对接方共暴露六类服务</strong>——MCP 工具服务是 B/C 通道的主服务，对话与技能匹配服务支撑内嵌通道，表单准备服务支撑办理场景，接入引导文档辅助配置。说明：OAuth 授权端点不在本节（由管理人平台实现，职责见第三章）；功能闸判定权威＝管理人平台——类①对应表拦、类②权限接口判（§14.1）均属平台配套事项，银小管侧筛子（tools/list 预过滤）＋调用时问询执行；接口上线前银小管可库直查兜底（过渡态）。</p>
+    <p style="margin:0 2px 12px;color:#475569;font-size:.92rem;line-height:1.8;">回答「接口服务是什么」：<strong>智能体平台（银小管）向对接方共暴露六类服务</strong>——MCP 工具服务是 B/C 通道的主服务，对话与技能匹配服务支撑内嵌通道，表单准备服务支撑办理场景，接入引导文档辅助配置。说明：OAuth 授权端点不在本节（由管理人平台实现，职责见第三章）；功能闸判定权威＝管理人平台——平台接口工具对应表拦、直连工具权限接口判（§14.1）均属平台配套事项，银小管侧筛子（tools/list 预过滤）＋调用时问询执行；接口上线前银小管可库直查兜底（过渡态）。</p>
     <div class="table-wrap">
     <table>
       <tr><th>服务</th><th>入口 / 端点</th><th>内容</th><th>状态</th><th>详见</th></tr>
@@ -558,17 +560,17 @@ tr:last-child td { border-bottom: none; }
       <tr><td><strong>接入引导文档</strong></td><td><code>GET /agent-setup.md</code></td><td>客户端接入指引（MCP 配置＋认证方式）</td><td><span class="badge" style="background:#16a34a;color:#fff;">已实现</span></td><td>§08</td></tr>
     </table>
     </div>
-    <p style="margin:10px 2px 0;font-size:.85rem;color:#64748b;">补充：生成式 UI（<code>/api/a2ui/*</code>）为试验接口、管理人平台无需对接（§11）。工具可见性由 <strong>筛子（tools/list 按用户权限预过滤）∩ 功能闸（类①平台拦·类②权限接口判）</strong> 决定；认证方式随通道不同——B/C 走 OAuth（§08），A 走服务间 API Key（见《智能体平台交互方案》）。</p>
+    <p style="margin:10px 2px 0;font-size:.85rem;color:#64748b;">补充：生成式 UI（<code>/api/a2ui/*</code>）为试验接口、管理人平台无需对接（§11）。工具可见性由 <strong>筛子（tools/list 按用户权限预过滤）∩ 功能闸（平台接口工具平台拦·直连工具权限接口判）</strong> 决定；认证方式随通道不同——B/C 走 OAuth（§08），A 走服务间 API Key（见《智能体平台交互方案》）。</p>
   </div>
   <div class="card" style="margin-top:16px;" id="authPlatformDuties">
     <div class="card-title">三、管理人平台如何对接<span style="font-size:.72em;color:#2563eb;font-weight:600;">A/B/C 三通道各自要做什么</span></div>
-    <p style="margin:0 2px 12px;color:#475569;font-size:.92rem;line-height:1.8;">管理人平台承担双重角色：<strong>A 通道的调用方与代理</strong>、<strong>B/C 通道的 OAuth 授权服务器</strong>；功能闸判定权威在平台——类①对应表拦、类②权限接口判（§14）属平台配套事项，银小管只按身份问询与执行。</p>
+    <p style="margin:0 2px 12px;color:#475569;font-size:.92rem;line-height:1.8;">管理人平台承担双重角色：<strong>A 通道的调用方与代理</strong>、<strong>B/C 通道的 OAuth 授权服务器</strong>；功能闸判定权威在平台——平台接口工具对应表拦、直连工具权限接口判（§14）属平台配套事项，银小管只按身份问询与执行。</p>
     <div class="table-wrap">
     <table>
       <tr><th style="width:150px;">通道</th><th>平台要做什么</th><th>性质</th></tr>
       <tr>
         <td><strong>A · 内嵌</strong><br>（存量）</td>
-        <td>① fmp-ai-proxy 凭服务间 API Key 代理转发（既有方案，见《智能体平台交互方案》）；② <strong>目标态：转发只捎认人标识</strong>（X-Fmp-User-Token），菜单/产品清单不捎带；③ <strong>功能闸判定由平台负责</strong>——类①平台接口层按「菜单-接口对应表」拦，类②银小管凭标识查平台权限接口——<strong>属平台配套事项（目标设计·尚未实现；过渡期银小管库直查兜底）</strong></td>
+        <td>① fmp-ai-proxy 凭服务间 API Key 代理转发（既有方案，见《智能体平台交互方案》）；② <strong>目标态：转发只捎认人标识</strong>（X-Fmp-User-Token），菜单/产品清单不捎带；③ <strong>功能闸判定由平台负责</strong>——平台接口工具在平台接口层按对应表拦，直连工具由银小管凭标识查平台权限接口——<strong>属平台配套事项（目标设计·尚未实现；过渡期银小管库直查兜底）</strong></td>
         <td><span class="badge" style="background:#16a34a;color:#fff;">代理链路已定</span><br><span class="badge" style="background:#d97706;color:#fff;">只捎标识·待接线</span></td>
       </tr>
       <tr>
@@ -1454,7 +1456,7 @@ data: [DONE]</code></pre>
         <thead><tr><th>能力</th><th>说明</th></tr></thead>
         <tbody>
           <tr><td><strong>身份闸：验凭证</strong></td><td>收到 B/C 通道请求后，通过 JWKS 验签 token，解出用户/机构身份（凭证只装身份·scope 已退役）。A 通道不走 OAuth——由管理人平台会话保障用户身份。</td></tr>
-          <tr><td><strong>功能闸：控工具</strong></td><td>筛子：tools/list 按用户权限预过滤工具清单（fail-open）；闸：类①工具由平台接口层按「菜单-接口对应表」拦、类②工具银小管调用时前置查平台权限接口（fail-closed·越权返回 403），见 §8.4。</td></tr>
+          <tr><td><strong>功能闸：控工具</strong></td><td>筛子：tools/list 按用户权限预过滤工具清单（fail-open）；闸：平台接口工具由平台接口层按「菜单-接口对应表」拦、直连工具银小管调用时前置查平台权限接口（fail-closed·越权返回 403），见 §8.4。</td></tr>
           <tr><td><strong>数据闸：控数据</strong></td><td>按机构（org_id）实时查询产品范围，仅放行本机构名下产品的数据——防止越权查询其他管理人的产品信息。</td></tr>
           <tr><td><strong>记账簿：留痕</strong></td><td>每次调用记录「谁（用户/服务账号）在什么时间调了什么工具、查了什么数据」，支持追溯。</td></tr>
           <tr><td><strong>表单预填</strong></td><td>办理类场景自动收集预填数据，生成取件码返回管理人平台，表单页面凭码取数据自动填入。</td></tr>
@@ -1483,10 +1485,10 @@ data: [DONE]</code></pre>
     </div>
     <div class=&quot;callout&quot;>
       <span class=&quot;callout-ico&quot;><svg class=&quot;icon&quot; viewBox=&quot;0 0 24 24&quot; fill=&quot;none&quot;><path d=&quot;M9 18l6-6-6-6&quot;/></svg></span>
-      <div class=&quot;callout-body&quot;><div class=&quot;callout-title&quot;>token 里的内容</div><div class=&quot;prose&quot;><p>银小管从 B/C 通道的 token 中解出两个关键信息：<strong>sub</strong>（用户 id 或服务账号 id）、<strong>org_id</strong>（所属机构，用于数据闸过滤）。token 不包含细粒度菜单权限——功能权限由平台负责判定（类②银小管凭标识查平台权限接口；目标设计·尚未实现，过渡期库直查），变更分钟级生效。</p></div></div>
+      <div class=&quot;callout-body&quot;><div class=&quot;callout-title&quot;>token 里的内容</div><div class=&quot;prose&quot;><p>银小管从 B/C 通道的 token 中解出两个关键信息：<strong>sub</strong>（用户 id 或服务账号 id）、<strong>org_id</strong>（所属机构，用于数据闸过滤）。token 不包含细粒度菜单权限——功能权限由平台负责判定（直连工具银小管凭标识查平台权限接口；目标设计·尚未实现，过渡期库直查），变更分钟级生效。</p></div></div>
     </div>
     <div class=&quot;subsection&quot;><div class=&quot;subsection-title&quot;>8.4 功能闸与工具过滤</div></div>
-    <div class=&quot;prose&quot;><p><strong>工具即权限单元</strong>：权限按工具批、按工具判——类①工具（经平台 REST）由平台接口层按「菜单-接口对应表」拦，类②工具（银小管直连）由银小管调用时前置查平台权限接口（fail-closed）；公共工具认证即用。银小管对外提供的 77 个业务场景退役为展示维度（每个场景内部编排一个或多个原子工具，权限落到工具粒度）。下表四档为业务理解的参考：</p></div>
+    <div class=&quot;prose&quot;><p><strong>工具即权限单元</strong>：权限按工具批、按工具判——平台接口工具（经平台 REST）由平台接口层按「菜单-接口对应表」拦，直连工具（银小管直连）由银小管调用时前置查平台权限接口（fail-closed）；公共工具认证即用。银小管对外提供的 77 个业务场景退役为展示维度（每个场景内部编排一个或多个原子工具，权限落到工具粒度）。下表四档为业务理解的参考：</p></div>
     <div class=&quot;table-wrapper&quot;>
       <table>
         <thead><tr><th>场景类型</th><th>数量</th><th>权限需求</th><th>说明</th></tr></thead>
@@ -1499,8 +1501,8 @@ data: [DONE]</code></pre>
       </table>
     </div>
     <div class=&quot;prose&quot;><p><strong>功能闸判定模型（2026-09-10 新口径）</strong>：判定权威唯一＝管理人平台，按工具分两类执行——</p>
-      <p>▪ <strong>类①工具（经平台 REST）</strong>：平台接口层按「菜单-接口对应表」拦——银小管透传身份调用，无权限请求在平台侧即被拒绝。</p>
-      <p>▪ <strong>类②工具（银小管直连）</strong>：银小管调用时前置查平台权限接口（fail-closed · 可短缓存 · 无权限 403 结构化转述）——目标设计·尚未实现，过渡期库直查兜底（菜单/角色直查平台库只读视图、产品范围走 manager_scope 既有链路），平台接口上线后切换。</p></div>
+      <p>▪ <strong>平台接口工具（经平台 REST）</strong>：平台接口层按「菜单-接口对应表」拦——银小管透传身份调用，无权限请求在平台侧即被拒绝。</p>
+      <p>▪ <strong>直连工具（银小管直连）</strong>：银小管调用时前置查平台权限接口（fail-closed · 可短缓存 · 无权限 403 结构化转述）——目标设计·尚未实现，过渡期库直查兜底（菜单/角色直查平台库只读视图、产品范围走 manager_scope 既有链路），平台接口上线后切换。</p></div>
     <div class=&quot;table-wrapper&quot;>
       <table>
         <thead><tr><th>scope 值</th><th>含义</th><th>B（个人）</th><th>C（机构）</th></tr></thead>
@@ -1534,7 +1536,7 @@ data: [DONE]</code></pre>
   # required_role: [&quot;role_xxx&quot;]      # 查询/提醒类典型：岗位角色编码
   fallback: fill_card                # 无锚点 scope 时的降级出口（缺省无降级）
   fallback_requires: tools:invoke:query   # 降级模式所需 scope（缺省 query）</code></pre>
-    <div class=&quot;prose&quot;><p>required_menu / required_role 为历史声明字段——新口径下功能权限判定由平台按工具执行（类①对应表拦·类②权限接口判）。</p></div>
+    <div class=&quot;prose&quot;><p>required_menu / required_role 为历史声明字段——新口径下功能权限判定由平台按工具执行（平台接口工具平台拦·直连工具权限接口判）。</p></div>
     <div class=&quot;prose&quot;><p><strong>意图唯一性与路由边界</strong>：一个场景只承诺<strong>一个动词性意图</strong>（查 / 办 / 提醒）——混合场景按归档规则拆分后（如「分红规则查询」＋「分红办理」），查询动作属原子工具层共享能力，两场景可调同一查询工具、不构成路由歧义；路由按用户意图分发，不按底层动作。配套约束：①<strong>触发词不跨动词域</strong>——查询类场景 triggers 禁含办理动词（办/申请/提交），办理类反之；②<strong>description 互斥指路</strong>——查询场景标注「仅查询，不办理」，办理场景标注「办理申请（含前置查询）」，供意图确认层判别；③<strong>拆分验收＝交叉负向回测</strong>——拆分场景须在 Skill 测试台跑交叉用例（「查 X」期望≠办理场景、「办 X」期望≠查询场景）全绿才算拆干净；④<strong>错配软着陆</strong>——办理场景编排首步即数据准备，查询话术误入仍能返回查询信息并引导办理入口；权限锚点（query/prepare）均在默认授权内，错配只产生体验错位、不构成越权。</p></div>
     <div class=&quot;prose&quot;><p><strong>混合场景归档规则</strong>：办理类场景内部常编排「查询 → 预填 → 提交」多类原子动作——场景档位取<strong>业务语义最高档</strong>（含办理语义即办理档），内部原子动作不单独声明、被场景档位覆盖；<strong>入口一次性判定</strong>，不做中途拦截（避免用户填了半天才被告知无权限）。若查询部分独立有业务价值（用户会只要那部分），应拆为独立场景各自归档——场景边界跟着权限语义走。</p></div>
     <div class=&quot;callout&quot;>
@@ -1542,8 +1544,8 @@ data: [DONE]</code></pre>
       <div class=&quot;callout-body&quot;><div class=&quot;callout-title&quot;>运行时判定链（以办理类场景为例）</div><div class=&quot;prose&quot;><div class=&quot;flow-diagram&quot;>skill-match 命中场景
  → 解凭证身份（B/C 从 token：人·机构；A 从平台会话/标识，目标态）
  → 场景 public？─ 是 → 放行（数据闸照走）
- → 功能闸判定（按工具）：类①透传身份由平台按对应表拦 · 类②查平台权限接口（fail-closed）
-    │  （类②目标设计·尚未实现；过渡期库直查兜底）
+ → 功能闸判定（按工具）：平台接口工具透传由平台按对应表拦 · 直连工具查平台权限接口（fail-closed）
+    │  （直连工具判定为目标设计尚未实现；过渡期库直查兜底）
     ├─ 通过 → 完整模式：出票 pf_ticket → 页面自动填充 → 用户本人提交
     ├─ 不通过 → 403「此功能未开通」
     └─ 不通过 → 降级检查（降级边界待拍板）
@@ -1554,8 +1556,8 @@ data: [DONE]</code></pre>
  → 审计留痕（含降级事件）</div></div></div>
     </div>
     <div class=&quot;prose&quot;><p><strong>降级模式四条边界</strong>：① 降级必须<strong>显式告知</strong>——用户须知道处于手工模式及原因，禁止静默降级；② 降级<strong>不发票</strong>——pf_ticket 的语义是「银小管认可本次办理辅助并绑定授权用户」，无授权不发票，保持凭据语义干净；③ <strong>审计记降级事件</strong>——「谁在频繁撞办理权限」可见，为开通申请提供依据；④ <strong>最后一环是平台原生菜单 ACL</strong>——银小管侧判定是体验与审计防线，不是安全唯一防线；降级用户跳转页面后若真无菜单权限，平台照常拦截提交。</p></div>
-    <div class=&quot;prose&quot;><p>银小管按用户权限过滤工具清单——<code>tools/list</code> 预过滤（筛子·fail-open），调用时类①平台拦、类②查平台权限接口（闸·fail-closed），越权返回 403。公共工具认证即用，但仍按机构产品范围过滤数据。</p></div>
-    <div class=&quot;prose&quot;><p><strong>术语对照</strong>（2026-09-10 功能闸新口径）：<strong>工具即权限单元</strong>＝权限按工具批、按工具判（场景退役为展示维度）；<strong>类①工具</strong>＝经平台 REST 的工具（平台接口层按对应表拦）；<strong>类②工具</strong>＝银小管直连工具（调用时前置查平台权限接口·fail-closed）；<strong>筛子</strong>＝tools/list 预过滤（fail-open）；<strong>岗位角色/菜单权限</strong>＝平台权限数据（判定权威在平台）；<strong>产品范围</strong>＝本机构可查的数据（数据闸）。scope 六域已退役：B 通道凭证只装身份。</p></div>
+    <div class=&quot;prose&quot;><p>银小管按用户权限过滤工具清单——<code>tools/list</code> 预过滤（筛子·fail-open），调用时平台接口工具平台拦、直连工具查平台权限接口（闸·fail-closed），越权返回 403。公共工具认证即用，但仍按机构产品范围过滤数据。</p></div>
+    <div class=&quot;prose&quot;><p><strong>术语对照</strong>（2026-09-10 功能闸新口径）：<strong>工具即权限单元</strong>＝权限按工具批、按工具判（场景退役为展示维度）；<strong>平台接口工具</strong>＝经平台 REST 的工具（平台接口层按对应表拦）；<strong>直连工具</strong>＝银小管直连数据源的工具（调用时前置查平台权限接口·fail-closed）；<strong>筛子</strong>＝tools/list 预过滤（fail-open）；<strong>岗位角色/菜单权限</strong>＝平台权限数据（判定权威在平台）；<strong>产品范围</strong>＝本机构可查的数据（数据闸）。scope 六域已退役：B 通道凭证只装身份。</p></div>
     <div class=&quot;subsection&quot;><div class=&quot;subsection-title&quot;>8.5 凭据对照表</div></div>
     <div class=&quot;table-wrapper&quot;>
       <table>
@@ -11870,9 +11872,9 @@ div.oac-overflow-y-auto.oac-overflow-x-hidden.oac-fixed.oac-h-full.scrollbar-hid
     {k:'5', a:'3.1 交互架构', t:'§3.1 交互架构 · 本方案覆盖范围（A 通道）',
      b:'本方案的「前端聊天组件 + fmp-ai-proxy 代理」= <b>对接方式 A（内嵌）</b>：管理人在管理人平台页面内使用 AI——平台会话认人、代理转发、不涉及 OAuth。另两条对接通道：<b>B（用户智能体端，如 Trae）</b>与 <b>C（机构智能体平台直连）</b>走 <b>OAuth 2.1</b>（授权码＋PKCE / client_credentials），平台需配套授权页、「我的授权」管理、机构服务账号在线申请审批等页面。三通道全景见《对外接口文档》§08 与看板「权限认证需求设计」页签。'},
     {k:'6', a:'（现有网关实现）', t:'§3.5 用户权限控制 · 目标态：只捎认人标识，功能闸判定归平台',
-     b:'当前：网关按登录token完成用户鉴权后转发。目标态（2026-09-10 功能闸新口径）：代理转发时<b>只捎认人标识</b>（X-Fmp-User-Token）；<b>功能闸判定权威＝管理人平台</b>——类①工具平台接口层按「菜单-接口对应表」拦，类②工具银小管凭标识查平台权限接口（fail-closed · 可短缓存），属平台配套事项（目标设计·尚未实现，过渡期银小管可库直查兜底）；B/C 通道同一套判定（《对外接口文档》§8.4）。'},
+     b:'当前：网关按登录token完成用户鉴权后转发。目标态（2026-09-10 功能闸新口径）：代理转发时<b>只捎认人标识</b>（X-Fmp-User-Token）；<b>功能闸判定权威＝管理人平台</b>——平台接口工具由平台接口层按「菜单-接口对应表」拦，直连工具银小管凭标识查平台权限接口（fail-closed · 可短缓存），属平台配套事项（目标设计·尚未实现，过渡期银小管可库直查兜底）；B/C 通道同一套判定（《对外接口文档》§8.4）。'},
     {k:'7', a:'4.1 关键约定', t:'§4.1 关键约定 · 权限判定公式（三通道统一）',
-     b:'权限术语一名一义（与《对外接口文档》§8.4 一致）：<b>工具即权限单元</b>＝权限按工具批、按工具判（77 场景层退役为展示维度）；<b>类①工具</b>＝经平台 REST 的工具（平台接口层按对应表拦）；<b>类②工具</b>＝银小管直连工具（调用时前置查平台权限接口·fail-closed）；<b>筛子</b>＝tools/list 预过滤（fail-open·覆盖全部工具）；<b>数据闸＝产品范围</b>（org_id 隔离）。scope 六域已退役：B 通道凭证只装身份，功能权限管理员预配置。'}
+     b:'权限术语一名一义（与《对外接口文档》§8.4 一致）：<b>工具即权限单元</b>＝权限按工具批、按工具判（77 场景层退役为展示维度）；<b>平台接口工具</b>＝经平台 REST 的工具（平台接口层按对应表拦）；<b>直连工具</b>＝银小管直连数据源的工具（调用时前置查平台权限接口·fail-closed）；<b>筛子</b>＝tools/list 预过滤（fail-open·覆盖全部工具）；<b>数据闸＝产品范围</b>（org_id 隔离）。scope 六域已退役：B 通道凭证只装身份，功能权限管理员预配置。'}
   ];
   var OV_ITEMS = [
     {k:'1', t:'<b>§3.2.3 Token 携带</b>：登录token 改放 X-Fmp-User-Token 头，Authorization 留给银小管 API Key（需修改）'},
@@ -11880,8 +11882,8 @@ div.oac-overflow-y-auto.oac-overflow-x-hidden.oac-fixed.oac-h-full.scrollbar-hid
     {k:'3', t:'<b>§3.2.8 接口路径</b>：按 /api/agent/* 为准，银小管出兼容路由，fmp-ai-proxy 无需改写（无需改）'},
     {k:'4', t:'<b>§5.1 风险点①</b>：已确认按预留 B 方案（X-Fmp-User-Token）执行，风险消除'},
     {k:'5', t:'<b>§3.1 交互架构</b>：本方案=A 通道；B/C 走 OAuth 2.1，平台需配套授权与申请页面（全局定位）'},
-    {k:'6', t:'<b>§3.5 用户权限控制</b>：目标态只捎认人标识，功能闸判定归平台（类①对应表拦·类②权限接口判·平台配套事项）'},
-    {k:'7', t:'<b>§4.1 关键约定</b>：功能闸判定归平台＝类①对应表拦·类②权限接口判，筛子＝tools/list 预过滤，数据闸＝产品范围（三通道统一）'}
+    {k:'6', t:'<b>§3.5 用户权限控制</b>：目标态只捎认人标识，功能闸判定归平台（平台接口工具平台拦·直连工具代问权限接口·平台配套事项）'},
+    {k:'7', t:'<b>§4.1 关键约定</b>：功能闸判定归平台＝平台接口工具平台拦·直连工具代问权限接口，筛子＝tools/list 预过滤，数据闸＝产品范围（三通道统一）'}
   ];
   function findEl(a){
     var all = document.querySelectorAll('body *'), best = null, bl = Infinity;
@@ -12600,7 +12602,7 @@ div.oac-overflow-y-auto.oac-overflow-x-hidden.oac-fixed.oac-h-full.scrollbar-hid
         <tr><td><strong>个人功能闸</strong></td><td>能操作哪些页面 / 业务功能（如智能录单）</td><td><strong>人</strong></td><td>管理人平台菜单权限体系（判定权威在平台）——A 经会话解出身份、B 凭 token 身份问询平台权限接口；C 不发放须落到具体个人的操作</td></tr>
         <tr><td><strong>机构数据闸</strong></td><td>能查到哪些产品的数据</td><td>机构</td><td><strong>智能体平台权限管理</strong> · MANAGER_ID 产品范围（机构ID → org_cust_info → glrbm → 名下产品清单；输入校验＋输出过滤双保险，微信链路已实装）</td></tr>
       </table></div>
-      <p style="margin:6px 0 0 0;font-size:.85rem;color:#64748b;">术语对照（全文统一·2026-09-10 功能闸新口径）：<strong>工具即权限单元</strong>＝权限按工具批、按工具判（77 场景层退役为展示维度）· <strong>类①工具</strong>＝经平台 REST 的工具（平台接口层按对应表拦）· <strong>类②工具</strong>＝银小管直连工具（调用时前置查平台权限接口·fail-closed）· <strong>筛子</strong>＝tools/list 预过滤（fail-open·覆盖全部工具）· <strong>产品范围</strong>＝本机构可查的数据（数据闸·org_id 隔离）；B 通道凭证只装身份（scope 六域退役·功能权限管理员预配置）；办理双出口＝有 prepare 出票自动填充 / 无授权降级出填单卡（显式告知·不发票·审计记降级·最后一环平台 ACL）。「权限集（permissions[]）」已随凭证模型 v1.4 退役。</p>
+      <p style="margin:6px 0 0 0;font-size:.85rem;color:#64748b;">术语对照（全文统一·2026-09-10 功能闸新口径）：<strong>工具即权限单元</strong>＝权限按工具批、按工具判（77 场景层退役为展示维度）· <strong>平台接口工具</strong>＝经平台 REST 的工具（平台接口层按对应表拦）· <strong>直连工具</strong>＝银小管直连数据源的工具（调用时前置查平台权限接口·fail-closed）· <strong>筛子</strong>＝tools/list 预过滤（fail-open·覆盖全部工具）· <strong>产品范围</strong>＝本机构可查的数据（数据闸·org_id 隔离）；B 通道凭证只装身份（scope 六域退役·功能权限管理员预配置）；办理双出口＝有 prepare 出票自动填充 / 无授权降级出填单卡（显式告知·不发票·审计记降级·最后一环平台 ACL）。「权限集（permissions[]）」已随凭证模型 v1.4 退役。</p>
       <p style="margin:8px 0 0 0;font-size:.86rem;color:#475569;"><strong>四个检查点（例：张三无「智能录单」菜单权，却让内嵌 AI 代录单）</strong>：① <strong>编排期</strong>——技能按功能码比对菜单权限，无权者工具清单里根本不出现（最早判出、体验最好，AI 直接答「此功能未开通」）；② <strong>执行期</strong>——调用时复检 + 写入记账簿；③ <strong>发票期</strong>——预填票 bindUser 绑人，开票前再核一次页面权；④ <strong>落地期</strong>——预填只是塞参数，<strong>打开页面仍受平台原生菜单 ACL 兜底拦截</strong>（不依赖 AI 链路任何组件的独立防线）。原则：<strong>判定尽早、处处可拦、最后一环独立成立</strong>。</p>
       <p style="margin:6px 0 0 0;font-size:.85rem;color:#64748b;">改造清单（新增）：a) 「技能 ↔ 功能码（菜单）」绑定声明——先办理类高敏技能（表单映射已有 menu_urls 雏形）；b) 内嵌入口按机构在智能体平台权限管理建档（伪房间键），把既有 check_permission / get_manager_scope 校验链接到内嵌流量——<strong>实现抓手不必新造</strong>：proxy 只须随请求捎「用户标识」（认人素材，载体可沿用既有 X-Fmp-User-Token 头），<strong>功能权限判定</strong>由校验链按标识执行（<strong>权限管理专员</strong> permission_agent，FMP 门户既有接口——过渡态库直查，平台权限接口上线后切换）、<strong>产品范围</strong>按伪房间键经 <strong>系统权限专员</strong>（sys_permission_agent，manager_scope 既有链路，微信链路已实装）解出——权限清单不随请求捎带，避免自造格式与请求膨胀；B 通道功能闸复用同一判定链（凭 token 解出的用户标识查平台权限接口——凭证只装身份：token 只承身份+机构）；c) 公开要素豁免小层视体验决定。</p>
       <p style="margin:6px 0 0 0;font-size:.85rem;color:#64748b;">🛂 「权限总装架构——张三的一天」示意图在「🔐 权限认证需求设计」页签（权限流转全景图下方）——与本节三层交集表、四检查点互为图注。</p>
@@ -14941,11 +14943,11 @@ function createWalkable(wrap, S, ORDER, hint) {
   /* ---- 交互走读（点方块看说明） ---- */
   var S = {
     au_embed:{n:'内嵌', t:'银河管理人平台·银小管(AI 问答)', w:'内嵌通道 · 不走 OAuth', s:'have', b:'这条链路三步看：<br><br>▪ <strong>平台怎么认人</strong>——用户打开银河管理人平台时已经登录过（平台账号 · CAS 单点登录），平台记得他是谁，不需要为用 AI 再登录一次（这就是「平台会话」）。<br>▪ <strong>请求怎么走</strong>——用户在页面里问 AI，请求先交给平台侧的 <strong>fmp-ai-proxy 代理</strong>，由它转发给银小管。<br>▪ <strong>银小管怎么放行</strong>——代理与银小管之间对<strong>固定 API Key</strong>（服务间暗号，认证的是代理这个“服务”而非用户本人）：两边配置同一串强随机值，请求带来、比对一致即放行。<strong>三个注意</strong>：①内网测试用的还是开发默认值（dev-api-key…），上线前须换强随机值，只存两侧服务配置文件（不进代码库/文档）；②暗号无时效，轮换需两侧同步（先加新再删旧）；③只认暗号不认人——谁拿到 key 谁就能以“平台代理”名义调用，故按“整扇门的钥匙”等级保密。「提问人是谁」随请求一起带给银小管（即 <code>X-Fmp-User-Token</code> 头——<strong>银小管不解析、不校验、不用于鉴权</strong>，仅按会话暂存供回调管理人平台时携带；接口文档 §2.2）。<br><br><strong>权限归谁管（目标态 · 见第八章「权限总装」）</strong>：内嵌流量将按机构在<strong>智能体平台权限管理</strong>中建档接入——数据范围沿用既有 MANAGER_ID 机制（查数按机构产品清单过滤），个人能办哪些事由<strong>管理人平台菜单权限</strong>按人裁剪技能清单；现状过渡期内银小管只认服务级 API Key、谁能用 AI 由<strong>平台页面权限</strong>管住入口。<br><br><strong>判别</strong>：「在银河管理人平台页面里用」= 内嵌通道（本格）；「管理人用户的桌面智能体来连」= B；「管理人机构的智能体平台来连」= C。'},
-    au_fwd:{n:'🔁', t:'内嵌 · 代理转发（fmp-ai-proxy → 银小管）', w:'内部链路 · 维持现状', s:'have', b:'fmp-ai-proxy 把平台内 AI 请求<strong>代理转发</strong>至银小管：网关侧 API Key 鉴权（服务间内部），用户身份随 <code>X-Fmp-User-Token</code> 头带给银小管——<strong>该头不参与鉴权</strong>（银小管不解析不校验，仅按会话暂存，供阶段三回调管理人平台 API 时原样携带；接口文档 §2.2）。<strong>权限归谁管</strong>：现状只认服务级 API Key（谁能用 AI 由平台页面权限管入口）；目标态代理只须把「用户标识」交给<strong>智能体平台权限管理</strong>既有校验链（载体可沿用 X-Fmp-User-Token 头）——功能按菜单权限裁剪、数据按机构产品范围过滤；功能闸判定权威在平台（类①对应表拦·类②权限接口判，过渡期校验链库直查兜底），见第八章「权限总装」。与 OAuth 体系<strong>并存互不影响</strong>——内部链路不引入 OAuth；跨信任边界的外部工具（B/C）才走 OAuth。图中蓝色虚线即此链路。'},
-    au_c1:{n:'B', t:'管理人用户智能体端', w:'外部调用方 · 走标准 OAuth', s:'todo', b:'管理人（客户）的员工在<strong>自己桌面上</strong>用的 AI 智能体工具，如 Trae、WorkBuddy、千问办公、豆包或客户自建的 agent。<br><br>这类工具要调银小管，先得回答一个问题：<strong>凭什么信你？</strong>员工不能把平台密码交给工具——密码一给出去就管不住了。所以按 MCP 官方规范走<strong>授权码 + PKCE</strong>，拿「张三用 Trae 查数据」举例，共三步：<br>▪ <strong>第一步</strong>：张三把 MCP 链接粘贴进 Trae，Trae 直接来调——没带凭证，先被拒（401）；响应里告诉它去哪儿领证，于是自动打开<strong>银河管理人平台的官方授权页</strong>——张三的密码只输给平台，Trae 碰不到；<br>▪ <strong>第二步</strong>：张三登录——用的就是他平时登录管理人平台的那个账号（即<strong>管理人平台账号</strong>），人挂在机构名下；页面问「允许 Trae 访问你的数据吗？」，张三点「同意」；<br>▪ <strong>第三步</strong>：平台发给 Trae 一张<strong>有时效的通行证（token）</strong>。<br><br><strong>PKCE 是啥</strong>：兑换通行证时的「对暗号」——Trae 发起授权时自造一个随机暗号，只把暗号的<strong>指纹</strong>随请求发给平台（暗号本体不走网络、只留在 Trae 手里）；兑换时必须出示暗号本体、现场对上指纹才发通行证。这样授权码即使被恶意程序截获，没有暗号也换不走通行证。桌面工具存不住长期密钥，用它替代——这正是判定特征第三问「secret 存得住吗」的技术根据，MCP 官方规范也因此强制要求。全程自动完成，用户无感。<br><br>之后 Trae 每次调银小管都带这张通行证（图中 S3）。银小管验通行证便知道：这是张三、属于哪家机构（租户）；功能闸按工具判定——类①平台拦 · 类②问平台权限接口——所以 <strong>Trae 能查到的 = 张三本人此刻能查到的</strong>，操作日志也记在张三名下。通行证约 1 小时过期，系统用 refresh 凭证静默换新（约 30 天），不必反复登录；张三随时可在「我的授权」页面作废它。<br><br><strong>怎么判断一个客户端属于 B 还是 C</strong>：▪ token 代表谁——个人用户本人 → B；机构系统自身 → C。▪ 授权时有没有人登录——用户本人操作 → B；无人值守纯服务端 → C。▪ secret 存在哪——桌面工具存不住 → 只能用 PKCE；服务端存得住 → 可用 client_credentials。同一个客户可以两条都要：员工白天用的前端 agent 走 B，夜间跑批的服务端走 C。<br><br><strong>产品形态注</strong>：Trae（字节 AI IDE）与 Cursor / Claude Desktop / VS Code 同类，支持配置 MCP 远程服务器；千问办公（QwenWork）有 SKILL 开发与 MCP client 生态；WorkBuddy 是腾讯的 AI 办公助手（桌面形态，可接入 QQ）；豆包则多以 MCP server 角色对外提供能力，作为 client 接入需先确认其支持自配 MCP 服务器。'},
+    au_fwd:{n:'🔁', t:'内嵌 · 代理转发（fmp-ai-proxy → 银小管）', w:'内部链路 · 维持现状', s:'have', b:'fmp-ai-proxy 把平台内 AI 请求<strong>代理转发</strong>至银小管：网关侧 API Key 鉴权（服务间内部），用户身份随 <code>X-Fmp-User-Token</code> 头带给银小管——<strong>该头不参与鉴权</strong>（银小管不解析不校验，仅按会话暂存，供阶段三回调管理人平台 API 时原样携带；接口文档 §2.2）。<strong>权限归谁管</strong>：现状只认服务级 API Key（谁能用 AI 由平台页面权限管入口）；目标态代理只须把「用户标识」交给<strong>智能体平台权限管理</strong>既有校验链（载体可沿用 X-Fmp-User-Token 头）——功能按菜单权限裁剪、数据按机构产品范围过滤；功能闸判定权威在平台（平台接口工具平台拦·直连工具代问权限接口，过渡期校验链库直查兜底），见第八章「权限总装」。与 OAuth 体系<strong>并存互不影响</strong>——内部链路不引入 OAuth；跨信任边界的外部工具（B/C）才走 OAuth。图中蓝色虚线即此链路。'},
+    au_c1:{n:'B', t:'管理人用户智能体端', w:'外部调用方 · 走标准 OAuth', s:'todo', b:'管理人（客户）的员工在<strong>自己桌面上</strong>用的 AI 智能体工具，如 Trae、WorkBuddy、千问办公、豆包或客户自建的 agent。<br><br>这类工具要调银小管，先得回答一个问题：<strong>凭什么信你？</strong>员工不能把平台密码交给工具——密码一给出去就管不住了。所以按 MCP 官方规范走<strong>授权码 + PKCE</strong>，拿「张三用 Trae 查数据」举例，共三步：<br>▪ <strong>第一步</strong>：张三把 MCP 链接粘贴进 Trae，Trae 直接来调——没带凭证，先被拒（401）；响应里告诉它去哪儿领证，于是自动打开<strong>银河管理人平台的官方授权页</strong>——张三的密码只输给平台，Trae 碰不到；<br>▪ <strong>第二步</strong>：张三登录——用的就是他平时登录管理人平台的那个账号（即<strong>管理人平台账号</strong>），人挂在机构名下；页面问「允许 Trae 访问你的数据吗？」，张三点「同意」；<br>▪ <strong>第三步</strong>：平台发给 Trae 一张<strong>有时效的通行证（token）</strong>。<br><br><strong>PKCE 是啥</strong>：兑换通行证时的「对暗号」——Trae 发起授权时自造一个随机暗号，只把暗号的<strong>指纹</strong>随请求发给平台（暗号本体不走网络、只留在 Trae 手里）；兑换时必须出示暗号本体、现场对上指纹才发通行证。这样授权码即使被恶意程序截获，没有暗号也换不走通行证。桌面工具存不住长期密钥，用它替代——这正是判定特征第三问「secret 存得住吗」的技术根据，MCP 官方规范也因此强制要求。全程自动完成，用户无感。<br><br>之后 Trae 每次调银小管都带这张通行证（图中 S3）。银小管验通行证便知道：这是张三、属于哪家机构（租户）；功能闸按工具判定——平台接口工具平台拦 · 直连工具代问权限接口——所以 <strong>Trae 能查到的 = 张三本人此刻能查到的</strong>，操作日志也记在张三名下。通行证约 1 小时过期，系统用 refresh 凭证静默换新（约 30 天），不必反复登录；张三随时可在「我的授权」页面作废它。<br><br><strong>怎么判断一个客户端属于 B 还是 C</strong>：▪ token 代表谁——个人用户本人 → B；机构系统自身 → C。▪ 授权时有没有人登录——用户本人操作 → B；无人值守纯服务端 → C。▪ secret 存在哪——桌面工具存不住 → 只能用 PKCE；服务端存得住 → 可用 client_credentials。同一个客户可以两条都要：员工白天用的前端 agent 走 B，夜间跑批的服务端走 C。<br><br><strong>产品形态注</strong>：Trae（字节 AI IDE）与 Cursor / Claude Desktop / VS Code 同类，支持配置 MCP 远程服务器；千问办公（QwenWork）有 SKILL 开发与 MCP client 生态；WorkBuddy 是腾讯的 AI 办公助手（桌面形态，可接入 QQ）；豆包则多以 MCP server 角色对外提供能力，作为 client 接入需先确认其支持自配 MCP 服务器。'},
     au_c3:{n:'C', t:'管理人机构智能体平台（服务账号）', w:'外部调用方 · 走标准 OAuth', s:'todo', b:'管理人（客户）以<strong>机构名义自建的智能体平台</strong>——部署在客户机房的后端系统。它调用银小管时，代表的<strong>不是某位登录用户，而是机构自身</strong>，所以不走个人授权流程（B 通道的授权码 + PKCE），而是走 <strong>client_credentials</strong>：机构在管理人平台<strong>在线申请</strong>（「API 服务授权」页 →「MCP 服务授权」页签：提交盖章授权书、勾选所需场景，经材料审核与三岗审批），<strong>审批通过自动开户</strong>——系统生成 <code>clientId + clientSecret</code>（secret 仅存哈希、邮件送达一次），机构智能体平台此后拿这对凭据直接向管理人平台换 access_token，全程不需要任何个人用户参与。预填存票（路段 C 的 pf_ticket）用的就是这条服务账号链路。<br><br>它拿到的权限约束用三句话就能说完：<br>▪ <strong>身份闸</strong>：token 是机构身份，能用哪些工具按机构申请范围最小化发放——办理类同权：按需申请、审批通过即发放；调用留痕记「机构 · 服务账号」（表单落地路径仍由经办人确认）；<br>▪ <strong>数据闸</strong>：查得到的数据只限本机构名下，碰不到其他管理人的；<br>▪ <strong>记账簿</strong>：每次调用都留痕，记到「某机构 · 某服务账号」名下。<br><br>要以「张三本人」身份办事是 B 通道的事——它的 token 是个人身份，过的同样是这三关。<br><br>这个服务账号与个人用户的授权记录登记在<strong>同一个授权服务器（管理人平台）</strong>之下，统一签发、变更、吊销。'},
     au_as:{n:'🏦', t:'管理人平台 = OAuth 授权服务器', w:'管理人平台新增', s:'todo', b:'这一格回答一个问题：<strong>外部工具要去哪儿领通行证？</strong>——去管理人平台。平台今天只负责「自己网页认人」（员工打开页面→用账号登录→看自己的业务）；要充当 OAuth 授权服务器（发通行证的窗口），得新增下面 6 件套。按张三接入 Trae 的时间顺序读：<br><br>▪ <strong>① 先登记</strong>（用户中心自助开通）：给每台接入的工具发一个<strong>自己的 clientId</strong>（接入编号），记录挂在授权主体——本人或本机构名下。<strong>注意它不是你的登录账号</strong>：管理人平台账号回答「你是谁」，clientId 回答「这是哪台工具」——同一个人可以授权五台工具，就是五个号。多数客户端（Trae 等）第一次连接时自动领取（MCP 动态注册），不需要人去申请；平台未开自动注册时才需到用户中心手动开通。C 通道的机构服务账号没有浏览器也没有人参与，由管理员预先开好（见 C 格）。<br>▪ <strong>② 再点头</strong>（授权页）：Trae 第一次要数据时弹出的官方授权页就是这块——用账号登录＋点「同意」；PKCE＝兑换通行证时的防截获「对暗号」。密码从头到尾只输给平台页面，Trae 碰不到。<br>▪ <strong>③ 发两张证</strong>（token 签发）：短期通行证 access_token（约 1h 过期，TTL＝有效期）＋续期凭证 refresh_token（约 30d、可吊销）——短的限制损失面，长的免反复登录。<br>▪ <strong>④ 可后悔</strong>（「我的授权」设备管理页＋首次授权通知）：像手机查「已登录设备」——张三能列出所有授权过的工具并一键撤销；有新工具第一次拿到授权会收到通知，不是本人点的同意马上能发现。<br>▪ <strong>⑤ 证里只写身份</strong>（token claims）：发证时只印「你是谁／哪家机构」（scope 六域已退役·功能权限管理员预配置）；细粒度菜单权限不进凭证——由银小管持凭证向平台权限接口问询（签发保持标准件，菜单改动即刻生效）。<br>▪ <strong>⑥ 机构一本账</strong>（服务账号挂同一授权服务器 · 默认窄 scope）：C 通道的机构服务账号也注册在这同一个发证窗口、不另起炉灶；且默认只给很窄的授权（开通默认只读子集）——新开的门默认只开条小缝。申请入口：「API 服务授权」页→「MCP 服务授权」页签（授权书＋三岗审批，审批通过自动注册到此）。<br><br>一句话：<strong>先登记 → 再点头 → 发两张证 → 可后悔 → 证里写字 → 机构一本账收进来。</strong>对面🤖银小管那格是「验票窗口」6 件套，一头发证、一头验票，两格对着看。'},
-    au_rs:{n:'🤖', t:'银小管 = OAuth 资源服务器', w:'智能体平台新增', s:'todo', b:'校验 token 并分发能力，6 项职责：▪ 401 + WWW-Authenticate 服务发现（MCP 规范）；▪ JWT 验签中间件 → 解出用户+租户；▪ 工具清单按权限预过滤（筛子）+ 功能闸判定（类①平台拦·类②问平台权限接口）；▪ 审计日志补用户维度；▪ prepare_form_data 的 bindUser 从 token 解出；▪ 接口文档 v1.13 §08 OAuth 规范成文。'},
+    au_rs:{n:'🤖', t:'银小管 = OAuth 资源服务器', w:'智能体平台新增', s:'todo', b:'校验 token 并分发能力，6 项职责：▪ 401 + WWW-Authenticate 服务发现（MCP 规范）；▪ JWT 验签中间件 → 解出用户+租户；▪ 工具清单按权限预过滤（筛子）+ 功能闸判定（平台接口工具平台拦·直连工具代问权限接口）；▪ 审计日志补用户维度；▪ prepare_form_data 的 bindUser 从 token 解出；▪ 接口文档 v1.13 §08 OAuth 规范成文。'},
     au_v:{n:'S4', t:'验凭证 / 换新', w:'两服务器之间', s:'todo', b:'资源服务器向授权服务器获取 JWKS 公钥验签 token；到期换新——B 用续期凭证、C 凭 secret 直接换。两框间的双向虚线箭头即此链路。'},
     au_l1:{n:'🚪', t:'身份闸 · token 代表谁', w:'三道关 · 第一关', s:'todo', b:'第一关决定这张 token 是谁的身份：<strong>B 通道</strong>（管理人用户智能体端）经授权码+PKCE 发的是<strong>个人身份</strong>，解出「用户+租户」，bindUser 由此而来；<strong>C 通道</strong>（管理人机构智能体平台）的服务账号发的是<strong>机构身份</strong>，工具按机构申请范围最小化发放——办理类同权：按需申请、审批通过即发放，调用留痕记机构·服务账号。身份定了，后两关的口径随之而定。'},
     au_l2:{n:'🧱', t:'数据闸 · 租户隔离', w:'三道关 · 第二关', s:'todo', b:'无论个人还是机构身份，查询都被过滤在本机构（租户）名下：机构身份从凭证解出，产品清单由银小管向平台既有接口实时查询（manager_scope 链路）后过滤——B 看不到别的管理人的数，C 也碰不到其他机构的。'},
@@ -15061,7 +15063,7 @@ function createWalkable(wrap, S, ORDER, hint) {
   roleCard('au_rs', 840, 1190, 700, '🤖 银小管 = OAuth 资源服务器', '验票闸机：验通行证 · 按权限放行', '#4f46e5', [
     '▪ 认不出不硬拦：401 + WWW-Authenticate 指路领证',
     '▪ 验票解身份：JWT 验签 → 人·机构',
-    '▪ 按票放行：工具清单按权限预过滤 + 类①平台拦·类②问接口',
+    '▪ 按票放行：工具清单按权限预过滤 + 平台接口工具平台拦·直连工具代问',
     '▪ 笔笔记账：B 记到个人 · C 记到服务账号',
     '▪ 表单绑主体：bindUser 从 token 解出',
     '▪ 规则成文：《对外接口文档》v1.13 §08',
