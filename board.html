@@ -168,13 +168,14 @@ tr:last-child td { border-bottom: none; }
 <div class="header">
   <div>
     <h1>银小管-小帆业务助手智能体平台及MCP服务手册 <span style="font-size:.6em;background:#dc2626;color:#fff;border-radius:6px;padding:2px 8px;vertical-align:middle;">单文件分享版</span></h1>
-    <div class="sub">银小管/小帆智能体平台 · 管理人助手 · v1.94 · 2026-09-11（聚合工具处置落板：运行态 83→81 · 判定语义 AND ＋「Skill 与 MCP 的关系」图 · 三原语供给版）</div>
+    <div class="sub">银小管/小帆智能体平台 · 管理人助手 · v1.95 · 2026-09-12（新增「工作总览·走读」页签：对客 AI 服务体系架构 × 23 节点 × 90 条工作事项拆分 · 归属系统标注）</div>
   </div>
   <div><span class="badge" style="background:#2563eb;color:#fff">77 业务场景 · MCP & Skill 服务 · 4 服务健康</span></div>
 </div>
 
 <div class="tab-bar" id="tabBar">
   <button class="tab-btn active" data-tab="arch"><span class="tab-icon">📐</span>架构总览</button>
+  <button class="tab-btn" data-tab="overview"><span class="tab-icon">🗂</span>工作总览·走读</button>
   <button class="tab-btn" data-tab="supply"><span class="tab-icon">🧭</span>Skill 与 MCP 服务设计</button>
   <button class="tab-btn" data-tab="authdesign"><span class="tab-icon">🔐</span>权限认证需求设计</button>
   <button class="tab-btn" data-tab="api"><span class="tab-icon">📡</span>智能体平台服务</button>
@@ -377,6 +378,259 @@ tr:last-child td { border-bottom: none; }
     </div>
     <p style="margin:12px 2px 0;color:#475569;font-size:.88rem;line-height:1.9;">三条关系线——<strong>封装链</strong>：平台接口 → MCP 工具 → skill → 意图路由（逐层封装，上层复用下层）；<strong>权限链</strong>：平台按接口拦（平台接口工具）／银小管按工具判（筛子＋闸）／skill 不参与判定；<strong>契约链</strong>：对外提供 MCP＋Skill，对内调平台 REST（平台配套 OAuth、§11.4 权限查询、表单存取、审批页）。<br>关键澄清：<strong>内嵌通道（A）无 MCP</strong>——skill 直接编排内部 REST；<strong>开放通道（B/C）以工具为对客形态</strong>——skill 退到幕后；两者是同一批能力的两种出口形态。对外契约面唯一：<strong>一个 MCP server（/mcp · 一套鉴权 · 一份工具清单）</strong>，对内可有多个实现（fmp-business-mcp 为内部供应者，不对外暴露）。</p>
   </div>
+</div>
+
+<div class="tab-content" id="tab-overview">
+<div id="ov-root">
+<style>
+  #ov-root { box-sizing: border-box; font-family: "Microsoft YaHei","PingFang SC",sans-serif; color:#24292f; line-height:1.6; }
+  #ov-root * { box-sizing: border-box; }
+  #ov-root .ov-card { background:#fff; border:1px solid #d8dee4; border-radius:12px; padding:16px 18px 10px; margin-bottom:14px; }
+  #ov-root .ov-guide { background:#f0f6ff; border:1px solid #b6d4f5; border-radius:10px; padding:12px 16px; margin-bottom:14px; font-size:13.5px; }
+  #ov-root .ov-guide b { color:#1f3a5f; }
+  #ov-root .ov-stats { display:flex; gap:12px; flex-wrap:wrap; margin:0 0 14px; }
+  #ov-root .ov-stat { background:#fff; border:1px solid #d8dee4; border-radius:8px; padding:6px 14px; font-size:12.5px; }
+  #ov-root .ov-stat b { font-size:16px; margin-right:4px; }
+  #ov-root .ov-stat.done b { color:#1a7f37; } #ov-root .ov-stat.doing b { color:#0969da; } #ov-root .ov-stat.open b { color:#bf8700; }
+  #ov-root .ov-layer { display:flex; align-items:stretch; gap:10px; margin-bottom:8px; }
+  #ov-root .ov-llabel { flex:0 0 88px; display:flex; align-items:center; justify-content:center; text-align:center;
+    background:#eef3fb; border-left:4px solid #1f6feb; border-radius:6px; font-size:12px; color:#1f3a5f; padding:6px 4px; line-height:1.4; }
+  #ov-root .ov-lnodes { flex:1; display:grid; gap:8px; }
+  #ov-root .ov-node { background:#fbfcfe; border:1.5px solid #c7d2e3; border-radius:8px; padding:8px 11px; cursor:pointer; transition:all .15s; position:relative; }
+  #ov-root .ov-node:hover { border-color:#1f6feb; background:#f0f6ff; box-shadow:0 2px 8px rgba(31,111,235,.12); }
+  #ov-root .ov-node .t { font-size:13px; font-weight:600; padding-right:44px; }
+  #ov-root .ov-node .s { font-size:11px; color:#57606a; margin-top:2px; }
+  #ov-root .ov-node .chip { position:absolute; top:6px; right:8px; font-size:10px; background:#eef3fb; color:#1f3a5f; border-radius:10px; padding:1px 7px; }
+  #ov-root .ov-node.ext { background:#f6f8fa; border-style:dashed; }
+  #ov-root .ov-node.hot { border-color:#d4a72c; }
+  #ov-root .ov-flow { text-align:center; color:#8b949e; font-size:11px; margin:0 0 8px; letter-spacing:2px; }
+  #ov-root .ov-legend { display:flex; gap:16px; font-size:11.5px; color:#57606a; margin-top:6px; flex-wrap:wrap; }
+  #ov-root .ov-dot { display:inline-block; width:9px; height:9px; border-radius:3px; margin-right:4px; vertical-align:-1px; }
+  #ov-root table.ov-t { border-collapse:collapse; width:100%; font-size:12.5px; background:#fff; }
+  #ov-root table.ov-t th, #ov-root table.ov-t td { border:1px solid #d8dee4; padding:4px 8px; text-align:left; vertical-align:top; }
+  #ov-root table.ov-t th { background:#f2f5f9; white-space:nowrap; }
+  #ov-overlay { display:none; position:fixed; inset:0; background:rgba(20,28,40,.45); z-index:9999; align-items:flex-start; justify-content:center; padding:5vh 16px; }
+  #ov-overlay.show { display:flex; }
+  #ov-modal { background:#fff; border-radius:12px; max-width:760px; width:100%; max-height:84vh; overflow-y:auto; box-shadow:0 12px 40px rgba(0,0,0,.25); position:relative; }
+  #ov-modal .mh { position:sticky; top:0; background:#fff; padding:14px 18px 8px; border-bottom:1px solid #eaeef2; }
+  #ov-modal .mh h3 { margin:0; font-size:16px; padding-right:60px; }
+  #ov-modal .mh .d { color:#57606a; font-size:12px; margin-top:3px; padding-right:36px; }
+  #ov-modal .mh .ref { position:absolute; top:14px; right:52px; font-size:11px; color:#8b949e; font-family:Consolas,monospace; }
+  #ov-modal .mx { position:absolute; top:10px; right:12px; border:none; background:#f0f2f5; border-radius:6px; width:26px; height:26px; font-size:14px; cursor:pointer; color:#57606a; }
+  #ov-modal .mb { padding:10px 18px 18px; }
+  #ov-modal .task { display:flex; gap:8px; padding:6px 9px; border-radius:7px; margin-bottom:4px; font-size:13px; align-items:flex-start; }
+  #ov-modal .task:hover { background:#f6f8fa; }
+  #ov-modal .st, #ov-modal .ow { flex:0 0 auto; font-size:11px; border-radius:10px; padding:1px 8px; margin-top:2px; white-space:nowrap; }
+  #ov-modal .st.done { background:#dafbe1; color:#1a7f37; } #ov-modal .st.doing { background:#ddf4ff; color:#0969da; } #ov-modal .st.open { background:#fff8c5; color:#9a6700; }
+  #ov-modal .ow { background:#eef1f4; color:#4b5563; border:1px solid #e2e6ea; }
+  #ov-modal .ow.pt { background:#f3e8ff; color:#6b21a8; border-color:#e9d5ff; }
+  #ov-modal .ow.yg { background:#dbeafe; color:#1e40af; border-color:#bfdbfe; }
+  #ov-modal .ow.both { background:#ccfbf1; color:#115e59; border-color:#99f6e4; }
+</style>
+
+<div class="ov-guide">
+  <b>🗂 走读指引</b>：本页 = 对客 AI 服务体系的<b>架构 × 工作事项</b>总览，供逐层走读、修正方案。建议顺序：
+  ①<b>对外服务边界</b>（唯一 MCP server / OAuth 方式B / 权限闸——方案核心口径）→ ②<b>三原语供给层</b> → ③<b>能力实现层</b> → ④<b>内部服务与数据层</b> → ⑤<b>横切治理层</b> → ⑥<b>客户与渠道层</b>。
+  <b>点击任意节点</b>弹出该节点任务拆分细条（含状态与<b>归属系统</b>标注）；每条任务带节点编号，修正意见请按编号反馈（例：「sup-tools #6 应标已完成」）。
+</div>
+<div class="ov-stats" id="ov-stats"></div>
+<div id="ov-diagram"></div>
+<div class="ov-legend">
+  <span><span class="ov-dot" style="background:#1a7f37"></span>✅ 已完成</span>
+  <span><span class="ov-dot" style="background:#0969da"></span>🔄 进行中/待跟进</span>
+  <span><span class="ov-dot" style="background:#bf8700"></span>⏸ 待拍板/等外部</span>
+  <span>｜ 实线框＝银小管域内 · 虚线框＝外部系统 · 黄边＝含待拍板项 · 任务条「归属」chip＝责任系统</span>
+</div>
+<div style="margin-top:16px">
+  <table class="ov-t">
+    <tr><th style="width:130px">归属系统图例</th><th>说明</th></tr>
+    <tr><td><span class="ow yg" style="font-size:11px;border-radius:10px;padding:1px 8px;">银小管</span></td><td>银小管智能体平台侧（S3-1 主责域：5089/5077/5086 服务、MCP 三原语、权限闸落地、文档与发布）</td></tr>
+    <tr><td><span class="ow pt" style="font-size:11px;border-radius:10px;padding:1px 8px;">管理人平台</span></td><td>管理人平台侧的工作（书面确认、网关路径、权限管控落地、客户/灰度范围）</td></tr>
+    <tr><td><span class="ow both" style="font-size:11px;border-radius:10px;padding:1px 8px;">银小管＋平台</span></td><td>双方协同事项（底稿/录入、联调、试点迁移）</td></tr>
+    <tr><td><span class="ow" style="font-size:11px;border-radius:10px;padding:1px 8px;">灰底域</span></td><td>其他域：插件域（S3-2）/ 胶囊域（S5）/ 知识库域（S1）/ 舆情域 / 用户亲验</td></tr>
+  </table>
+</div>
+
+<div id="ov-overlay"><div id="ov-modal">
+  <div class="mh"><button class="mx" id="ov-close">✕</button><span class="ref" id="ov-ref"></span><h3 id="ov-mtitle"></h3><div class="d" id="ov-mdesc"></div></div>
+  <div class="mb" id="ov-mbody"></div>
+</div></div>
+
+<script>
+(function () {
+  var ST = { done:{l:"✅ 已完成",c:"done"}, doing:{l:"🔄 进行中",c:"doing"}, open:{l:"⏸ 待拍板",c:"open"} };
+  function ow2cls(o){ if(o.indexOf("＋")>=0) return "both"; if(o.indexOf("管理人平台")>=0) return "pt"; if(o==="银小管") return "yg"; return ""; }
+  var LAYERS = [
+    { name:"客户与渠道层", nodes:["chan-platform","chan-ai","chan-plugin","chan-capsule"] },
+    { name:"对外服务边界", nodes:["edge-mcp","edge-oauth","edge-gate"] },
+    { name:"三原语供给层", nodes:["sup-tools","sup-resources","sup-prompts","sup-portable"] },
+    { name:"能力实现层", nodes:["cap-proxy","cap-direct","cap-card"] },
+    { name:"内部服务与数据层", nodes:["int-fmp","int-ta","int-contract","int-csp"] },
+    { name:"横切治理层", nodes:["gov-doc","gov-sec","gov-deploy","gov-web","gov-todo"] }
+  ];
+  var N = {
+  "chan-platform":{ title:"管理人平台（网页端）", ext:false, sub:"对客主入口 · B/C 通道发起方", desc:"管理人登录平台使用智能体服务；功能闸与数据闸的判定权威。", tasks:[
+    {s:"done",o:"银小管＋管理人平台",t:"平台菜单-接口对应关系表初始数据登记（盘点表 53 条底稿：银小管整理、平台录入）"},
+    {s:"done",o:"管理人平台",t:"「按工具权限设置功能」管控口径对齐（工具即权限单元）"},
+    {s:"open",o:"管理人平台",t:"#13 聚合工具判定语义 AND 书面确认（银小管已实现并注接口文档 v1.19）"},
+    {s:"open",o:"管理人平台",t:"#6 submit_ta_order 业务侧网关路径（审批链路真触发前提）"}]},
+  "chan-ai":{ title:"第三方 AI 客户端", ext:false, sub:"Trae / CLI / 通用 MCP 客户端", desc:"以 MCP 协议接入银小管的通用 AI 客户端。", tasks:[
+    {s:"done",o:"银小管",t:"agent-setup.md 接入文档（内网直连 / OAuth 双路径文案）"},
+    {s:"done",o:"银小管",t:"stdio 直跑修复（tls_bypass 重命名消除 _ssl 遮蔽，9 处 import 同步）"},
+    {s:"doing",o:"银小管＋管理人平台",t:"Trae 等客户端实测接入（修复后可用，待实际联调）"}]},
+  "chan-plugin":{ title:"银小帆浏览器插件", ext:false, sub:"认申赎录单场景 · 表单自动填充", desc:"Chrome/Edge 插件，承载录单场景深链、表单映射与自动填充。", tasks:[
+    {s:"done",o:"插件域",t:"认申赎录单 Skill 场景跑通（open-day 自动合并 batch / 参数规范化 / pre_review 注管理人）"},
+    {s:"done",o:"插件域",t:"插件版本发布链（release.py build-first / test→latest / /version 自动更新）"}]},
+  "chan-capsule":{ title:"桌面胶囊", ext:true, sub:"真机桌宠 · 对话入口", desc:"PySide6 桌面客户端，对话引擎移植插件链路。", tasks:[
+    {s:"done",o:"胶囊域",t:"MVP（P1+P2）E2E 跑通「我的哪些产品今天是开放日」（19 产品反查→批量→4 只命中）"},
+    {s:"doing",o:"胶囊域＋用户",t:"真机窗口人工走查（待验证）"}]},
+  "edge-mcp":{ title:"对外唯一 MCP server（5089）", ext:false, sub:"一个 URL · 一套鉴权 · 一份工具清单", desc:"银小管对客唯一契约面。JSON-RPC tools/list + tools/call；对内多实现不对外暴露。", tasks:[
+    {s:"done",o:"银小管",t:"/mcp 端点（JSON-RPC），静态 API Key 兼容通道（内网测试默认）"},
+    {s:"done",o:"银小管",t:"tools/list 筛子预过滤（fail-open，覆盖全部工具；_EXCLUDED_FMP_TOOLS 跳过降级项）"},
+    {s:"done",o:"银小管",t:"RFC9728 保护资源元数据端点（双路径）"},
+    {s:"done",o:"银小管",t:"中间件：静态 Key 兼容 + token introspect 校验（15s/5s 缓存 fail-closed）+ L2 scope 校验（-32002 附指引）"},
+    {s:"done",o:"银小管",t:"「对外唯一 MCP server」契约写入板 v1.91 / 接口文档 v1.17 并全链收口"},
+    {s:"open",o:"银小管",t:"判定链降级边界两处（接口明确拒绝不降级 / 影子比对）——板与接口文档已标「待拍板」"}]},
+  "edge-oauth":{ title:"OAuth 2.1 方式B（认证授权）", ext:false, sub:"默认关闭 · MCP_OAUTH_ENABLED=0 线上零变更", desc:"授权服务器（5095 承载）+ 资源服务器（5089 双角色面）；B 凭证只装身份。", tasks:[
+    {s:"done",o:"银小管",t:"OAuth 2.1 授权码 + PKCE demo 全链（授权页仅确认身份，不列工具清单——♀拍板）"},
+    {s:"done",o:"银小管",t:"单凭证档A：≤8h 随源会话、不发放跨会话长效凭证、撤销走内省（接口文档 v1.15→v1.16）"},
+    {s:"done",o:"银小管",t:"L2 工具 → 6 业务域 scope 映射（_TOOL_SCOPES：account/trade/precheck/monitor/…）"},
+    {s:"done",o:"银小管",t:"可选岗位权限现查插件点（MCP_PERM_CHECK_URL，fail-closed）"},
+    {s:"done",o:"银小管",t:"MCP 中间件鉴权缓存盘点（token 15s/权限 60s，设计期语义非 bug）"}]},
+  "edge-gate":{ title:"权限闸（功能闸 + 数据闸）", ext:false, sub:"判定权威＝管理人平台 · 银小管只筛不闸", desc:"功能闸：类①平台接口层拦 / 类②银小管前置查平台权限接口（fail-closed）；数据闸：org_id 行级过滤。", tasks:[
+    {s:"done",o:"银小管",t:"新口径全板改写（A 通道判定归平台 + 全口径排查 4 批 4 提交，28 处 srcdoc 双写）"},
+    {s:"done",o:"银小管",t:"工具分级 L0/L1/L2 落码（L2 需 scope + 可选岗位现查；L0/L1 认证即可用）"},
+    {s:"done",o:"银小管",t:"权限一张图表头收口（认人 · 定功能 · 定数据范围｜B/C 发凭证 · A 代转发）"},
+    {s:"done",o:"银小管",t:"scope 四值表/SKILL permission 块标注「历史设计参考」（保留不改）"},
+    {s:"open",o:"银小管＋管理人平台",t:"灰度白名单开放集（待定客户）"}]},
+  "sup-tools":{ title:"Tools 原语", ext:false, sub:"运行态 81 ＝ 53 代理 + 30 直连 − 2 同名去重", desc:"工具即权限单元；全集 83（聚合降级 2 项后运行态 81）。", tasks:[
+    {s:"done",o:"银小管",t:"全集口径定稿：83 ＝ 53 平台接口代理 + 30 直连（板 v1.94 / 接口文档 v1.19 / 盘点表全链同步）"},
+    {s:"done",o:"银小管",t:"聚合处置落板（♀拍板）：query_product_lifecycle / query_mgr_overview 降级为场景内编排，运行态 83→81（05af34ced）"},
+    {s:"done",o:"银小管",t:"同名双源去重：query_raise_flow / query_product_info 按直连优先（运行态口径）"},
+    {s:"done",o:"银小管",t:"聚合工具判定语义 AND 定稿并注接口文档 v1.19"},
+    {s:"done",o:"银小管",t:"工具元数据统一 _tools_meta()（L1/L2 + 所需 scope，场景卡/文档共用）"},
+    {s:"open",o:"管理人平台",t:"#13 AND 语义待管理人平台书面确认"},
+    {s:"open",o:"管理人平台",t:"#6 服务器 MCP 目录补 submit_ta_order（等业务侧网关路径）"}]},
+  "sup-resources":{ title:"Resources 原语（场景卡）", ext:false, sub:"yxg://skills/index + yxg://skills/{id}/scenecard", desc:"向客户端供场景卡：流程步骤 + 工具清单 + 可移植正文。", tasks:[
+    {s:"done",o:"银小管",t:"Resources 出口上线（索引 + 场景卡模板，a97d7a784）"},
+    {s:"done",o:"银小管",t:"get_skill_flow 升级场景卡 v2（flows+tools+portable_flow+strip_report）——修复原文截断 4000 字符带私有指令外发问题（ca931438a）"},
+    {s:"done",o:"银小管",t:"6 业务助手 skill 实测零残留 ALL_CLEAN（unresolved_api_references 透明化）"}]},
+  "sup-prompts":{ title:"Prompts 原语（剧本包）", ext:false, sub:"17 剧本资产，6 业务助手先行", desc:"skill_{skill_id} 剧本包出口；剧本不外借原文只借剥离版。", tasks:[
+    {s:"done",o:"银小管",t:"Prompts 出口上线（6 业务助手剧本包先行，a97d7a784）"},
+    {s:"done",o:"银小管",t:"get_skill_content 改剥离版（仅 MCP 工具层；管理端 HTTP 端点保留原文，skill-explained 三页不受影响）"},
+    {s:"doing",o:"银小管",t:"其余 11 个剧本资产（9 流程类 + 2 前端小组件）纳入 Prompts 的排期待定"}]},
+  "sup-portable":{ title:"剥离程序 skill_portable", ext:false, sub:"唯一派生实现 · 在线 + 离线 CLI 共用", desc:"读源/剥离私有指令/流程解析/工具提取的唯一实现，保证三原语出口一致。", tasks:[
+    {s:"done",o:"银小管",t:"独立模块转正（mcp_server 净删 112 行重复实现）"},
+    {s:"done",o:"银小管",t:"离线 CLI：--check 残留门禁（退码 1）/ --export 批量导出审校件 / --skills"},
+    {s:"done",o:"银小管",t:"零回归验证：改造前后 6 skill 输出逐字节一致（全 SAME）"},
+    {s:"done",o:"银小管",t:"CLI 输出 ASCII 化修复 GBK 控制台崩溃（59a746644，服务器实测暴露）"}]},
+  "cap-proxy":{ title:"代理工具（53 · 平台 REST）", ext:false, sub:"MCP → 管理人平台 REST，平台接口层可拦", desc:"类①工具：直调平台接口，纳入菜单-接口对应表。", tasks:[
+    {s:"done",o:"银小管",t:"53 条平台接口清单登记（盘点表，含 requiresIdentity 50/53 标注）"},
+    {s:"done",o:"银小管",t:"Route C 聚合工具 #55 query_rule_calc_flow 保留（#53/#54 降级为场景内编排）"},
+    {s:"done",o:"银小管",t:"降级影响全链收口：全集 85→83、运行态 83→81"},
+    {s:"open",o:"银小管＋管理人平台",t:"#14 直连旁路 16 项治理还款计划（建议试点 query_raise_flow 改挂平台 REST——平台有现成等价接口 #21）"}]},
+  "cap-direct":{ title:"直连工具（30）", ext:false, sub:"旁路 16 + 纯内部 14", desc:"类②工具：不经平台 REST（CSP / dblink / 内部逻辑），须前置查平台权限接口管控。", tasks:[
+    {s:"done",o:"银小管",t:"数据路径逐工具核实（fund.PRD_PROP@fmp、PRD_SCALE_INDEX_MONITOR@fmp 等 dblink 实证）"},
+    {s:"done",o:"银小管",t:"L1/L2 分级表 + L2→scope 映射维护（_TOOL_LEVELS / _TOOL_SCOPES）"},
+    {s:"done",o:"银小管",t:"TA 查询扩展 5 场景端点（confirm-rule / open-day / lock-period / raise-flow / redemption-fee，纯加法）"},
+    {s:"done",o:"银小管",t:"长期路径决策点成文（每工具二选一：改挂平台 REST / 维持旁路）"},
+    {s:"open",o:"银小管",t:"#15 工具上架与权限登记门禁（新工具上架必须同步登记对应表/权限项）"}]},
+  "cap-card":{ title:"工具契约卡（C9）", ext:false, sub:"认申赎 10 工具 · 五要素 · md+HTML 双产出", desc:"对客使用说明文档：定位/输入/输出/权限边界/错误兜底。", tasks:[
+    {s:"done",o:"银小管",t:"样卡格式审定（用户四问拍板：五要素定型 / 内部字段标注 / 字段级示意 / md+HTML 双产出）"},
+    {s:"done",o:"银小管",t:"10 工具契约卡交付（docs/MCP工具契约卡-认申赎-10工具-20260911.{md,html}，事实基线 10a252873 逐卡核对）"},
+    {s:"done",o:"银小管",t:"副作用与语义陷阱披露（reminders 企微推送 / stop-buy 无记录≠正常 / raise-flow 同名双源 / 客户名包含式匹配）"},
+    {s:"doing",o:"银小管",t:"契约卡挂外网 Pages 或 5095 工作台（HTML 已备好，上传路径待定）"}]},
+  "int-fmp":{ title:"fmp-business-mcp（5077）", ext:true, sub:"对内 MCP 聚合层 · qa/intel/memory/business/docs", desc:"银小管内部消费的 MCP 聚合服务（Route C 源），不对外暴露。", tasks:[
+    {s:"done",o:"银小管",t:"五 server 健康（qa/intel/memory/business/docs 全 ok）"},
+    {s:"done",o:"银小管",t:"SSE 代理集成（_FMP_PROXY_TOOLS 动态发现 + 排除表过滤）"},
+    {s:"done",o:"银小管",t:"工具盘点路线 A 全集核对（mcp-inventory-A.md）"}]},
+  "int-ta":{ title:"TA 专员（份额/开放日）", ext:true, sub:"TAInvestorInfoTool / TAOpenDayTool", desc:"份额登记与开放日历的数据源。", tasks:[
+    {s:"done",o:"银小管",t:"投资者份额/开户状态查询接通（account-status / investor / lock-period 三端点）"},
+    {s:"done",o:"银小管",t:"开放日 nearest_open_day 可靠性修复（无未来日期返回空，不回退历史）"},
+    {s:"doing",o:"银小管",t:"open-day-reminders 管理人反查无 OB fallback（回退默认产品——已披露，胶囊侧显式兜底，服务端待补）"}]},
+  "int-contract":{ title:"合同协议专员（5096）", ext:true, sub:"contractQ 合同条款解析", desc:"确认天数/锁定期等合同要素的数据源。", tasks:[
+    {s:"done",o:"知识库域",t:"query_contract_params 接入（申购/赎回确认天数、锁定期字段提取）——S3-1 读用，数据层归 S1"}]},
+  "int-csp":{ title:"CSP API / OceanBase", ext:true, sub:"产品/净值/持仓数据 + dblink 直查", desc:"平台数据旁路的底层通道。", tasks:[
+    {s:"done",o:"银小管",t:"ob_fallback 直查链路核实并写入盘点表（16 项旁路路径实证）"},
+    {s:"done",o:"银小管",t:"CSP 不可用时 OB 备用源接入（product-status / product-by-name / manager-info / stop-buy）"}]},
+  "gov-doc":{ title:"文档体系", ext:false, sub:"板 v1.95 · 接口文档 v1.19 · 盘点表 · 契约卡", desc:"对客与对内的四层文档资产，全部双写同步。", tasks:[
+    {s:"done",o:"银小管",t:"综合板多页签（架构总览/供给设计/权限设计…，渲染实测 0 越界）——本页签即其一部分"},
+    {s:"done",o:"银小管",t:"接口文档 v1.19（§01/§08/§8.4/§8.6/§11.4 + AND 注 + 变更记录，源+板内 srcdoc 双写）"},
+    {s:"done",o:"银小管",t:"MCP 工具权限盘点表（全集 83=53+30 · 运行态 81 口径）"},
+    {s:"done",o:"银小管",t:"方案探讨 ①~⑨ 全部收口落板"},
+    {s:"done",o:"银小管",t:"认申赎 10 工具契约卡（C9）"},
+    {s:"doing",o:"银小管",t:"PRD（srcdoc ③）更深同步——工具表描述已同步（B7），其余段落随下批"}]},
+  "gov-sec":{ title:"安全加固", ext:false, sub:"SSRF 防护 · TLS 收敛 · 凭据纪律", desc:"出站与运行时安全治理。", tasks:[
+    {s:"done",o:"银小管",t:"SSRF 防护（协议校验 + 私网阻断 + MCP_OUTBOUND_ALLOWLIST 白名单 + 禁重定向，过 Mimosa 门禁）"},
+    {s:"done",o:"银小管",t:"tls_bypass 重命名修复 _ssl 遮蔽（direct/stdio 直跑崩溃根因 = bat 守护长期未启用真因，d5a456208）"},
+    {s:"done",o:"银小管",t:"GitHub Token 纪律（凭据管理器 x-access-token 不落明文；发布脚本白名单主机校验）"},
+    {s:"open",o:"舆情域",t:"舆情 agent 12 处证书校验缺失/SSRF 存量风险（09-05 已登记警示，归舆情域会话）"}]},
+  "gov-deploy":{ title:"部署与守护", ext:false, sub:"5089 bat 守护 · service_ctl 规范 · 双 env", desc:"服务端目录 pull → service_ctl → 注册表的规范部署链。", tasks:[
+    {s:"done",o:"银小管",t:"5089 挂回 start_api_service.bat 守护（PID 27024，守护链 cmd→python 验证；#12 拍板 a 落地）"},
+    {s:"done",o:"银小管",t:"三原语批次部署（59a746644，stash 前置留档）+ 聚合处置部署（4e2e2e231）"},
+    {s:"done",o:"银小管",t:"服务注册表规范（status 探测先行 / 外部启动标记 / update 刷新）"},
+    {s:"doing",o:"银小管",t:"4 服务 bat :loop 守护补齐（仅 5089 完成；5090/5095/5096 仍终端直启，双 env 自动重启依赖此项）"}]},
+  "gov-web":{ title:"外网发布通道", ext:false, sub:"GitHub Pages · luistream/rag-html-preview", desc:"板与分享页的外网预览通道（Pages 约 30s 重建）。", tasks:[
+    {s:"done",o:"银小管",t:"通道建立并三次推送（Git Data API）"},
+    {s:"done",o:"银小管",t:"board.html 重推 v1.94（Contents API，commit e7c89da，线上实测通过——C8 改判执行）"},
+    {s:"done",o:"银小管",t:"发布脚本安全化（固定主机白名单 + 禁重定向，过 Mimosa SSRF 门禁）"},
+    {s:"doing",o:"银小管",t:"契约卡 HTML 挂外网（contract-cards.html，待定）"}]},
+  "gov-todo":{ title:"治理待办台账", ext:false, sub:"pending-decisions · 交接锚点", desc:"跨批次治理事项统一登记（docs/pending-decisions.md）。", tasks:[
+    {s:"open",o:"管理人平台",t:"#13 聚合 AND 语义平台书面确认（等外部）"},
+    {s:"open",o:"银小管",t:"#14 直连旁路 16 项还款计划（等用户择期启动试点）"},
+    {s:"open",o:"银小管",t:"#15 工具上架与权限登记门禁（等新工具上架场景落实）"},
+    {s:"open",o:"管理人平台",t:"#6 submit_ta_order（等业务侧网关路径）"},
+    {s:"open",o:"银小管",t:"判定链降级边界（接口明确拒绝不降级 / 影子比对）"},
+    {s:"open",o:"银小管",t:"鉴权缓存 TTL 收紧（配置化/写时失效，设计期语义，待拍板再动）"}]}
+  };
+  function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
+  function cnt(id){ var n=N[id], c={done:0,doing:0,open:0}; n.tasks.forEach(function(t){c[t.s]++;}); c.total=n.tasks.length; return c; }
+  // 统计条
+  (function(){ var c={done:0,doing:0,open:0}, total=0;
+    Object.keys(N).forEach(function(k){ N[k].tasks.forEach(function(t){ total++; c[t.s]++; }); });
+    document.getElementById("ov-stats").innerHTML =
+      '<div class="ov-stat done"><b>'+c.done+'</b>已完成</div>'+
+      '<div class="ov-stat doing"><b>'+c.doing+'</b>进行中/待跟进</div>'+
+      '<div class="ov-stat open"><b>'+c.open+'</b>待拍板/等外部</div>'+
+      '<div class="ov-stat"><b>'+total+'</b>任务细条总计</div>';
+  })();
+  // 架构图
+  (function(){
+    var dg=document.getElementById("ov-diagram"), html=[];
+    LAYERS.forEach(function(layer,i){
+      var cols = layer.nodes.length>=4 ? "repeat(4, 1fr)" : "repeat("+layer.nodes.length+", 1fr)";
+      html.push('<div class="ov-layer"><div class="ov-llabel">'+layer.name+'</div><div class="ov-lnodes" style="grid-template-columns:'+cols+'">');
+      layer.nodes.forEach(function(id){
+        var n=N[id], c=cnt(id);
+        html.push('<div class="ov-node'+(n.ext?" ext":"")+(c.open>0?" hot":"")+'" data-ov="'+id+'" title="点击查看任务拆分（归属系统标注）">'+
+          '<div class="chip">'+c.done+'/'+c.total+'</div><div class="t">'+n.title+'</div><div class="s">'+n.sub+'</div></div>');
+      });
+      html.push('</div></div>');
+      if(i<LAYERS.length-1) html.push('<div class="ov-flow">▼</div>');
+    });
+    dg.innerHTML=html.join("");
+  })();
+  // 弹窗（事件委托，不占全局名）
+  function openModal(id){
+    var n=N[id]; if(!n) return;
+    document.getElementById("ov-mtitle").textContent=n.title+(n.ext?"（外部系统）":"");
+    document.getElementById("ov-mdesc").textContent=n.desc+" ｜ "+n.sub;
+    document.getElementById("ov-ref").textContent="#"+id;
+    document.getElementById("ov-mbody").innerHTML=n.tasks.map(function(t,i){
+      return '<div class="task"><span class="st '+ST[t.s].c+'">'+ST[t.s].l+'</span><span class="ow '+ow2cls(t.o)+'">'+t.o+'</span><span><b>'+(i+1)+'.</b> '+esc(t.t)+'</span></div>';
+    }).join("");
+    document.getElementById("ov-overlay").classList.add("show");
+  }
+  document.getElementById("ov-diagram").addEventListener("click", function(e){
+    var el=e.target; while(el && el!==this && !(el.dataset&&el.dataset.ov)) el=el.parentNode;
+    if(el && el.dataset && el.dataset.ov) openModal(el.dataset.ov);
+  });
+  document.getElementById("ov-close").addEventListener("click", function(){ document.getElementById("ov-overlay").classList.remove("show"); });
+  document.getElementById("ov-overlay").addEventListener("click", function(e){ if(e.target===this) this.classList.remove("show"); });
+  document.addEventListener("keydown", function(e){ if(e.key==="Escape") document.getElementById("ov-overlay").classList.remove("show"); });
+})();
+</script>
+</div>
 </div>
 
 <!-- ========== TAB: 供给设计（Skill ↔ MCP 三原语） ========== -->
@@ -14368,6 +14622,7 @@ TA巨…</td><td style="white-space:nowrap;">对客</td></tr>
       <table>
         <tr><th style="width:150px;">页签</th><th>内容构成</th><th>磁盘源（权威版本）</th><th style="width:110px;">维护方式</th></tr>
         <tr><td>📐 架构总览</td><td>板内原生（960 架构图＋权限流转全景图＋Skill↔MCP 关系图等）</td><td>无（仅本板）</td><td>直接改本板</td></tr>
+        <tr><td>🗂 工作总览·走读</td><td>板内原生（6 层架构 × 23 节点点击弹任务拆分 90 条·归属系统标注＋平铺反馈指引）</td><td>无（仅本板；姊妹单文件 <code>docs/对客AI服务体系-工作总览-20260911.html</code>）</td><td>直接改本板</td></tr>
         <tr><td>🧭 Skill 与 MCP 服务设计</td><td>板内原生（供给架构图＋数据流四层＋样例走读）</td><td>无（仅本板）</td><td>直接改本板</td></tr>
         <tr><td>🔐 权限认证需求设计</td><td>板内原生（总纲/四章正文＋配图①②③走读 SVG）</td><td>无（仅本板）</td><td>直接改本板</td></tr>
         <tr><td>📡 智能体平台服务</td><td><strong>srcdoc ①《对外接口文档》</strong>完整嵌入</td><td><code>docs/LYQREFER/LYQNEW/银小管-小帆智能体平台对外接口文档.html</code></td><td><strong>双写</strong></td></tr>
