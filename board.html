@@ -168,7 +168,7 @@ tr:last-child td { border-bottom: none; }
 <div class="header">
   <div>
     <h1>银小管-小帆业务助手智能体平台及MCP服务手册 <span style="font-size:.6em;background:#dc2626;color:#fff;border-radius:6px;padding:2px 8px;vertical-align:middle;">单文件分享版</span></h1>
-    <div class="sub">银小管/小帆智能体平台 · 管理人助手 · v1.99 · 2026-09-13（走读修正③：通道图插件消费方三行改定——「浏览器插件（银小帆演示）／全业务场景-与A通道相同／静态 Key 对接」，纠正首发场景被误读为能力边界）</div>
+    <div class="sub">银小管/小帆智能体平台 · 管理人助手 · v1.100 · 2026-09-13（走读修正④：「管理人平台」改称 FMP（免与智能体平台混淆，通道图+总览页签范围）；对接原则定盘——FMP 侧轻改造/免深度改造，页面只做薄调用（预填/预审规则等），开发尽量归智能体平台）</div>
   </div>
   <div><span class="badge" style="background:#2563eb;color:#fff">77 业务场景 · MCP & Skill 服务 · 4 服务健康</span></div>
 </div>
@@ -436,7 +436,7 @@ tr:last-child td { border-bottom: none; }
 <div class="ov-card">
 <div class="ov-card">
   <div style="font-size:14px;font-weight:600;color:#1f3a5f;margin-bottom:6px;">🛣 通道与调用关系图 —— 预演 / 内嵌 / MCP 三通道 × 消费方 × 智能体平台（skill / tools）</div>
-  <div style="font-size:12px;color:#57606a;margin-bottom:8px;">读法：实线箭头＝调用方向；①②③＝三条接入通道；预演/内嵌走<b>对话链路</b>（对话编排消费 skill＋tools），MCP 通道<b>直接消费三原语</b>；类①出口回穿管理人平台 REST，类②走内部数据（先过银小管前置权限判定）。</div>
+  <div style="font-size:12px;color:#57606a;margin-bottom:8px;">读法：实线箭头＝调用方向；①②③＝三条接入通道；预演/内嵌走<b>对话链路</b>（对话编排消费 skill＋tools），MCP 通道<b>直接消费三原语</b>；类①出口回穿 FMP REST，类②走内部数据（先过银小管前置权限判定）。对接原则：FMP 侧轻改造——页面只做薄调用（预填/预审规则等），编排与开发尽量归智能体平台。</div>
   <svg id="ov-chanmap" viewBox="0 0 1060 666" width="100%" style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <marker id="ovarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -459,9 +459,9 @@ tr:last-child td { border-bottom: none; }
     </g>
     <g>
       <rect x="12" y="186" width="168" height="78" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.4"/>
-      <text x="96" y="206" font-size="12" font-weight="700" fill="#1e293b" text-anchor="middle">管理人平台</text>
+      <text x="96" y="206" font-size="12" font-weight="700" fill="#1e293b" text-anchor="middle">FMP（管理人平台）</text>
       <text x="96" y="223" font-size="10.5" fill="#64748b" text-anchor="middle">对客页面 · 可内嵌对话</text>
-      <text x="96" y="239" font-size="10.5" fill="#64748b" text-anchor="middle">也可作为 MCP 客户端</text>
+      <text x="96" y="239" font-size="10.5" fill="#64748b" text-anchor="middle">也可作 MCP 客户端（薄调用）</text>
       <text x="96" y="255" font-size="10.5" fill="#64748b" text-anchor="middle">（右列另有其服务端角色面）</text>
     </g>
     <g>
@@ -481,7 +481,7 @@ tr:last-child td { border-bottom: none; }
     <g>
       <rect x="240" y="186" width="176" height="66" rx="8" fill="#eff6ff" stroke="#2563eb" stroke-width="1.4"/>
       <text x="328" y="206" font-size="12" font-weight="700" fill="#1e40af" text-anchor="middle">② 内嵌通道</text>
-      <text x="328" y="223" font-size="10.5" fill="#1d4ed8" text-anchor="middle">平台内嵌对话页</text>
+      <text x="328" y="223" font-size="10.5" fill="#1d4ed8" text-anchor="middle">FMP 内嵌对话页</text>
       <text x="328" y="239" font-size="10.5" fill="#1d4ed8" text-anchor="middle">iframe / H5</text>
     </g>
     <g>
@@ -521,14 +521,14 @@ tr:last-child td { border-bottom: none; }
     <g>
       <rect x="496" y="496" width="260" height="54" rx="8" fill="#fef2f2" stroke="#dc2626" stroke-width="1.2" stroke-dasharray="5 3"/>
       <text x="626" y="516" font-size="11" font-weight="700" fill="#991b1b" text-anchor="middle">类② 前置权限判定（fail-closed）</text>
-      <text x="626" y="534" font-size="10.5" fill="#b91c1c" text-anchor="middle">功能闸 · 数据闸判定权威＝管理人平台</text>
+      <text x="626" y="534" font-size="10.5" fill="#b91c1c" text-anchor="middle">功能闸 · 数据闸判定权威＝FMP</text>
     </g>
 
     <!-- ===== 列4 能力出口 ===== -->
     <g>
       <rect x="836" y="246" width="212" height="76" rx="8" fill="#fff" stroke="#1f6feb" stroke-width="1.4"/>
       <text x="942" y="264" font-size="12" font-weight="700" fill="#1e3a8a" text-anchor="middle">类① 代理工具 53</text>
-      <text x="942" y="280" font-size="10.5" fill="#475569" text-anchor="middle">→ 管理人平台 REST</text>
+      <text x="942" y="280" font-size="10.5" fill="#475569" text-anchor="middle">→ FMP REST</text>
       <text x="942" y="296" font-size="10.5" fill="#475569" text-anchor="middle">平台接口层可拦</text>
       <text x="942" y="312" font-size="10.5" fill="#475569" text-anchor="middle">纳入菜单-接口对应表</text>
     </g>
@@ -542,7 +542,7 @@ tr:last-child td { border-bottom: none; }
     <g>
       <rect x="836" y="520" width="212" height="66" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.2" stroke-dasharray="5 3"/>
       <text x="942" y="540" font-size="11.5" font-weight="700" fill="#334155" text-anchor="middle">数据 / 接口底座</text>
-      <text x="942" y="556" font-size="10.5" fill="#64748b" text-anchor="middle">平台 REST · 平台库表（@fmp）</text>
+      <text x="942" y="556" font-size="10.5" fill="#64748b" text-anchor="middle">FMP REST · FMP 库表（@fmp）</text>
       <text x="942" y="572" font-size="10.5" fill="#64748b" text-anchor="middle">合同解析 · TA · CSP</text>
     </g>
 
@@ -577,7 +577,7 @@ tr:last-child td { border-bottom: none; }
 
     <!-- 图例条 -->
     <rect x="12" y="630" width="1036" height="26" rx="6" fill="#f1f5f9"/>
-    <text x="530" y="647" font-size="10.5" fill="#475569" text-anchor="middle">①②③＝接入通道 ｜ 箭头＝调用方向 ｜ 预演/内嵌走对话链路消费 skill＋tools，MCP 通道直接消费三原语 ｜ 功能闸/数据闸判定权威＝管理人平台（银小管只筛不闸）</text>
+    <text x="530" y="647" font-size="10.5" fill="#475569" text-anchor="middle">①②③＝接入通道 ｜ 箭头＝调用方向 ｜ 预演/内嵌走对话链路消费 skill＋tools，MCP 通道直接消费三原语 ｜ 功能闸/数据闸判定权威＝FMP（银小管只筛不闸）</text>
   </svg>
 </div>
 </div>
@@ -593,8 +593,8 @@ tr:last-child td { border-bottom: none; }
   <table class="ov-t">
     <tr><th style="width:130px">归属系统图例</th><th>说明</th></tr>
     <tr><td><span class="ow yg" style="font-size:11px;border-radius:10px;padding:1px 8px;">银小管</span></td><td>银小管智能体平台侧（S3-1 主责域：5089/5077/5086 服务、MCP 三原语、权限闸落地、文档与发布）</td></tr>
-    <tr><td><span class="ow pt" style="font-size:11px;border-radius:10px;padding:1px 8px;">管理人平台</span></td><td>管理人平台侧的工作（书面确认、网关路径、权限管控落地、客户/灰度范围）</td></tr>
-    <tr><td><span class="ow both" style="font-size:11px;border-radius:10px;padding:1px 8px;">银小管＋平台</span></td><td>双方协同事项（底稿/录入、联调、试点迁移）</td></tr>
+    <tr><td><span class="ow pt" style="font-size:11px;border-radius:10px;padding:1px 8px;">FMP</span></td><td>FMP 侧的工作（书面确认、网关路径、权限管控落地、客户/灰度范围）</td></tr>
+    <tr><td><span class="ow both" style="font-size:11px;border-radius:10px;padding:1px 8px;">银小管＋FMP</span></td><td>双方协同事项（底稿/录入、联调、试点迁移）</td></tr>
     <tr><td><span class="ow" style="font-size:11px;border-radius:10px;padding:1px 8px;">灰底域</span></td><td>其他域：插件域（S3-2）/ 胶囊域（S5）/ 知识库域（S1）/ 舆情域 / 用户亲验</td></tr>
   </table>
 </div>
@@ -607,7 +607,7 @@ tr:last-child td { border-bottom: none; }
 <script>
 (function () {
   var ST = { done:{l:"✅ 已完成",c:"done"}, doing:{l:"🔄 进行中",c:"doing"}, open:{l:"⏸ 待拍板",c:"open"} };
-  function ow2cls(o){ if(o.indexOf("＋")>=0) return "both"; if(o.indexOf("管理人平台")>=0) return "pt"; if(o==="银小管") return "yg"; return ""; }
+  function ow2cls(o){ if(o.indexOf("＋")>=0) return "both"; if(o.indexOf("FMP")>=0) return "pt"; if(o==="银小管") return "yg"; return ""; }
   var LAYERS = [
     { name:"客户与渠道层", nodes:["chan-platform","chan-ai","chan-plugin","chan-capsule"] },
     { name:"对外服务边界", nodes:["edge-mcp","edge-oauth","edge-gate"] },
@@ -617,15 +617,16 @@ tr:last-child td { border-bottom: none; }
     { name:"横切治理层", nodes:["gov-doc","gov-sec","gov-deploy","gov-web","gov-todo"] }
   ];
   var N = {
-  "chan-platform":{ title:"管理人平台（网页端）", ext:false, sub:"对客主入口 · B/C 通道发起方", desc:"管理人登录平台使用智能体服务；功能闸与数据闸的判定权威。", tasks:[
-    {s:"done",o:"银小管＋管理人平台",t:"平台菜单-接口对应关系表初始数据登记（盘点表 53 条底稿：银小管整理、平台录入）"},
-    {s:"done",o:"管理人平台",t:"「按工具权限设置功能」管控口径对齐（工具即权限单元）"},
-    {s:"open",o:"管理人平台",t:"#13 聚合工具判定语义 AND 书面确认（银小管已实现并注接口文档 v1.19）"},
-    {s:"open",o:"管理人平台",t:"#6 submit_ta_order 业务侧网关路径（审批链路真触发前提）"}]},
+  "chan-platform":{ title:"FMP（管理人平台）", ext:false, sub:"对客主入口 · B/C 通道发起方", desc:"管理人登录 FMP 使用智能体服务；功能闸与数据闸的判定权威。对接原则（09-13 用户走读定盘）：FMP 侧轻改造——页面只做薄调用（预填/预审规则等），编排与开发尽量由智能体平台承担。", tasks:[
+    {s:"done",o:"银小管＋FMP",t:"平台菜单-接口对应关系表初始数据登记（盘点表 53 条底稿：银小管整理、平台录入）"},
+    {s:"done",o:"FMP",t:"「按工具权限设置功能」管控口径对齐（工具即权限单元）"},
+    {s:"open",o:"FMP",t:"#13 聚合工具判定语义 AND 书面确认（银小管已实现并注接口文档 v1.19）"},
+    {s:"open",o:"FMP",t:"#6 submit_ta_order 业务侧网关路径（审批链路真触发前提）"},
+    {s:"done",o:"银小管＋FMP",t:"对接原则定盘（09-13 走读）：FMP 免深度改造——页面只做薄调用（预填/预审规则等），开发工作尽量归智能体平台"}]},
   "chan-ai":{ title:"第三方 AI 客户端", ext:false, sub:"Trae / CLI / 通用 MCP 客户端", desc:"以 MCP 协议接入银小管的通用 AI 客户端。", tasks:[
     {s:"done",o:"银小管",t:"agent-setup.md 接入文档（内网直连 / OAuth 双路径文案）"},
     {s:"done",o:"银小管",t:"stdio 直跑修复（tls_bypass 重命名消除 _ssl 遮蔽，9 处 import 同步）"},
-    {s:"doing",o:"银小管＋管理人平台",t:"Trae 等客户端实测接入（修复后可用，待实际联调）"}]},
+    {s:"doing",o:"银小管＋FMP",t:"Trae 等客户端实测接入（修复后可用，待实际联调）"}]},
   "chan-plugin":{ title:"银小帆浏览器插件", ext:false, sub:"认申赎录单场景 · 表单自动填充", desc:"Chrome/Edge 插件，承载录单场景深链、表单映射与自动填充。", tasks:[
     {s:"done",o:"插件域",t:"认申赎录单 Skill 场景跑通（open-day 自动合并 batch / 参数规范化 / pre_review 注管理人）"},
     {s:"done",o:"插件域",t:"插件版本发布链（release.py build-first / test→latest / /version 自动更新）"}]},
@@ -650,15 +651,15 @@ tr:last-child td { border-bottom: none; }
     {s:"done",o:"银小管",t:"工具分级 L0/L1/L2 落码（L2 需 scope + 可选岗位现查；L0/L1 认证即可用）"},
     {s:"done",o:"银小管",t:"权限一张图表头收口（认人 · 定功能 · 定数据范围｜B/C 发凭证 · A 代转发）"},
     {s:"done",o:"银小管",t:"scope 四值表/SKILL permission 块标注「历史设计参考」（保留不改）"},
-    {s:"open",o:"银小管＋管理人平台",t:"灰度白名单开放集（待定客户）"}]},
+    {s:"open",o:"银小管＋FMP",t:"灰度白名单开放集（待定客户）"}]},
   "sup-tools":{ title:"Tools 原语", ext:false, sub:"运行态 81 ＝ 53 代理 + 30 直连 − 2 同名去重", desc:"工具即权限单元；全集 83（聚合降级 2 项后运行态 81）。", tasks:[
     {s:"done",o:"银小管",t:"全集口径定稿：83 ＝ 53 平台接口代理 + 30 直连（板 v1.94 / 接口文档 v1.19 / 盘点表全链同步）"},
     {s:"done",o:"银小管",t:"聚合处置落板（♀拍板）：query_product_lifecycle / query_mgr_overview 降级为场景内编排，运行态 83→81（05af34ced）"},
     {s:"done",o:"银小管",t:"同名双源去重：query_raise_flow / query_product_info 按直连优先（运行态口径）"},
     {s:"done",o:"银小管",t:"聚合工具判定语义 AND 定稿并注接口文档 v1.19"},
     {s:"done",o:"银小管",t:"工具元数据统一 _tools_meta()（L1/L2 + 所需 scope，场景卡/文档共用）"},
-    {s:"open",o:"管理人平台",t:"#13 AND 语义待管理人平台书面确认"},
-    {s:"open",o:"管理人平台",t:"#6 服务器 MCP 目录补 submit_ta_order（等业务侧网关路径）"}]},
+    {s:"open",o:"FMP",t:"#13 AND 语义待管理人平台书面确认"},
+    {s:"open",o:"FMP",t:"#6 服务器 MCP 目录补 submit_ta_order（等业务侧网关路径）"}]},
   "sup-resources":{ title:"Resources 原语（场景卡）", ext:false, sub:"yxg://skills/index + yxg://skills/{id}/scenecard", desc:"向客户端供场景卡：流程步骤 + 工具清单 + 可移植正文。", tasks:[
     {s:"done",o:"银小管",t:"Resources 出口上线（索引 + 场景卡模板，a97d7a784）"},
     {s:"done",o:"银小管",t:"get_skill_flow 升级场景卡 v2（flows+tools+portable_flow+strip_report）——修复原文截断 4000 字符带私有指令外发问题（ca931438a）"},
@@ -677,7 +678,7 @@ tr:last-child td { border-bottom: none; }
     {s:"done",o:"银小管",t:"53 条平台接口清单登记（盘点表，含 requiresIdentity 50/53 标注）"},
     {s:"done",o:"银小管",t:"Route C 聚合工具 #55 query_rule_calc_flow 保留（#53/#54 降级为场景内编排）"},
     {s:"done",o:"银小管",t:"降级影响全链收口：全集 85→83、运行态 83→81"},
-    {s:"open",o:"银小管＋管理人平台",t:"#14 直连旁路 16 项治理还款计划（建议试点 query_raise_flow 改挂平台 REST——平台有现成等价接口 #21）"}]},
+    {s:"open",o:"银小管＋FMP",t:"#14 直连旁路 16 项治理还款计划（建议试点 query_raise_flow 改挂平台 REST——平台有现成等价接口 #21）"}]},
   "cap-direct":{ title:"直连工具（30）", ext:false, sub:"旁路 16 + 纯内部 14", desc:"类②工具：不经平台 REST（CSP / dblink / 内部逻辑），须前置查平台权限接口管控。", tasks:[
     {s:"done",o:"银小管",t:"数据路径逐工具核实（fund.PRD_PROP@fmp、PRD_SCALE_INDEX_MONITOR@fmp 等 dblink 实证）"},
     {s:"done",o:"银小管",t:"L1/L2 分级表 + L2→scope 映射维护（_TOOL_LEVELS / _TOOL_SCOPES）"},
@@ -725,10 +726,10 @@ tr:last-child td { border-bottom: none; }
     {s:"done",o:"银小管",t:"发布脚本安全化（固定主机白名单 + 禁重定向，过 Mimosa SSRF 门禁）"},
     {s:"doing",o:"银小管",t:"契约卡 HTML 挂外网（contract-cards.html，待定）"}]},
   "gov-todo":{ title:"治理待办台账", ext:false, sub:"pending-decisions · 交接锚点", desc:"跨批次治理事项统一登记（docs/pending-decisions.md）。", tasks:[
-    {s:"open",o:"管理人平台",t:"#13 聚合 AND 语义平台书面确认（等外部）"},
+    {s:"open",o:"FMP",t:"#13 聚合 AND 语义平台书面确认（等外部）"},
     {s:"open",o:"银小管",t:"#14 直连旁路 16 项还款计划（等用户择期启动试点）"},
     {s:"open",o:"银小管",t:"#15 工具上架与权限登记门禁（等新工具上架场景落实）"},
-    {s:"open",o:"管理人平台",t:"#6 submit_ta_order（等业务侧网关路径）"},
+    {s:"open",o:"FMP",t:"#6 submit_ta_order（等业务侧网关路径）"},
     {s:"open",o:"银小管",t:"判定链降级边界（接口明确拒绝不降级 / 影子比对）"},
     {s:"open",o:"银小管",t:"鉴权缓存 TTL 收紧（配置化/写时失效，设计期语义，待拍板再动）"}]}
   };
