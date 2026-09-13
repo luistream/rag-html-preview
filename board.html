@@ -168,7 +168,7 @@ tr:last-child td { border-bottom: none; }
 <div class="header">
   <div>
     <h1>银小管-小帆业务助手智能体平台及MCP服务手册 <span style="font-size:.6em;background:#dc2626;color:#fff;border-radius:6px;padding:2px 8px;vertical-align:middle;">单文件分享版</span></h1>
-    <div class="sub">银小管/小帆智能体平台 · 管理人助手 · v1.100 · 2026-09-13（走读修正④：「管理人平台」改称 FMP（免与智能体平台混淆，通道图+总览页签范围）；对接原则定盘——FMP 侧轻改造/免深度改造，页面只做薄调用（预填/预审规则等），开发尽量归智能体平台）</div>
+    <div class="sub">银小管/小帆智能体平台 · 管理人助手 · v1.101 · 2026-09-13（走读修正⑤：FMP 定位澄清——删「也可作 MCP 客户端（薄调用）」，FMP=内嵌 AI 服务对接智能体平台、协助客户完成办理；FMP 不做 MCP 客户端开发；通道图删 FMP→③箭头，MCP 通道消费方=第三方 AI 客户端）</div>
   </div>
   <div><span class="badge" style="background:#2563eb;color:#fff">77 业务场景 · MCP & Skill 服务 · 4 服务健康</span></div>
 </div>
@@ -436,7 +436,7 @@ tr:last-child td { border-bottom: none; }
 <div class="ov-card">
 <div class="ov-card">
   <div style="font-size:14px;font-weight:600;color:#1f3a5f;margin-bottom:6px;">🛣 通道与调用关系图 —— 预演 / 内嵌 / MCP 三通道 × 消费方 × 智能体平台（skill / tools）</div>
-  <div style="font-size:12px;color:#57606a;margin-bottom:8px;">读法：实线箭头＝调用方向；①②③＝三条接入通道；预演/内嵌走<b>对话链路</b>（对话编排消费 skill＋tools），MCP 通道<b>直接消费三原语</b>；类①出口回穿 FMP REST，类②走内部数据（先过银小管前置权限判定）。对接原则：FMP 侧轻改造——页面只做薄调用（预填/预审规则等），编排与开发尽量归智能体平台。</div>
+  <div style="font-size:12px;color:#57606a;margin-bottom:8px;">读法：实线箭头＝调用方向；①②③＝三条接入通道；预演/内嵌走<b>对话链路</b>（对话编排消费 skill＋tools），MCP 通道<b>直接消费三原语</b>；类①出口回穿 FMP REST，类②走内部数据（先过银小管前置权限判定）。设计意图（09-13 定盘）：FMP=内嵌 AI 服务对接智能体平台、协助客户完成办理（预填/预审规则等由 AI 服务承担）；FMP 不做 MCP 客户端开发，编排与开发尽量归智能体平台。</div>
   <svg id="ov-chanmap" viewBox="0 0 1060 666" width="100%" style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;" xmlns="http://www.w3.org/2000/svg">
     <defs>
       <marker id="ovarrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
@@ -460,8 +460,8 @@ tr:last-child td { border-bottom: none; }
     <g>
       <rect x="12" y="186" width="168" height="78" rx="8" fill="#f8fafc" stroke="#94a3b8" stroke-width="1.4"/>
       <text x="96" y="206" font-size="12" font-weight="700" fill="#1e293b" text-anchor="middle">FMP（管理人平台）</text>
-      <text x="96" y="223" font-size="10.5" fill="#64748b" text-anchor="middle">对客页面 · 可内嵌对话</text>
-      <text x="96" y="239" font-size="10.5" fill="#64748b" text-anchor="middle">也可作 MCP 客户端（薄调用）</text>
+      <text x="96" y="223" font-size="10.5" fill="#64748b" text-anchor="middle">内嵌AI服务·对接智能体平台</text>
+      <text x="96" y="239" font-size="10.5" fill="#64748b" text-anchor="middle">协助客户完成业务办理</text>
       <text x="96" y="255" font-size="10.5" fill="#64748b" text-anchor="middle">（右列另有其服务端角色面）</text>
     </g>
     <g>
@@ -552,7 +552,6 @@ tr:last-child td { border-bottom: none; }
       <line x1="416" y1="79" x2="474" y2="88"/>
       <line x1="180" y1="215" x2="238" y2="215"/>
       <line x1="416" y1="215" x2="474" y2="108"/>
-      <line x1="180" y1="244" x2="238" y2="404"/>
       <line x1="180" y1="419" x2="238" y2="419"/>
       <line x1="416" y1="419" x2="474" y2="330"/>
       <line x1="626" y1="126" x2="626" y2="164"/>
@@ -617,12 +616,12 @@ tr:last-child td { border-bottom: none; }
     { name:"横切治理层", nodes:["gov-doc","gov-sec","gov-deploy","gov-web","gov-todo"] }
   ];
   var N = {
-  "chan-platform":{ title:"FMP（管理人平台）", ext:false, sub:"对客主入口 · B/C 通道发起方", desc:"管理人登录 FMP 使用智能体服务；功能闸与数据闸的判定权威。对接原则（09-13 用户走读定盘）：FMP 侧轻改造——页面只做薄调用（预填/预审规则等），编排与开发尽量由智能体平台承担。", tasks:[
+  "chan-platform":{ title:"FMP（管理人平台）", ext:false, sub:"对客主入口 · A 通道发起方", desc:"管理人登录 FMP 使用智能体服务；功能闸与数据闸的判定权威。设计意图（09-13 用户走读澄清）：FMP 做的是内嵌 AI 服务——对接智能体平台、在 FMP 页面协助客户完成办理（预填/预审规则等由 AI 服务承担）；FMP 不作为 MCP 客户端开发，编排与开发尽量由智能体平台承担。", tasks:[
     {s:"done",o:"银小管＋FMP",t:"平台菜单-接口对应关系表初始数据登记（盘点表 53 条底稿：银小管整理、平台录入）"},
     {s:"done",o:"FMP",t:"「按工具权限设置功能」管控口径对齐（工具即权限单元）"},
     {s:"open",o:"FMP",t:"#13 聚合工具判定语义 AND 书面确认（银小管已实现并注接口文档 v1.19）"},
     {s:"open",o:"FMP",t:"#6 submit_ta_order 业务侧网关路径（审批链路真触发前提）"},
-    {s:"done",o:"银小管＋FMP",t:"对接原则定盘（09-13 走读）：FMP 免深度改造——页面只做薄调用（预填/预审规则等），开发工作尽量归智能体平台"}]},
+    {s:"done",o:"银小管＋FMP",t:"设计意图定盘（09-13 走读澄清）：FMP=内嵌 AI 服务对接智能体平台，协助客户完成办理（预填/预审规则等由 AI 服务承担）；FMP 不做 MCP 客户端开发、免深度改造，编排与开发归智能体平台"}]},
   "chan-ai":{ title:"第三方 AI 客户端", ext:false, sub:"Trae / CLI / 通用 MCP 客户端", desc:"以 MCP 协议接入银小管的通用 AI 客户端。", tasks:[
     {s:"done",o:"银小管",t:"agent-setup.md 接入文档（内网直连 / OAuth 双路径文案）"},
     {s:"done",o:"银小管",t:"stdio 直跑修复（tls_bypass 重命名消除 _ssl 遮蔽，9 处 import 同步）"},
