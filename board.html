@@ -168,7 +168,7 @@ tr:last-child td { border-bottom: none; }
 <div class="header">
   <div>
     <h1>银小管-小帆业务助手智能体平台及MCP服务手册 <span style="font-size:.6em;background:#dc2626;color:#fff;border-radius:6px;padding:2px 8px;vertical-align:middle;">单文件分享版</span></h1>
-    <div class="sub">银小管/小帆智能体平台 · 管理人助手 · v1.96 · 2026-09-13（走读修正①：编排层「17 个剧本资产」口径降为「存量 17 个 SKILL.md 多为测试案例·归拢待开展」；总览页签登记「剧本资产梳理归拢」待办）</div>
+    <div class="sub">银小管/小帆智能体平台 · 管理人助手 · v1.97 · 2026-09-13（走读修正②：剧本数量口径改预估制——「存量 17 个」→「约 25 个（20~30 区间）·待最终梳理归拢结果」；估算基数=保留盘约13〔6业务助手投产+2小组件在用+流程类估半〕+新增盘10~15〔77场景中办理/提醒/多步类〕）</div>
   </div>
   <div><span class="badge" style="background:#2563eb;color:#fff">77 业务场景 · MCP & Skill 服务 · 4 服务健康</span></div>
 </div>
@@ -340,7 +340,7 @@ tr:last-child td { border-bottom: none; }
         <rect x="200" y="40" width="1200" height="96" rx="12" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.6"/>
         <rect x="200" y="40" width="7" height="96" rx="3" fill="#2563eb"/>
         <text x="228" y="76" font-size="16" font-weight="bold" fill="#1d4ed8">① 编排层 · Skill —— 我们写的剧本（怎么演）</text>
-        <text x="228" y="104" font-size="12.5" fill="#475569">77 业务场景（答/查/醒/办）· 存量 17 个 SKILL.md（多为测试案例，归拢待开展）· 流程/规则/话术/表单映射</text>
+        <text x="228" y="104" font-size="12.5" fill="#475569">77 业务场景（答/查/醒/办）· 约 25 个剧本（20~30 区间·待最终梳理归拢）· 流程/规则/话术/表单映射</text>
         <!-- ② 桥 -->
         <rect x="200" y="176" width="1200" height="96" rx="12" fill="#faf5ff" stroke="#c4b5fd" stroke-width="1.6"/>
         <rect x="200" y="176" width="7" height="96" rx="3" fill="#7c3aed"/>
@@ -515,11 +515,11 @@ tr:last-child td { border-bottom: none; }
     {s:"done",o:"银小管",t:"Resources 出口上线（索引 + 场景卡模板，a97d7a784）"},
     {s:"done",o:"银小管",t:"get_skill_flow 升级场景卡 v2（flows+tools+portable_flow+strip_report）——修复原文截断 4000 字符带私有指令外发问题（ca931438a）"},
     {s:"done",o:"银小管",t:"6 业务助手 skill 实测零残留 ALL_CLEAN（unresolved_api_references 透明化）"}]},
-  "sup-prompts":{ title:"Prompts 原语（剧本包）", ext:false, sub:"存量 17 个 SKILL.md（多为测试案例），6 业务助手先行", desc:"skill_{skill_id} 剧本包出口；剧本不外借原文只借剥离版。", tasks:[
+  "sup-prompts":{ title:"Prompts 原语（剧本包）", ext:false, sub:"约 25 个剧本（20~30 区间·待最终梳理归拢），6 业务助手先行交付", desc:"skill_{skill_id} 剧本包出口；剧本不外借原文只借剥离版。", tasks:[
     {s:"done",o:"银小管",t:"Prompts 出口上线（6 业务助手剧本包先行，a97d7a784）"},
     {s:"done",o:"银小管",t:"get_skill_content 改剥离版（仅 MCP 工具层；管理端 HTTP 端点保留原文，skill-explained 三页不受影响）"},
     {s:"open",o:"银小管",t:"存量其余 11 个（9 流程类＋2 小组件）多为测试案例——是否纳入 Prompts 待资产归拢后定"},
-    {s:"open",o:"银小管",t:"剧本资产梳理归拢（09-13 用户走读拍板：存量 17 个 SKILL.md 多为测试案例，尚未完整梳理归拢；归拢出正式清单后再定 Prompts 扩面与交付）"}]},
+    {s:"open",o:"银小管",t:"剧本资产梳理归拢（09-13 用户走读拍板：现存量 17 个多为测试案例不作数——预估归拢后约 25 个/区间 20~30，以最终梳理结果为准；归拢后再定 Prompts 扩面与交付）"}]},
   "sup-portable":{ title:"剥离程序 skill_portable", ext:false, sub:"唯一派生实现 · 在线 + 离线 CLI 共用", desc:"读源/剥离私有指令/流程解析/工具提取的唯一实现，保证三原语出口一致。", tasks:[
     {s:"done",o:"银小管",t:"独立模块转正（mcp_server 净删 112 行重复实现）"},
     {s:"done",o:"银小管",t:"离线 CLI：--check 残留门禁（退码 1）/ --export 批量导出审校件 / --skills"},
@@ -15045,9 +15045,9 @@ function createWalkable(wrap, S, ORDER, hint) {
     a_rag:{n:'📚', t:'知识库 RAG', w:'知识库（S1 域）', s:'liveopt', b:'知识库检索增强能力（已上线，适配优化中 50%）。'},
     a_mcp:{n:'🔌', t:'MCP server（对外唯一）', w:'智能体平台', s:'live', b:'MCP 服务端点（已上线 95%），以业务场景为维度对外提供能力——77 个场景经语义聚合后由 MCP & Skill 服务承载，底层编排 81 项原子工具。<strong>对外唯一协议适配层</strong>：一个 URL（/mcp）／一套鉴权（OAuth 2.1）／一份工具清单（tools/list）；另提供场景卡（Resources）与剧本包（Prompts）两种原语供给（与工具清单同源派生）；对内可有多个实现（fmp-business-mcp 为内部供应者，不对外暴露）。'},
     a_custagent:{n:'🖥️', t:'管理人自有智能体', w:'客户侧', s:'live', b:'管理人（客户）自有智能体加载调用我方 MCP 服务 / SKILL 技能包。虚线框表示客户侧资产，非我方实现。'},
-    a_semantic:{n:'①', t:'语义聚合 MCP 服务层', w:'智能体平台', s:'live', b:'对外开放的语义化工具层：把底层接口<strong>按业务语义聚合</strong>成 MCP 工具集（已上线 95%）与 SKILL 技能包（存量 17 个，多为测试案例待归拢），避免工具碎片化暴露。'},
+    a_semantic:{n:'①', t:'语义聚合 MCP 服务层', w:'智能体平台', s:'live', b:'对外开放的语义化工具层：把底层接口<strong>按业务语义聚合</strong>成 MCP 工具集（已上线 95%）与 SKILL 技能包（约 25 个剧本，待最终梳理归拢），避免工具碎片化暴露。'},
     a_semtools:{n:'🧰', t:'语义聚合 MCP 工具集', w:'智能体平台', s:'live', b:'接口语义化、按业务聚合后的 MCP 工具集（运行态 81 项，已上线 95%）——即银小管77个业务场景的主体，也是<strong>对外 MCP server 契约面（Tools 原语）</strong>：接入方经唯一端点 /mcp 的 tools/list 看到的清单即此层。'},
-    a_skill:{n:'📦', t:'SKILL 技能包', w:'智能体平台', s:'plan', b:'按场景规划的 SKILL 技能包（存量 17 个 SKILL.md 多为测试案例，归拢尚未开展）；对外以 <strong>MCP Prompts</strong> 交付——skill_{skill_id}（6 个业务助手先行），与场景卡（Resources）、工具清单（Tools）同源派生。'},
+    a_skill:{n:'📦', t:'SKILL 技能包', w:'智能体平台', s:'plan', b:'按场景规划的 SKILL 技能包（预估约 25 个·20~30 区间，待最终梳理归拢）；对外以 <strong>MCP Prompts</strong> 交付——skill_{skill_id}（6 个业务助手先行），与场景卡（Resources）、工具清单（Tools）同源派生。'},
     a_iface:{n:'②', t:'底层接口整合层', w:'智能体平台', s:'plan', b:'对底层系统接口的统一整合与封装（规划中 20%），供语义聚合层取用。'},
     a_iflist:{n:'📋', t:'底层系统接口清单', w:'智能体平台', s:'plan', b:'底层系统接口的清单化梳理，是聚合与封装的基础。'},
     a_ifwrap:{n:'🧬', t:'统一整合与封装', w:'智能体平台', s:'plan', b:'对接口做统一鉴权、路由与返回结构封装。'},
