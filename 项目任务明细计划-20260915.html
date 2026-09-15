@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>项目任务明细计划 · 走读稿 v0.2</title>
+<style>
+  :root{
+    --bg:#f8fafc; --surface:#ffffff; --surface-2:#f1f5f9; --ink:#1e293b; --ink-strong:#0f172a;
+    --muted:#64748b; --muted-2:#94a3b8; --border:#e2e8f0; --border-strong:#cbd5e1;
+    --primary:#2563eb; --ok:#16a34a; --wip:#2563eb; --todo:#64748b; --pend:#dc2626;
+    --radius:10px; --radius-lg:14px;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);line-height:1.6;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei","PingFang SC",sans-serif;font-size:14px}
+  .wrap{max-width:none;margin:0 auto;padding:24px 18px 80px}
+  h1{font-size:23px;margin:0 0 6px;color:var(--ink-strong);border-bottom:3px solid var(--primary);padding-bottom:10px}
+  .sub{color:var(--muted);font-size:12.5px;margin-bottom:14px}
+  h2{font-size:16px;margin:28px 0 8px;color:var(--ink-strong);display:flex;align-items:center;gap:8px}
+  h2 .cnt{font-size:12px;font-weight:600;color:var(--muted);background:var(--surface-2);
+    border:1px solid var(--border);border-radius:20px;padding:1px 9px}
+  .note{background:#fff8e6;border-left:4px solid #d4a72c;padding:9px 13px;border-radius:0 8px 8px 0;
+    font-size:12.5px;margin:0 0 12px}
+  .note b{color:#92400e}
+  .alert{background:#fef2f2;border-left:4px solid #dc2626;padding:9px 13px;border-radius:0 8px 8px 0;
+    font-size:12.5px;margin:0 0 14px}
+  .alert a{color:#dc2626;font-weight:600}
+  code{background:#f1f5f9;border:1px solid var(--border);border-radius:4px;padding:0 4px;font-size:0.9em;
+    font-family:ui-monospace,Consolas,"Courier New",monospace}
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:9px;margin:0 0 14px}
+  .kpi{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:9px 11px}
+  .kpi .n{font-size:20px;font-weight:700;color:var(--ink-strong);line-height:1.2}
+  .kpi .l{font-size:11px;color:var(--muted)}
+  .toolbar{position:sticky;top:0;z-index:20;background:rgba(248,250,252,.96);backdrop-filter:blur(6px);
+    border-bottom:1px solid var(--border);padding:8px 0;margin-bottom:4px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+  .toolbar input[type=search]{flex:1 1 190px;min-width:150px;padding:5px 9px;font-size:12.5px;
+    border:1px solid var(--border-strong);border-radius:8px;background:#fff;color:var(--ink)}
+  .toolbar select{padding:5px 7px;font-size:12.5px;border:1px solid var(--border-strong);border-radius:8px;background:#fff;color:var(--ink)}
+  .btn{padding:5px 11px;font-size:12.5px;font-weight:600;border:1px solid var(--border-strong);border-radius:8px;
+    background:#fff;color:var(--ink);cursor:pointer}
+  .btn:hover{background:var(--surface-2)}
+  .btn.pri{background:var(--primary);border-color:var(--primary);color:#fff}
+  .tblwrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow-x:auto}
+  table{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed}
+  /* 固定列宽：后两列（时间要求/状态）必须始终可见，不横向滚出视野 */
+  thead th:nth-child(1){width:40px}
+  thead th:nth-child(2){width:140px}
+  thead th:nth-child(3){width:400px}
+  thead th:nth-child(4){width:auto}
+  thead th:nth-child(5){width:128px}
+  thead th:nth-child(6){width:92px}
+  thead th:nth-child(7){width:70px}
+  td.c-name,td.c-cont,td.c-tech{overflow-wrap:anywhere;word-break:break-word}
+  thead th{background:var(--surface-2);text-align:left;font-weight:650;color:var(--ink-strong);
+    padding:8px 9px;border-bottom:1px solid var(--border);white-space:nowrap;font-size:12px}
+  tbody td{padding:7px 9px;border-bottom:1px solid #eef2f7;vertical-align:top;line-height:1.45}
+  tbody tr:last-child td{border-bottom:none}
+  tbody tr:hover{background:#fbfdff}
+  td.num{white-space:nowrap;font-family:ui-monospace,Consolas,monospace;font-weight:700;color:var(--primary);width:38px}
+  td.c-name{width:140px;font-weight:650;color:var(--ink-strong)}
+  td.c-cont{width:400px;color:#334155}
+  td.c-tech{color:#334155;min-width:300px}
+  td.c-time{width:128px}
+  td.c-st{width:92px;white-space:nowrap}
+  .c-time input{width:100%;padding:5px 7px;font-size:11.5px;border:1px solid var(--border);border-radius:6px;
+    background:#fff;color:var(--ink);font-family:inherit}
+  .c-time input::placeholder{color:var(--muted-2)}
+  .c-time input.has{background:#fff8e6;border-color:#d4a72c}
+  .c-pct input{width:100%;max-width:70px;text-align:right}
+  .stsel{font-size:11.5px;font-weight:650;border-radius:6px;padding:3px 6px;border:1px solid transparent;
+    cursor:pointer;font-family:inherit;max-width:100%}
+  .v-done{background:#dafbe1;color:#1a7f37;border-color:#a7e8b8}
+  .v-wip{background:#dbeafe;color:#1d4ed8;border-color:#a9c9fb}
+  .v-bdone{background:#fef3c7;color:#b45309;border-color:#fcd34d}
+  .v-todo{background:#eef1f4;color:#475569;border-color:#dbe1e7}
+  .v-pend{background:#fee2e2;color:#b91c1c;border-color:#f7b4b4}
+  .stnote{font-size:10.5px;color:var(--muted-2);margin-top:3px;line-height:1.35}
+  .tabbar{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px;padding-bottom:2px;border-bottom:2px solid var(--border)}
+  .tabbar button{padding:8px 14px;font-size:13.5px;font-weight:650;border:1px solid var(--border);
+    border-bottom:none;border-radius:10px 10px 0 0;background:#fff;color:var(--muted);cursor:pointer;margin-bottom:-2px}
+  .tabbar button:hover{background:var(--surface-2);color:var(--ink)}
+  .tabbar button.on{background:var(--primary);border-color:var(--primary);color:#fff}
+  .tabbar button .tsub{display:block;font-size:11px;font-weight:500;opacity:.85;margin:1px 0 0}
+  .panel[hidden]{display:none !important}
+  .linkmap{background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;padding:10px 14px;margin:0 0 14px}
+  .linkmap summary{cursor:pointer;font-weight:650;color:#1e3a8a;font-size:13.5px}
+  .linkmap table{width:100%;border-collapse:collapse;font-size:12.5px;margin:9px 0 0;background:#fff}
+  .linkmap th,.linkmap td{border:1px solid #dbe7f5;padding:6px 9px;text-align:left;vertical-align:top}
+  .linkmap th{background:#f1f5f9;font-weight:650}
+  .linkmap .lm-note{font-size:12px;color:#475569;margin:9px 0 0;line-height:1.6}
+  .hidden{display:none !important}
+  .empty{background:var(--surface);border:1px dashed var(--border-strong);border-radius:var(--radius);
+    padding:24px;text-align:center;color:var(--muted);font-size:13px}
+  footer{margin-top:30px;padding-top:13px;border-top:1px solid var(--border);color:var(--muted-2);font-size:12px}
+  @media print{
+    body{background:#fff;font-size:10px}
+    .toolbar,.alert,#expBar,.stnote{display:none !important}
+    tbody tr{break-inside:avoid}
+  }
+  .apx { margin:0 0 16px; border:1px dashed #cbd5e1; border-radius:8px; background:#fcfdff; }
+  .apx > summary { cursor:pointer; padding:7px 12px; font-size:12px; color:#64748b; user-select:none; }
+  .apx > summary:hover { color:#1f3a5f; }
+  .apx-b { padding:2px 14px 10px; font-size:12px; color:#64748b; line-height:1.75; }
+  .apx-b p { margin:4px 0; }
+
+  /* ===== 手机端适配（≤760px：表格转卡片）===== */
+  @media (max-width:760px){
+    .wrap{padding:14px 10px 60px}
+    h1{font-size:19px;padding-bottom:7px}
+    thead{display:none}
+    table,tbody{display:block;width:100%}
+    tbody tr{display:block;background:var(--surface);border:1px solid var(--border);border-radius:10px;
+      padding:6px 11px;margin:0 0 10px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+    tbody tr:hover{background:var(--surface)}
+    tbody tr.hidden{display:none}
+    tbody td{display:block;border-bottom:none;padding:5px 0}
+    td.num,td.c-name,td.c-cont{width:auto}
+    td.c-tech{width:auto;min-width:0}
+    td.c-time,td.c-st{width:auto;white-space:normal}
+    td[data-l]::before{content:attr(data-l) "：";font-weight:650;font-size:11px;color:var(--muted);margin-right:4px}
+    .c-time input{width:auto;max-width:62%}
+    .c-pct input{max-width:34%}
+    td.c-st .stsel{max-width:100%}
+    .kpi .n{font-size:17px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>项目任务明细计划</h1>
+  
+
+  
+
+  <div class="stats" id="kpis"></div>
+
+  
+
+  
+
+  <div class="toolbar">
+    <input type="search" id="q" placeholder="搜索：名称 / 内容 / 技术要求 / 编号">
+    <select id="fg"><option value="">全部分组</option></select>
+    <select id="fs">
+      <option value="">全部状态</option>
+      <option value="todo">未开始</option>
+      <option value="wip">进行中</option>
+      <option value="done">已完成</option>
+      <option value="pend">待确认</option>
+    </select>
+    <button class="btn" id="onlyFb">只看已填（时间）</button>
+    <button class="btn pri" id="expBtn">📋 导出</button>
+    <button class="btn" onclick="window.print()">🖨 打印/存 PDF</button>
+  </div>
+
+  <div id="expBar" class="hidden" style="margin:8px 0 12px">
+    <textarea id="expBox" rows="9" style="width:100%;font-family:ui-monospace,Consolas,monospace;font-size:12px;padding:10px;border:1px solid var(--border-strong);border-radius:8px"></textarea>
+    <div style="margin-top:6px;display:flex;gap:8px">
+      <button class="btn pri" id="copyBtn">复制到剪贴板</button>
+      <button class="btn" id="closeExp">关闭</button>
+    </div>
+  </div>
+
+  <div class="tabbar" id="tabbar"></div>
+  <div id="body"></div>
+  <div id="bodyAgent" class="panel" hidden></div>
+  <div id="bodyYd" class="panel" hidden></div>
+  <div id="bodyZx" class="panel" hidden></div>
+
+  <footer>
+    本页为<b>多系统走读稿</b>（4 个页签）：<b>FMP</b>源 <code>docs/管理人平台侧工作面条目-20260913.md</code>；<b>智能体平台（YXF）</b>逐条搬运自综板「🗂 工作总览·走读」台账 24 节点中归属YXF的任务；<b>云鼎系统</b>／<b>直销系统</b>为 09-13 定盘后的初始框架、细节待与对方对齐｜来源：《6.智能体平台交互方案》（ONES·2026-08-21）·《银小管-智能体表单预填·管理人平台对接方案》v1.0 ·《银小管 MCP 申请授权流程·业务需求与UI参考》v1.0 ·《对外接口文档》v1.19 §11 · 综板「工作总览·走读」台账<br>
+    整理：S3-1（ZCode·zc0913-s31）· 2026-09-13
+  </footer>
+</div>
+
+<script>
+/* 状态：done 已完成 ／ wip 进行中 ／ todo 未开始 ／ pend 待确认 */
+const ST = {done:'已完成', bdone:'基本完成', wip:'进行中', todo:'未开始', pend:'待确认'};
+const DEFV = {done:100, bdone:80, wip:50, todo:0, pend:0};
+
+
+const $ = (s)=>document.querySelector(s);
+const STS = ['todo','wip','done','bdone','pend'];
+
+/* 各系统数据（FMP沿用原 42 条；其余为本轮新增） */
+const SYSTEMS = [
+  {id:'mgr', tab:'FMP', sub:'44 条 · 6 个任务包', pane:'body', groups: [
+ {id:'M1', name:'任务包一 · 平台前端：页面内嵌 AI 对话', desc:'在FMP页面内嵌入 AI 对话入口，管理人员登录后即可提问与办理。', apx:'<p><b>来源记录</b>：<b>原 A 组</b>：来源：交 §3.2–3.3</p><p><b>逐条来源</b>：A1 → 交 §3.2.1｜A2 → 交 §3.2.3–3.2.5｜A3 → 交 §3.2.6｜A4 → 交 §3.3｜A5 → 交 §3.2.3、§3.2.8</p>', items:[
+  ['A1','平台页面内嵌 AI 对话入口','在FMP现有页面上直接打开 AI 对话，管理人员登录后即可提问与办理，无需切换系统。','5 模块：ChatWindow（悬浮/侧边栏·开闭·单一活跃窗口约束）／MessageList（用户右对齐·助手左对齐·滚动到底）／SSE Client（建立维持 SSE·解析 event-stream）／Handshake Manager（session_token 获取·localStorage·重置）／Token Provider（从登录态取 token 注入每次请求）','todo','交 §3.2.1','','2026-11-30'],
+  ['A2','对话逐字显示与断线自动恢复','AI 回复边生成边逐字显示，无需等待整段完成；网络波动或连接中断时自动重连，已收到的内容不丢失。','chunk 到达即逐字追加（避免整段等待）；3 类断开场景自动重连——网络抖动/临时中断、代理·网关超时掐断、连续失败；重连间隔递增 1s→2s→5s、上限 3 次，超限降级手动重试并保留已收内容','todo','交 §3.2.3–3.2.5','','2026-11-30'],
+  ['A3','异常场景的提示与处置','四类异常给出明确提示与下一步动作：服务暂不可用（可重试）、连接中断（自动重连中）、服务繁忙（稍后重试）、登录失效（引导重新登录）。','handshake 失败→「服务暂不可用」＋重试按钮＋session_token 置空；SSE 中断→自动重连＋「重连中」；YXF 429/504→「服务繁忙，请稍后重试」；登录令牌过期→识别回调被网关拦截→弹窗「登录已失效」→跳登录页','todo','交 §3.2.6','','2026-11-30'],
+  ['A4','对话内直达业务页面并带入已填内容','AI 在回答中给出办理页面的入口与已备好的信息，点击即可跳转到对应业务页面；可自动带入的字段自动填好，带不进去时保留信息供人工填写。','AI 回答中直接给出办理页入口与已备信息，点击即跳转；能自动带入的字段自动填好；<b>技术实现细节（表单数据接口结构、分步填充参数与节奏）下沉附录</b>，主表用业务语言；跳转或自动填充受限时保留已备信息供人工填写','todo','交 §3.3','','2026-11-30'],
+  ['A5','登录身份与会话标识的安全传递','每轮对话同时携带登录身份与会话标识，缺一即拒；两者不落在浏览器可长期读取的位置；同一页面仅允许一个对话窗口，刷新或重新打开时重新建立会话。','登录 token 放请求头 Authorization、session_token 放请求体；两者均不落 localStorage 敏感位；同一页面仅允许一个活跃聊天窗口（模块级单例）；刷新/重开窗口重新握手换新 session_token','todo','交 §3.2.3、§3.2.8','','2026-11-30'],
+ ]},
+ {id:'M2', name:'任务包二 · 平台后端：接口清单、权限登记与令牌', desc:'把平台现有接口整理成服务清单，建立「菜单-接口」权限对应关系，并打通登录身份与令牌传递。', apx:'<p><b>来源记录</b>：<b>原 B 组</b>：来源：用户 09-13 定盘｜原《交互方案》§3.3「新增 fmp-ai-proxy 代理服务」的 4 条技术设计（服务本体／接口／流式链路／线程模型）按此定盘作废，该方案需相应修订；<b>原 D 组</b>：来源：交 §3.5；<b>原 H 组</b>：来源：接 §8.4/§11 导语/§11.4、台账</p><p><b>逐条来源</b>：B1 → 用户 09-13 定盘｜D1 → 交 §3.5 ＋ 用户 09-13 定盘｜D2 → 交 §3.5.2｜D3 → 交 §3.6.1、§5.1｜H1 → 账 chan-platform｜H2 → 用户 09-13 定盘｜H3 → 接 §11.4 ＋ 用户 09-13 定盘｜H4 → 接 §11 导语｜H5 → 账 chan-platform、sup-tools｜H6 → 账 edge-gate、cap-proxy、chan-platform</p><p><p><b>状态补充说明</b>：B1 → 存量任务·不新开发接口｜D1 → 正式方案；演示阶段走白名单｜D2 → 口径已定｜H1 → 平台侧全量匹配｜H2 → ✅ 定盘｜H3 → ✅ 定盘·仍需保留｜H4 → 已落地｜H5 → 口径已定；#13 已拍·AND 直接执行｜H6 → 治理总纲·执行项见 P2-16/P3-9/#6</p>', items:[
+  ['B1','提供平台页面接口服务清单','由FMP梳理并提供其全部现有页面（菜单）对应的接口服务清单；智能体平台侧在编写 skills、封装 tools / MCP 服务时，可直接调试并采纳，减少平台侧的翻译工作量。','<b>存量任务</b>：不新开发接口，只需把现存的接口服务提供出来（清单化交付）。建议清单含：接口路径／请求方式／入参出参／归属菜单／是否需身份。底稿可参考YXF已整理的平台接口清单（<code>tools.yaml</code> 结构化导出）；平台全量接口另见 <code>FMPALL/docs/mcp-inventory-A.md</code> 可作扩展全集','wip','用户 09-13 定盘','存量任务·不新开发接口；09-14 用户口径：代码梳理途径已完成约五成',''],
+  ['D1','内嵌通道权限判定·对应表与平台接口层拦截（FMP）','正式方案：内嵌通道的权限判定由FMP承担——调用进入平台后，由平台接口层按「菜单 ↔ 接口」对应关系校验该用户是否有权限。演示阶段不建对应表，暂由YXF按白名单圈定开放范围。','鉴权通道不变：YXF回调平台 API 时携带用户登录 token，走现有网关解析。字段映射：登录 token（网关签发·权限凭证）／session_token（YXF下发·会话标识）／session_id ＝ session_token。权限判定以平台侧「菜单-接口对应关系表」为准（对应表建设见同类目 H2）。演示阶段不建表：白名单兜底与权限直查路由已由YXF具备（见 X4）。','todo','交 §3.5 ＋ 用户 09-13 定盘','责任方＝FMP；演示阶段走白名单（YXF已具备）',''],
+  ['D2-1','双令牌·YXF侧签发与校验','对话会话标识由YXF下发：平台前端以登录 token 握手换取 session_token，此后每轮对话双令牌齐备、缺一即拒','session_token 签发（JWT）＋握手接口已实现；登录 token 随操作续期＋会话最长 8 小时窗口；多端同时在线不做单点限制；机制成文交 §3.5.2。<b>双令牌口径（0915 用户问答沉淀）</b>：session_token 答「哪场对话」（归属/多窗口区分/8h 与撤销归YXF自管），登录 token 答「此刻有无资格」（每轮实时校验·登出禁用换岗即时生效，即「≤8h 随源会话」的必然要求）；换发不为少传主凭证（每轮仍随行）而为<b>资格归FMP、会话归YXF</b>解耦——单登录 token 分不清多对话流且深耦合平台 token 语义，单 session_token 则权限实时失效失守，每轮双令牌为平衡点。若平台前端希望减负，可选「首轮隐式换取」（握手并进首条消息，安全模型不变）。剩余＝与 FMP 前端联调（随 A 组）','bdone','交 §3.5.2','09-14 多责任方拆分·YXF侧',''],
+  ['D2-2','双令牌·FMP握手前端模块','FMP 页面 AI 对话的前端握手与令牌注入','Handshake Manager（带登录 token 换 session_token）＋ Token Provider（每轮对话注入双令牌）；随 FMP 前端 A 组排期','todo','交 §3.2.x','09-14 多责任方拆分·FMP侧；随 A 组排期',''],
+  ['D3-1','反调带身份·YXF侧实现与验证','反向调用平台接口时请求头携带该用户登录凭证，让平台识别「这是哪位用户」','MCP 回调改写/丢失 Authorization 头 → 联调专项验证；若不支持仅透传则改自定义头 X-Fmp-User-Token。已知问题：同用户多 Web 会话共用上下文——靠前端单窗口约束缓解','todo','交 §3.6.1、§5.1','09-14 多责任方拆分·YXF侧',''],
+  ['D3-2','反调身份头的网关透传确认（FMP）','平台网关对 AI 回调携带的身份头「仅透传不校验」的配置确认','<b>网关原理与对接三问（0915 用户问答沉淀）</b>：代传用户身份属业内正统——Token Relay 令牌中继（轻方案，即本项）／OBO 换限定子 token（重方案，演进方向）。网关两派：<b>透传派</b>（原样放行，无坑）／<b>网关终结派</b>（验完把 Authorization 替换为服务凭证，用户身份蒸发——业界常见默认设计，安全动机＝原始 token 不后传）。对接三问：① 网关是否校验调用方来源（非浏览器即拒？）② 验后是否剥/换 Authorization ③ 业务接口读原始头还是网关塞回的上下文——①②命中则FMP侧加透传配置，或认可自定义头 <code>X-Fmp-User-Token</code>（网关不识自定义头天然透传）。本条为设计期一纸确认，避免联调期撞「身份变服务账号」灵异现象；YXF侧须实测 HTTP 库重定向剥离 Authorization 行为（见 D3-1）','todo','交 §3.6.1','09-14 多责任方拆分·FMP侧；建议随下一轮对接沟通与 D2-2/B1 一并提出',''],
+  ['H1','建立「菜单 ↔ 接口」对应关系清单','由FMP完成其全部页面菜单与接口的对应关系清单（全量匹配，不限YXF已梳理的接口），作为后续权限判定的基础。','清单建议含：菜单编码／菜单名称／接口路径／请求方式／是否需身份。YXF已有的接口清单底稿可作参考，平台侧需覆盖其全部菜单与接口。','todo','账 chan-platform','平台侧全量匹配',''],
+  ['H2','按「菜单 × 接口」建立权限校验','FMP按「菜单 ↔ 接口」对应关系建立权限校验：调用进入平台时，由接口层按对应关系判断该用户是否有权限。不在平台上的接口（调用不经过平台）也需在平台登记，由YXF在调用时代问平台权限接口（见 H3）。','平台需新建并维护「页面菜单 ↔ 接口」对应关系表；接口分两类：① FMP的接口——调用经平台，由平台接口层按对应表拦；② 非FMP的接口——调用不物理经平台，但平台也要登记并控制权限（由YXF调用时代问，见 H3）。登记项含「调用路径分类」（平台接口／非平台接口／纯内部）。','todo','用户 09-13 定盘','✅ 定盘',''],
+  ['H3','权限查询接口（YXF调用前代问）','有些工具走的是不在FMP上的接口，调用不经过平台、平台没法在入口处拦。为了让这些调用同样受平台权限管控，由YXF在调用前「代问」平台一句「这个用户能不能用这个工具」，平台按自己的菜单与权限数据回答能/不能，YXF据此放行或拒绝（拿不到答复时默认不放行）。','<code>GET {权限服务基址}/agent-perm?user=&amp;tool=</code> → <code>{has_permission, reason}</code>；覆盖直连工具调用前判定 ＋ 工具清单预过滤；建议 3 秒内应答；阶段一平台可按只读库直查；fail-closed（无应答即拒）。','todo','接 §11.4 ＋ 用户 09-13 定盘','✅ 定盘·仍需保留',''],
+  ['H4','权限数据源（平台侧已具备）','平台侧已提供菜单/岗位权限只读视图与产品范围链路','只读视图 <code>v_agent_user_perm</code>（用户菜单编码全集＋岗位角色清单，后台数据库层实现）；机构产品范围沿用 <code>manager_scope</code> 既有链路（query_user_product_scope：查询＋5 分钟缓存＋心跳刷新）','done','接 §11 导语','已落地',''],
+  ['H5','按工具权限管控与 AND 语义确认','按工具维度配置功能权限；聚合工具判定语义按 AND 执行','拆两件事：① <b>权限单元＝工具</b>——「按工具权限设置功能」口径已定盘、77 场景退役为展示维度（台账已 done）；② <b>聚合工具判定语义＝AND</b>（扇出接口全部有权限才算可用）——<b>#13 已拍（0914）：无需平台书面确认，按 AND 直接执行</b>（实现与接口文档 v1.19 均已按 AND）','todo','账 chan-platform、sup-tools','口径已定；#13已拍·AND直接执行',''],
+  ['H6','过渡态与治理待办（治理总纲）','治理类事项总纲，执行项分别在 P2-16／P3-9／台账 #6','<b>收敛为治理总纲（走读定稿）</b>，执行项不再在此重复报状态：① 灰度白名单 → <b>P2-16</b>（演示方案过渡态）；② 直连旁路 → <b>P3-9</b>（#14 口径：演示走旁路·生产走正路）；③ submit_ta_order 网关路径 → <b>台账 #6 已拍</b>：不进只读 MCP 目录，审批演示用 5089 原生 stub，真实录单独立写通道后续立项','todo','账 edge-gate、cap-proxy、chan-platform','治理总纲·执行项见 P2-16/P3-9/#6',''],
+ ]},
+ {id:'M3', name:'任务包三 · 网关与部署：流式链路打通', desc:'打通对话流式输出所依赖的网关与部署链路（不缓冲、不断流、可逐层验证）。', apx:'<p><b>来源记录</b>：<b>原 C 组</b>：来源：交 §3.4–3.4.5、§5.1｜✅ <b>转发主体已定盘（09-13 用户）</b>：内嵌通道由<b>平台既有的「AI 对话框服务」</b>转发到智能体平台——<b>不新建代理服务</b>。故本组四条<b>保留</b>，主语从「新建的 fmp-ai-proxy」改为「平台既有 AI 对话框服务链路」</p><p><b>逐条来源</b>：C1 → 交 §3.4.2 ＋ 09-13 定盘｜C2 → 交 §3.4.3 ＋ 09-13 定盘｜C3 → 交 §3.4.4｜C4 → 交 §3.4.5、§5.1 ＋ 09-13 定盘</p><p><p><b>状态补充说明</b>：C1 → 主语＝平台既有 AI 对话框服务｜C2 → 主语＝平台既有 AI 对话框服务｜C3 → 已确认无需改动｜C4 → 主语＝平台既有 AI 对话框服务</p>', items:[
+  ['C1','两层 Nginx SSE 配置','在管理人 NG 与前端服务 NG 两处关闭缓冲，保障流式不被攒包','两处 SSE location 均配：<code>proxy_buffering off</code>、<code>X-Accel-Buffering no</code>、read/send timeout 3600s、<code>proxy_http_version 1.1</code>、<code>proxy_set_header Connection ""</code>、<code>Accept text/event-stream</code>','todo','交 §3.4.2 ＋ 09-13 定盘','主语＝平台既有 AI 对话框服务',''],
+  ['C2','网关路由与超时配置','在 Spring Cloud Gateway 配置流式路由并拉长响应超时','路由指向承载 内嵌通道对话的<b>既有 AI 对话框服务</b>地址，predicate <code>Path=/api/agent/**</code>；网关 <code>response-timeout: 360000</code>（ms，SSE 长连接拉长）','todo','交 §3.4.3 ＋ 09-13 定盘','主语＝平台既有 AI 对话框服务',''],
+  ['C3','F5（LTM）流式确认','确认负载均衡层不缓冲、不压缩事件流','已咨询王铎：默认未开启缓冲、Buffer streaming response 无需改动；仅需确认不对 <code>text/event-stream</code> 压缩/缓存','done','交 §3.4.4','已确认无需改动',''],
+  ['C4','响应头与分层验证','约定流式响应头，并逐层验证流式效果','响应头 4 项（Content-Type: text/event-stream／Cache-Control: no-cache／Connection: keep-alive／X-Accel-Buffering: no）；上线清单逐层独立 curl 验证「数据持续小批输出」','todo','交 §3.4.5、§5.1 ＋ 09-13 定盘','主语＝平台既有 AI 对话框服务',''],
+ ]},
+ {id:'M4', name:'任务包四 · 办理类能力：表单预填', desc:'让 AI 能把办理页面的表单内容自动带入，减少客户手工录入。', apx:'<p><b>来源记录</b>：<b>原 E 组</b>：来源：预 §5–§10｜方案状态＝待平台方评审</p><p><b>逐条来源</b>：E1 → 预 §3.2、§6｜E2 → 预 §6.1｜E3 → 预 §5.3、§6｜E4 → 预 §5.2｜E5 → 预 §5.4、§6｜E6 → 预 §7、§8、§10｜E7 → 预 §9、§10</p><p><p><b>状态补充说明</b>：E1 → 方案待平台方评审；源文档估时 Phase 0·约 1 周｜E2 → 方案待平台方评审；源文档估时 Phase 1·约 2 周｜E3 → 方案待平台方评审；源文档估时 Phase 1·约 2 周｜E4 → 方案待平台方评审；源文档估时 Phase 1·约 2 周｜E5 → 方案待平台方评审；源文档估时 Phase 0·约 1 周｜E6 → 方案待平台方评审；源文档定 Phase 2·迭代｜E7 → 方案待平台方评审；源文档定 Phase 0~3 贯穿</p>', items:[
+  ['E1','permission.js 一行修复','修复未登录跳转丢 query 导致预填票据丢失','<code>src/permission.js:78</code>：<code>to.path</code> → <code>to.fullPath</code>。方案标注「无论是否做预填都建议修」','todo','预 §3.2、§6','方案待平台方评审；源文档估时 Phase 0·约 1 周',''],
+  ['E2','全局 prefill-mixin','新增全局通用回填器，业务页面零改动即可消费预填','约 40 行：读 <code>$route.query.pf_ticket</code> → 兑票 → <code>Object.assign(this.ruleForm, form_vars)</code> → 提示「已带入 N 项，请核对后提交」；无票或非表单页零影响；<code>Vue.mixin</code> 于 main.js 注册（或仅挂 process 路由公共 Layout）','todo','预 §6.1','方案待平台方评审；源文档估时 Phase 1·约 2 周',''],
+  ['E3','兑票端点与票箱存储','新增取件端点与票箱表，页面凭票取预填数据','<code>POST /fmp-bpm/redeemPrefill</code>（登录态）：单次有效＋TTL(15min)＋校验登录用户==bindUser＋审计留痕；票箱复用草稿表结构＋ticket/expiry/used/binded 列（DDL 1 份）','todo','预 §5.3、§6','方案待平台方评审；源文档估时 Phase 1·约 2 周',''],
+  ['E4','存票端点','新增存票接口，智能体侧存预填数据换一次性票据','<code>POST /fmp-bpm/issuePrefill</code>（YXF服务端→平台）：服务间凭证＋HMAC-SHA256 签名；幂等；返回 ticket＋expiresIn','todo','预 §5.2','方案待平台方评审；源文档估时 Phase 1·约 2 周',''],
+  ['E5','manifest 表单清单发布','发布各流程字段目录（中文名/类型/必填/取值来源），供智能体侧对齐字段','每 <code>processDefinitionKey</code> 的 form_vars 字段目录由平台发布·智能体平台只读；覆盖约 120 个业务流程 / 601 处 el-form；建议「静态扫描 ruleForm 声明＋BPM 流程定义元数据」组合，脚本离线不改运行时','todo','预 §5.4、§6','方案待平台方评审；源文档估时 Phase 0·约 1 周',''],
+  ['E6','Phase 2 扩展项','补齐草稿二选一交互、回执上报与复杂表单结构','用户草稿二选一（检测已有 draftInfo 不抢写，弹层让用户选「带入智能体预填／继续我的草稿」）；回执上报（applied/skipped/userEdited 回流 skill 侧）；批量/数组型 form_vars（openTable）','todo','预 §7、§8、§10','方案待平台方评审；源文档定 Phase 2·迭代',''],
+  ['E7','安全审计红线与分期验收','约定六条安全红线并按四期推进验收','6 条红线：URL 零业务明文（浏览器历史·代理日志·Referrer 三处归零）／ticket 单次＋TTL＋绑定用户＋绑定 processDefId／issue·redeem 全程审计／descriptor HMAC 防篡改／预填≠锁定（关键字段可改且留痕）／任何形态「平台下发可执行代码、平台执行」不做','todo','预 §9、§10','方案待平台方评审；源文档定 Phase 0~3 贯穿',''],
+ ]},
+ {id:'M5', name:'任务包五 · 对外通道与授权：用户智能体端／机构智能体平台通道', desc:'面向外部客户端与机构平台的两条接入通道：授权服务器（OAuth）与 MCP 服务授权页。', apx:'<p><b>来源记录</b>：<b>原 F 组</b>：来源：接 §11.1、§8.4–8.5；<b>原 G 组</b>：来源：授 §3–§7</p><p><b>逐条来源</b>：F1 → 接 §11.1｜F2 → 接 §11.1、§8.4｜F3 → 接 §8.5、§11.1｜F4 → 接 §11.1；板内 authdesign 第四章原型｜G1 → 授 §3.1–3.2｜G2 → 授 §3.1｜G3 → 授 §3.3｜G4 → 授 §3.4｜G5 → 授 四｜G6 → 授 五｜G7 → 授 六｜G8 → 授 七</p><p><p><b>状态补充说明</b>：F2 → 口径已定｜F3 → 口径已定｜G4 → ⚠️ 分档口径见冲突 3｜G7 → ⚠️ 工具分档口径见冲突 3</p>', items:[
+  ['F1','OAuth 六端点','实现授权服务器六个标准端点','<code>GET /oauth2/authorize</code>（授权页：平台账号登录＋授权确认）／<code>POST /oauth2/token</code>（authorization_code＋PKCE、client_credentials）／<code>POST /oauth2/registration</code>（动态客户端注册·可选）／<code>GET /.well-known/oauth-authorization-server</code>（RFC 8414）／<code>GET /.well-known/jwks.json</code>（RFC 7517·供YXF验签）／<code>POST /oauth2/revoke</code>（RFC 7009＋平台扩展）','todo','接 §11.1','',''],
+  ['F2','授权页语义落地','授权页只做身份确认与告知，不列工具清单','工具可见性由YXF tools/list 实时预过滤（单一判定点不漂移），平台无需反向拉取工具清单；<b>授权时只做摘要性告知、且不提供选择</b>——摘要按菜单/业务域粒度（用既有菜单权限数据聚合，不引入工具概念）','todo','接 §11.1、§8.4','口径已定',''],
+  ['F3','单凭证与授权结果落库','只发一张短效凭证，并把授权结果落库','access_token 随源登录会话 ≤8h、不发 refresh；授权结果落库作签发与「我的授权」页数据源；撤销经 token 内省即时生效','todo','接 §8.5、§11.1','口径已定',''],
+  ['F4','用户中心开通页与我的授权页','新增开通页与授权管理页两个页面','① 用户中心·开通页（仅少数不支持自动注册的工具需人工开 clientId：工具名称/工具类型/回调地址 → 开通并发放 clientId）②「我的授权」设备管理页（已授权工具列表／撤销／首次授权通知）','todo','接 §11.1；板内 authdesign 第四章原型','',''],
+  ['G1','新增第三页签与两个子页签','在「API 服务授权」页新增「MCP 服务授权」页签及其两个子页签','子页签一「MCP 服务授权信息」（已开通服务账号卡片：clientId 脱敏、授权范围、IP 白名单、状态、最近 token；最多 3 个账号）；子页签二「历史申请记录」（复用 callProInfoList，<code>prdDefKey=McpServiceAuthProcess</code>，详情复用 detailDialog）','todo','授 §3.1–3.2','',''],
+  ['G2','按钮组与账号原子动作','补齐申请/变更/停用按钮，以及吊销/暂停/重发三个账号动作','工具栏：MCP服务账号申请（<3 且走 startApiProcessPreCheck 防在途预检）／变更（对齐 API 四选）／停用（对齐「取消授权」＋「暂停可恢复」语义）／下载《MCP接入规范》；卡片动作：吊销密钥（旧 clientSecret 立即失效→token 随之失效）／暂停账号（可恢复）／重发密钥（旧永久失效）——均需短信验证码确认','todo','授 §3.1','',''],
+  ['G3','发起表单（复用 launchProcess）','发起申请表单，字段按 MCP 流程与 API 流程的差异改造','申请类型（新增／变更四选，同款）；账号标识改 <b>clientId（系统生成）</b>（变更·停用按 clientId 定位）；接口勾选改<b>工具勾选树</b>；IP 白名单（测试·生产公网 IP，生产必填、分号多值）；授权书改《MCP服务接入授权书》（模板新做 <code>downloadMcpAuthTemplate</code>）；秘钥接收邮箱 <code>secretKeyReceiveEmail</code>；联系人三件套；留言','todo','授 §3.3','',''],
+  ['G4','工具勾选树','按工具分组提供可勾选的核定清单','分组来自新字典 <code>MCP_TOOL_GROUP</code>，组内工具来自YXF工具元数据——<b>四字段口径（冲突3定盘③）</b>：tool_name／调用路径分类（平台接口·直连·内部）／工具分组／access_class；<b>旧字段 required_scope/group/billing 作废</b>；按组勾选＋组内可展开剔除单项；变更时展示已核定清单（disabled 勾选态）','todo','授 §3.4','四字段口径已定盘',''],
+  ['G5','三岗审批链与核减职责','复用 API 流程审批链，并增加最小必要集核减','01 提交（可撤回）→02 材料审核（授权书完整性、联系人）→包容网关按业务条件分流→03 外包资金划付岗/份额清算岗/估值核算岗（可多岗并行）→结束；03 岗除业务条件外核定申请工具是否为最小必要集（对照申请理由勾减超额项）','todo','授 四','',''],
+  ['G6','发证动作（后端五步）','审批通过后自动开户并发放凭据','① 生成 clientId（<code>mcp_</code> 前缀＋随机）＋clientSecret（强随机·仅存哈希）② 注册 OAuth 客户端（绑机构／核定清单／IP 白名单／token TTL：access 1h、不发 refresh）③ 落库 <code>MCP_AUTH_MAPPING</code>（对齐 API 映射表结构）④ 邮件送达（对齐 API 密钥邮件通道）⑤ 流程结束通知（复用站内信/邮件）；吊销即失效、重发换新 secret','todo','授 五','',''],
+  ['G7','数据与字典六项','准备流程所需的字典、元数据表、流程定义与授权书模板','字典 <code>MCP_TOOL_GROUP</code>（初始值YXF提供）／工具元数据表（<b>四字段口径同 G4</b>：tool_name·调用路径分类·工具分组·access_class，YXF维护·平台只读同步）／BPMN <code>McpServiceAuthProcess</code>／表 <code>MCP_AUTH_MAPPING</code>／《MCP服务接入授权书》word 模板／授权服务器注册接口','todo','授 六','四字段口径已定盘（同 G4）',''],
+  ['G8','验收要点七条','按七条验收标准验收全链路','① 页签进入/发起/在途防重/撤回全链路可用 ② 邮件可达且能换 access_token、tools/list 只见「公共基础∪核定受控」③ 越权 403、办理类未核定不可见不可调、查询仅本机构产品范围 ④ IP 白名单外被拒 ⑤ 吊销后旧 token 立即失效、重发后新 secret 可用旧永久失效 ⑥ 变更即时生效（无需重新发证）⑦ 历史记录与 API 流程同页切换互不干扰','todo','授 七','',''],
+ ]},
+ {id:'M6', name:'任务包六 · 联调与验收', desc:'与平台方联调、方案评审回执与工作量口径确认。', apx:'<p><b>来源记录</b>：<b>原 I 组</b>：来源：台账 ＋ 三份方案页首</p><p><b>逐条来源</b>：I1 → 账 chan-ai｜I2 → 账 chan-platform｜I3 → 三份方案页首｜I4 → 接 §11 导语 vs 本清单</p><p><p><b>状态补充说明</b>：I2 → 09-13 走读已定｜I3 → 未见回执</p>', items:[
+  ['I1','Trae 等客户端实测接入','完成 用户智能体端通道客户端实测联调','用户智能体端通道全链联调（修复后可用，待实际联调）；YXF＋平台双方共同','wip','账 chan-ai','',''],
+  ['I2','设计意图定盘（免深度改造）','确认平台侧只做内嵌 AI 服务对接、不做 MCP 客户端开发','FMP ＝ 内嵌 AI 服务对接智能体平台、协助客户完成办理（预填/预审规则由 AI 服务承担）；编排与开发归智能体平台','done','账 chan-platform','09-13 走读已定',''],
+  ['I3','方案评审状态跟踪','跟踪三份对接方案的平台方评审回执','《表单预填对接方案》标「待平台方评审」；《MCP 申请授权流程》标「提交FMP项目组作为设计开发输入」；《交互方案》为 ONES 页（附YXF接口文档）——均未见平台方回执记录','pend','三份方案页首','未见回执',''],
+  ['I4','平台侧工作量口径纠偏','修正接口文档对平台侧工作量的低估表述','接口文档 §11 导语称「本章仅剩两类平台实现事项（OAuth 端点与核定存储、表单预填端点）」，与实测平台侧工作面（44 条）严重不符，需修正表述；<b>一并修正 §2.1 转发主语</b>——「fmp-ai-proxy 网关转发」→「平台既有 AI 对话框服务转发」（冲突1已定盘 09-13）','todo','接 §11 导语、§2.1','转发主语已定盘·待改文档',''],
+ ]},
+]},
+{id:'agent', tab:'智能体平台（YXF）', sub:'91 条 · 9 方面', pane:'bodyAgent', groups: [
+ {id:'P1', name:'P1 · 客户服务支持专员（对客服务线）', note:'来源：全景总图对客面 ＋ 09-13 走读定盘｜⚠️ 台账 24 节点中<u>无对应节点</u>，本组为新建项', items:[
+  ['P1-1','银小帆对客服务专员（统一主入口）','建设平台内对客主入口专员，承接业务菜单查询与操作、业务办理类','skill 路由三层（关键词→向量→LLM）＋ 会话粘性 ＋ 回复统一出口（四渠道无需感知内部路由）；对外只呈现「两个对客服务专员」的契约面；现由业务预审专员兼任（底座约八成在线），剩余＝拆出专职角色与对外契约面','wip','全景总图＋09-13 走读；09-14 改判进行中','新建·台账无节点',''],
+  ['P1-2','对客四类输出落地（含委托银小管出口）','四类出口已通三：skill 驱动、MCP 服务能力、智能体对接（法规顾问已在生产对客）；委托银小管出口未建','① skill 驱动（P4 出口上线）② MCP 服务能力（P2）③ 智能体对接（法规顾问；跨平台 A2A 协议未立项不计）④ 委托银小管接口＝框4 预留项','wip','全景总图＋09-13 走读；09-14 原银小管委托调用与四类输出合并去重','新建·台账无节点',''],
+  ['P1-6','对客路由决策表落地','实现两条对客路由规则','① 动作性质——菜单操作／办理类→银小帆自身；纯咨询／FAQ→委托银小管；判不出→默认银小管 ② 会话粘性——同会话粘住首次命中的专员。三层意图路由（关键词→向量→LLM）已在线，剩余＝把帆/管分流与会话粘性写入','bdone','全景总图 v0.15','新建',''],
+ ]},
+ {id:'P2', name:'P2 · MCP server 与对外服务边界', note:'来源：台账「对外服务边界」3 节点（edge-*，共 16 条）', items:[
+  ['P2-1','/mcp 端点（JSON-RPC）','提供对外唯一 MCP server 的协议端点','JSON-RPC；静态 API Key 兼容通道（内网测试默认）','done','台账 edge-mcp','',''],
+  ['P2-2','tools/list 筛子预过滤','按用户权限预过滤可见工具清单','fail-open；覆盖全部工具；_EXCLUDED_FMP_TOOLS 跳过降级项','done','台账 edge-mcp','',''],
+  ['P2-3','RFC9728 保护资源元数据端点','供客户端 401 时自动发现授权服务器','双路径','done','台账 edge-mcp','',''],
+  ['P2-4','MCP 认证中间件','静态 Key 与 OAuth 双模式鉴权','静态 Key 兼容 ＋ token introspect 校验（15s／负 5s 缓存·fail-closed）＋ L2 scope 校验（-32002 附指引）<b>⚠️ scope 退役后此段需改，见 X2</b>','done','台账 edge-mcp','已完成·待随 X2 退役 scope',''],
+  ['P2-5','「对外唯一 MCP server」契约','契约句写入板与接口文档并全链收口','一个 URL ／ 一套鉴权 ／ 一份工具清单（一个 URL·一套鉴权·一份工具清单）','done','台账 edge-mcp','',''],
+  ['P2-6','判定链降级边界','约定判定链的降级边界两处','<b>★B 已拍（0914）</b>：接口明确拒绝＝不降级硬拦（YXF不二次判定）；无应答/超时＝同样拦截（fail-closed）；影子比对仅作平台接口上线前过渡观察。板与接口文档按此落地','todo','台账 edge-mcp','★B已拍·待落地',''],
+  ['P2-7','OAuth 2.1 授权码＋PKCE 全链','打通 用户智能体端通道 OAuth 授权链路','授权页仅确认身份、不列工具清单（09-13 定盘：只做摘要性告知、不提供选择）','done','台账 edge-oauth','口径已按 09-13 定盘对齐',''],
+  ['P2-8','单凭证档 A','确定凭证生命周期','≤8h 随源会话、不发放跨会话长效凭证、撤销走内省（接口文档 v1.15→v1.16）','done','台账 edge-oauth','',''],
+  ['P2-9','L2 工具 → 6 业务域 scope 映射','维护 L2 工具的 scope 映射表','_TOOL_SCOPES：account／trade／precheck／monitor／workflow／chat <b>⚠️ 按 09-13 定盘 scope 退役，本项转为 X2 退役任务</b>','done','台账 edge-oauth ＋ X2','已完成·待退役',''],
+  ['P2-10','岗位权限现查插件点','提供可选的岗位权限实时现查','MCP_PERM_CHECK_URL，fail-closed（独立机制，不随 scope 退役）','done','台账 edge-oauth','',''],
+  ['P2-11','鉴权缓存盘点','盘点鉴权缓存 TTL 并用文档说明','token 内省 15s／权限判定 60s，属设计期语义非 bug','done','台账 edge-oauth','',''],
+  ['P2-12','功能闸新口径全板改写','内嵌通道判定归平台的全面改写','全口径排查 4 批 4 提交，28 处 srcdoc 双写','done','台账 edge-gate','',''],
+  ['P2-13','工具分级 L0/L1/L2 落码','工具分级落到代码并驱动判定','L2 需 scope ＋ 可选岗位现查；L0/L1 认证即可用（L 级保留为展示维度）','done','台账 edge-gate','',''],
+  ['P2-14','权限判定图表头收口','统一权限判定图的表头口径','认人·定功能·定数据范围 ｜ B/C 发凭证·A 代转发','done','台账 edge-gate','',''],
+  ['P2-15','旧 scope 材料标注','旧 scope 材料标注为历史参考','scope 四值表／SKILL permission 块标注「历史设计参考」（保留不改）','done','台账 edge-gate','',''],
+  ['P2-16','灰度白名单开放集','演示方案过渡态的客户白名单','平台零改造过渡态：YXF侧白名单圈定 1~2 家真实客户灰度；平台权限机制上线后平移为接口判定','todo','台账 edge-gate','待定客户',''],
+ ]},
+ {id:'P3', name:'P3 · MCP tools（工具与契约卡）', note:'来源：台账「三原语供给层·Tools」＋「能力实现层」两节点（sup-tools ＋ cap-*，共 19 条）', items:[
+  ['P3-1','全集口径定稿（83＝53＋30）','定稿工具全集口径','83 ＝ 53 平台接口代理 ＋ 30 直连（板 v1.94／接口文档 v1.19／盘点表全链同步）','done','台账 sup-tools','',''],
+  ['P3-2','聚合工具处置落板','处置三个聚合工具','query_product_lifecycle／query_mgr_overview 降级为场景内编排；运行态 83→81','done','台账 sup-tools','',''],
+  ['P3-3','同名双源去重','处理同名不同源的工具','query_raise_flow／query_product_info 按直连优先（运行态口径）','done','台账 sup-tools','',''],
+  ['P3-4','聚合工具判定语义 AND 定稿','确定聚合工具的判定语义','AND（扇出接口全部有权限才算可用）并注接口文档 v1.19','done','台账 sup-tools','待平台书面确认',''],
+  ['P3-5','工具元数据统一 _tools_meta()','统一工具元数据的供给','L1/L2 ＋ 所需 scope，场景卡／文档共用','done','台账 sup-tools','scope 字段待随 X2 退役',''],
+  ['P3-6','53 条平台接口清单登记','把平台接口清单登记入盘点表','含 requiresIdentity 50/53 标注','done','台账 cap-proxy','',''],
+  ['P3-7','Route C 聚合工具 #55 保留','保留 query_rule_calc_flow','#53/#54 降级为场景内编排，#55 保留（2 接口＝同一动作两步）','done','台账 cap-proxy','',''],
+  ['P3-8','降级影响全链收口','收敛降级带来的口径变化','全集 85→83、运行态 83→81','done','台账 cap-proxy','',''],
+  ['P3-9','直连工具分环境权限管控','推进直连旁路的治理还款','<b>#14 口径重定（0914）</b>：直连旁路＝<b>演示环境正当路径</b>（YXF白名单判权限，正路就绪后亦可切正路）；<b>正式生产一律走正路</b>（平台判权限），切换随 H2 平台权限接口上线；原「16 项还款计划」表述作废。可先试点 query_raise_flow 挂平台 REST（平台有现成等价接口）','todo','台账 cap-proxy','#14已拍·阶段三启动',''],
+  ['P3-10','fmp-ai-proxy 口径定盘','明确 fmp-ai-proxy 的定性','＝分析平台代码库所得「平台可提供服务接口集合」项目；两部分分工：① FMP 提供接口 ② 智能体平台封装为 tools/MCP（53 条即②的产物）','done','台账 cap-proxy','09-13 定盘',''],
+  ['P3-11','直连工具数据路径逐工具核实','核实 30 项直连工具的数据路径','fund.PRD_PROP@fmp、PRD_SCALE_INDEX_MONITOR@fmp 等 dblink 实证','done','台账 cap-direct','',''],
+  ['P3-12','L1/L2 分级表维护','维护直连工具的分级与 scope 映射','_TOOL_LEVELS／_TOOL_SCOPES（分级保留为展示维度，scope 待退役）','done','台账 cap-direct','',''],
+  ['P3-13','TA 查询扩展 5 场景端点','扩展份额登记相关查询端点','confirm-rule／open-day／lock-period／raise-flow／redemption-fee（纯加法）','done','台账 cap-direct','',''],
+  ['P3-14','长期路径决策点成文','把每项直连工具的长期路径写成决策点','每工具二选一：改挂平台 REST ／ 维持旁路','done','台账 cap-direct','',''],
+  ['P3-15','新工具上线的权限登记把关','设新工具上架的登记门禁','新工具上架必须同步登记对应表／权限项','todo','台账 cap-direct','等新工具上架场景落实',''],
+  ['P3-16','契约卡样卡格式审定','审定工具契约卡的样卡格式','五要素定型／内部字段标注／字段级示意／md＋HTML 双产出','done','台账 cap-card','',''],
+  ['P3-17','10 工具契约卡交付','交付认申赎 10 工具契约卡','docs/MCP工具契约卡-认申赎-10工具-20260911.{md,html}，事实基线 10a252873 逐卡核对','done','台账 cap-card','',''],
+  ['P3-18','副作用与语义陷阱披露','在契约卡中披露副作用与语义陷阱','reminders 企微推送／stop-buy 无记录≠正常／raise-flow 同名双源／客户名包含式匹配','done','台账 cap-card','',''],
+  ['P3-19','工具说明卡发布至内部工作台','为契约卡提供对外查阅入口','HTML 已备好，上传路径待定','wip','台账 cap-card','待定',''],
+ ]},
+ {id:'P4', name:'P4 · skills 梳理编写与供给（三原语）', note:'来源：台账「三原语供给层」的 Resources／Prompts／剥离程序三节点（共 11 条）', items:[
+  ['P4-1','Resources 出口上线','上线场景卡出口','索引＋场景卡模板（a97d7a784）','done','台账 sup-resources','',''],
+  ['P4-2','get_skill_flow 升级场景卡 v2','场景卡升级到 v2 结构','flows（全量步骤）＋ tools（带权限域）＋ portable_flow（剥离版）＋ strip_report；修复原文截断 4000 字符带私有指令外发问题','done','台账 sup-resources','',''],
+  ['P4-3','6 业务助手 skill 零残留过检','6 个业务助手场景全量过检','实测零残留 ALL_CLEAN（unresolved_api_references 透明化）','done','台账 sup-resources','',''],
+  ['P4-4','Prompts 出口上线','上线剧本包出口','6 业务助手剧本包先行（skill_{skill_id}）','done','台账 sup-prompts','',''],
+  ['P4-5','get_skill_content 改剥离版','读取出口改返回可移植版','仅 MCP 工具层剥离；管理端 HTTP 端点保留原文，skill-explained 三页不受影响','done','台账 sup-prompts','',''],
+  ['P4-6','存量其余 11 个是否纳入 Prompts','判定存量 11 个（9 流程类＋2 小组件）是否纳入','多为测试案例——<b>#16 已拍（0914）：逐个走测试台流程验证，通过才正式纳入正式 skill 剧本资产</b>；归拢后再定 Prompts 扩面','wip','台账 sup-prompts','业务团队（工具＝测试台·出口＝YXF）；编写进行中约五成·验证门槛见 #16',''],
+  ['P4-7','剧本资产梳理归拢','梳理归拢剧本资产','09-13 用户走读拍板：现存量 17 个多为测试案例不作数——预估归拢后约 25 个（区间 20~30，以最终梳理结果为准）；<b>#16 门槛：逐个走测试台验证后纳入</b>；归拢后再定 Prompts 扩面与交付','wip','台账 sup-prompts','业务团队（工具＝测试台·出口＝YXF）；编写进行中约五成',''],
+  ['P4-8','剥离程序独立模块转正','skill_portable 独立成模块','mcp_server 净删 112 行重复实现','done','台账 sup-portable','',''],
+  ['P4-9','离线 CLI（门禁与导出）','提供离线命令行','--check 残留门禁（有残留退码 1）／--export 批量导出审校件／--skills','done','台账 sup-portable','',''],
+  ['P4-10','零回归验证','验证改造前后输出一致','6 skill 输出逐字节一致（全 SAME）','done','台账 sup-portable','',''],
+  ['P4-11','CLI 输出 ASCII 化','修 CLI 在 GBK 控制台的崩溃','ASCII 化输出（59a746644，服务器实测暴露）','done','台账 sup-portable','',''],
+ ]},
+ {id:'P5', name:'P5 · 演示浏览器插件（预演通道）', note:'来源：台账「客户与渠道层·银小帆浏览器插件」＋ 09-13 C-6 口径｜⚠️ 台账仅 2 条，对客演示端/运营生产端拆分待补', items:[
+  ['P5-1','认申赎录单 Skill 场景跑通','跑通插件的录单场景','open-day 自动合并 batch／参数规范化／pre_review 注管理人','done','台账 chan-plugin','',''],
+  ['P5-2','插件版本发布链','建立插件构建与发布链','release.py build-first／test→latest／/version 自动更新','done','台账 chan-plugin','',''],
+  ['P5-3','对客演示端／运营生产端拆分','按 C-6 口径把插件分两端','对客演示端（对外演示）＋ 运营生产端（业务操作）；插件盒副行改为「生产端（业务操作）」已有，拆分后的任务与验收待补','done','09-13 C-6 口径','台账未覆盖·待补',''],
+  ['P5-4','预演通道作为 内嵌通道验证形态','明确预演通道的定位与鉴权','静态 API Key；作为 内嵌通道的验证形态（接口文档 §8.1）；演示方案下平台零改造','done','全景总图＋接口文档','台账未覆盖·待补',''],
+ ]},
+ {id:'P6', name:'P6 · skills 测试台建设', note:'来源：⚠️ 台账 24 节点中<u>无对应节点</u>——本组内容摘自已登记的会话记录，<b>状态与进度须由 S3-2（插件与技能工作台）核对补全</b>，本页仅占位。09-14 用户核定四条基本完成（80%），S3-2 已逐条追认（#80e4fd：全链/导入向导/建议引擎客观证据补齐/插件联动 80%）', items:[
+  ['P6-1','测试台全链（写法检查／客户说法／对话试跑）','建设 skill 测试工作台主链','三页签：写法检查／客户说法／对话试跑；技术细节入「🔧 工程视图」','bdone','会话记录摘录','用户0914核定基本完成·S3-2已追认（三页签实测）',''],
+  ['P6-2','导入向导与文档符合性检查','提供 skill 导入向导与文档符合性检查','含导航编辑器（域名探活／页面地址捕获）','bdone','会话记录摘录','用户0914核定基本完成·S3-2已追认（含导航编辑器实测）',''],
+  ['P6-3','建议引擎读权威底账','建议引擎改读权威底账','底账只读（用户拍板）；<b>SKILL.md 单写·不回写底账</b>（S3-2 0914 追认纠偏：0911「不改底账」拍板后双写已不成立；消歧接口 <code>doc-expected</code> 等客观证据见其回执）','bdone','会话记录摘录','用户0914核定基本完成·S3-2已追认',''],
+  ['P6-4','插件联动（平台页常驻捕获）','打通插件与测试台的捕获联动','插件 2.30.0 平台页右下角常驻「📍 就这个页面」按钮 → 回传 adopt 标记 → 编辑器自动落地址','bdone','会话记录摘录','用户0914核定基本完成·S3-2追认80%（差额＝待用户实机验证 2.30.2 确认按钮链路）',''],
+ ]},
+ {id:'P7', name:'P7 · 内部服务与数据对接', note:'来源：台账「内部服务与数据层」4 节点（int-*，现 8 条）。分工：接口提供与登记＝FMP（B1 接口清单·H1 对应表·H2 校验）；工具封装与调用对接＝智能体平台', items:[
+  ['P7-1','对内 MCP 聚合层五 server 健康','保障内部聚合层可用','qa／intel／memory／business／docs 五 server 健康检查全 ok','done','台账 int-fmp','',''],
+  ['P7-2','SSE 代理集成','集成本地 MCP 代理','_FMP_PROXY_TOOLS 动态发现 ＋ 排除表过滤','done','台账 int-fmp','',''],
+  ['P7-3','工具盘点路线 A 全集核对','核对平台全量接口清单','mcp-inventory-A.md','done','台账 int-fmp','',''],
+  ['P7-4','投资者份额与开户状态查询接通','接通 TA 三端点','account-status／investor／lock-period','done','台账 int-ta','',''],
+  ['P7-5','开放日 nearest_open_day 修复','修复开放日查询可靠性','无未来日期返回空，不回退历史','done','台账 int-ta','',''],
+  ['P7-7','query_contract_params 接入','接入合同要素查询','申购/赎回确认天数、锁定期字段提取（数据层归 S1）','done','台账 int-contract','',''],
+  ['P7-8','ob_fallback 直查链路核实','核实旁路直查链路并入盘点表；09-14 拍板：OB 兜底不再扩展（原 P7-6 撤销），存量保留为演示保命链路','16 项旁路路径实证','done','台账 int-csp','',''],
+  ['P7-9','CSP 不可用时 OB 备用源','提供备用数据源','product-status／product-by-name／manager-info／stop-buy','done','台账 int-csp','',''],
+ ]},
+ {id:'P8', name:'P8 · 治理与交付（文档／安全／部署／外网／台账）', note:'来源：台账「横切治理层」5 节点（gov-*，共 21 条）', items:[
+  ['P8-1','综合板多页签','维护综合板多页签结构','架构总览／供给设计／权限设计…，渲染实测 0 越界','done','台账 gov-doc','',''],
+  ['P8-2','接口文档 v1.19','维护对外接口文档','§01/§08/§8.4/§8.6/§11.4 ＋ AND 注 ＋ 变更记录，源＋板内 srcdoc 双写 <b>⚠️ §11.4 的 H3 代问接口是否保留待定</b>','done','台账 gov-doc','',''],
+  ['P8-3','MCP 工具权限盘点表','维护工具权限盘点表','全集 83＝53＋30 · 运行态 81 口径','done','台账 gov-doc','',''],
+  ['P8-4','方案探讨 ①~⑨ 收口','收口方案探讨全部条目','①~⑨ 全部收口落板','done','台账 gov-doc','',''],
+  ['P8-5','认申赎 10 工具契约卡','交付契约卡（与 P3-17 同一产出）','见 P3-17','done','台账 gov-doc','',''],
+  ['P8-6','PRD 更深同步','推进 PRD 与现状同步','工具表描述已同步（B7），其余段落随下批','wip','台账 gov-doc','随下批',''],
+  ['P8-7','SSRF 防护','出站安全防护','协议校验 ＋ 私网阻断 ＋ MCP_OUTBOUND_ALLOWLIST 白名单 ＋ 禁重定向，过 Mimosa 门禁','done','台账 gov-sec','',''],
+  ['P8-8','tls_bypass 重命名修复 _ssl 遮蔽','修 direct/stdio 直跑崩溃根因','同时消除了 bat 守护长期未启用的问题（d5a456208）','done','台账 gov-sec','',''],
+  ['P8-9','GitHub Token 纪律','凭据不落明文','凭据管理器 x-access-token；发布脚本白名单主机校验','done','台账 gov-sec','',''],
+  ['P8-10','5089 挂回 bat 守护','恢复 5089 守护链','PID 27024，守护链 cmd→python 验证（#12 拍板 a 落地）','done','台账 gov-deploy','',''],
+  ['P8-11','批次部署','三原语与聚合处置部署','59a746644（stash 前置留档）＋ 4e2e2e231','done','台账 gov-deploy','',''],
+  ['P8-12','服务注册表规范','规范服务启停','status 探测先行／外部启动标记／update 刷新','done','台账 gov-deploy','',''],
+  ['P8-13','4 服务 bat :loop 守护补齐','补齐其余三服务的守护','仅 5089 完成；5090／5095／5096 仍终端直启，双 env 自动重启依赖此项','wip','台账 gov-deploy','待补',''],
+  ['P8-14','外网发布通道','建立外网预览通道','通道建立并三次推送（Git Data API）','done','台账 gov-web','',''],
+  ['P8-15','board.html 重推 v1.94','重推板到外网','Contents API，commit e7c89da，线上实测通过','done','台账 gov-web','',''],
+  ['P8-16','发布脚本安全化','发布脚本加安全约束','固定主机白名单 ＋ 禁重定向，过 Mimosa SSRF 门禁','done','台账 gov-web','',''],
+  ['P8-17','契约卡 HTML 挂外网','把契约卡挂外网','<b>已并入 P3-19</b>；★E 已拍（0914）：契约卡只挂 5095 工作台、不挂外网——本项外网挂载取消，随 P3-19 收口','todo','台账 gov-web','★E已拍·外网挂载取消',''],
+  ['P8-18','判定链降级边界','与 P2-6 同一事项','<b>已并入 P2-6</b>；★B 结论：接口明确拒绝＝不降级硬拦；无应答/超时＝fail-closed；影子比对仅过渡观察','todo','台账 gov-todo','★B已拍·随P2-6落地',''],
+  ['P8-19','鉴权缓存 TTL 收紧','收紧鉴权缓存 TTL','配置化／写时失效（设计期语义，待拍板再动）','todo','台账 gov-todo','待拍板',''],
+  ['P8-20','治理待办台账维护','维护跨批次治理事项台账','docs/pending-decisions.md 统一登记','done','台账 gov-todo','',''],
+  ['P8-21','板外网推送恢复','按 #github-hold 恢复推送','<b>0914 已恢复一次</b>：用户明确指示，单文件版导出件已推 GitHub（luistream/rag-html-preview·58dfb80）；board.html 等其余外网发布仍等指令逐次推','todo','台账 gov-todo','已恢复一次·其余等指令',''],
+ ]},
+ {id:'P9', name:'P9 · 本议题引出的YXF工作项', note:'来源：09-13 走读定盘（原在清单页末附录）', items:[
+  ['X1','梳理并确定「公共／免申请」工具子集','由智能体平台梳理并确定 <b>1 个可枚举的</b>「公共工具」子集（开通即用·免申请），作为 MCP 服务授权流程勾选树的免申部分与字典初始值','从 83 项工具全集（53 平台接口代理 ＋ 30 直连）中划出<b>可枚举</b>的免申子集。建议判据三层：① <b>无平台业务数据</b>（纯平台元信息／协议层）→ 公共；② <b>有业务数据但不含个人／机构敏感信息</b>（产品要素／净值／交易日历／公告／合同条款等）→ 复核后入公共；③ <b>含敏感信息</b>（投资者／持仓／账户／交易流水／反洗钱）<b>或产生副作用</b>（预审／表单准备／监控触发）→ 受控。产出物＝子集清单（工具名／归属分组／判据依据），须明确「<b>免申请 ≠ 免判定</b>」。⚠️ <b>该子集最终需人工确定</b>（属业务敏感度判断，09-13 用户明确）——系统侧可先出<b>候选草案＋判据依据</b>供评审，不做自动定档','todo','09-13 定盘','09-13 用户指派·需人工定',''],
+  ['X2','退役代码中的 scope 校验链路','按定盘「凭证只装身份、不需要 scope」——移除YXF侧的 scope 签发与校验，使实现与口径一致','涉及三处：① <code>mcp_server.py</code> 的 <code>_TOOL_SCOPES</code>（15 项 L2 工具 → 6 业务域）；② <code>api_business_review.py</code> 的 L2＋OAuth 校验分支（返回 <code>-32002</code>）；③ 401 保护资源元数据里的 <code>scopes_supported</code>。<b>保留</b>：<code>_TOOL_LEVELS</code>（展示维度）与 <code>MCP_PERM_CHECK_URL</code>（独立机制）。影响 5089 运行时行为，需按服务窗口重启','todo','09-13 定盘','09-13 用户指派',''],
+  ['X3','两类接口的平台登记与统一控权（平台侧）','把「非平台接口由FMP登记并控权限」落到接口与代码','09-13 定盘：接口分两类——FMP的接口／非FMP的接口；<b>非平台接口不需物理经平台，但FMP也要登记并控制权限</b>。落地：① 菜单-接口对应表范围扩展到两类接口；② 直连工具的代问逻辑由智能体平台侧落地（见 X5）；③ <b>纯内部工具（14 项）也纳入平台登记</b>——09-13 定盘：FMP是客户登录后权限管控的中心，故全部 83 项工具统一登记；登记项含「调用路径分类」','todo','09-13 定盘','责任方＝FMP；落地待做（含开只读账号支撑 X4 直查）',''],
+  ['X4','演示路径权限直查路由（读平台只读视图）','演示阶段判定链直读平台后台权限数据，真数据判权限；白名单退居兜底','直读 v_agent_user_perm＋manager_scope（H4 已交付视图；query_user_product_scope 5 分钟缓存＋心跳刷新已上线）——已完成大半；缺＝菜单↔接口对应关系（等 H1 平台交表后补全逐项判定）。实现红线：参数绑定、凭据只走环境变量、fail-closed（★B）、短 TTL（★C）','bdone','09-14 用户提出并确认已完成大半','银小帆智能体平台（前置：平台只读账号，随 X3 推动）',''],
+  ['X5','登记供数与代问逻辑（银小帆智能体平台）','承接 X3 的YXF侧落地','① 给平台供登记清单数据（全部工具：工具名／调用路径分类／权限要求）② YXF侧写代问平台权限接口的调用逻辑（咬合 H3）','todo','09-14 多责任方拆分规则自 X3 拆出','YXF',''],
+ ]}
+]},
+  {id:'yd', tab:'云鼎系统', sub:'5 条 · 待对齐', pane:'bodyYd', groups: [
+ {id:'Y', name:'Y · 云鼎系统', note:'来源：09-13 用户定盘 ＋ 全景总图对客面｜⚠️ 细节待与云鼎方对齐，本页为初始框架', items:[
+  ['Y1','提供 MCP 服务（绩效分析能力）','云鼎作为<b>独立服务提供方</b>，对外提供绩效分析能力','云鼎侧 MCP 服务<b>基本完成</b>（09-14 用户口径）；依赖FMP用户权限认证接口（最终方案）；先期可按过渡方案自行发 key 自鉴权','bdone','09-13 定盘；09-14 进度口径','09-14 用户口径：基本完成',''],
+  ['Y2','菜单权限汇集到FMP','云鼎的菜单权限汇集到FMP，做统一用户鉴权与权限管理','权限不在云鼎侧独立判定，汇集到平台统一管理','pend','09-13 定盘','待与云鼎方对齐',''],
+  ['Y3','对接口径确认（过渡方案 or 最终方案）','确认云鼎与平台/智能体平台的对接方式（两方案二选）','① <b>过渡方案</b>：云鼎自行发 key、自行用户鉴权（首批提供可用）；② <b>最终方案</b>：与FMP对接（依赖平台用户权限认证接口，菜单权限汇集平台统一管理）。另：云鼎 MCP server <b>后期统一接入FMP MCP server</b>（09-14 用户口径）；智能体平台侧负责编排与 MCP 服务统筹。09-14 用户口径：<b>过渡方案基本就绪</b>；最终方案待平台用户权限认证接口','bdone','09-13 定盘；09-14 两方案口径','09-14 用户口径：过渡基本就绪',''],
+  ['Y4','提供能力清单（工具名／入参出参／权限要求）','云鼎提供可供封装的绩效分析能力清单','便于编入工具元数据表与 MCP 服务授权勾选树','pend','待补','待与云鼎方对齐',''],
+  ['Y5','云鼎能力对客汇入编排','把云鼎绩效分析能力纳入对客服务（YXF侧编排统筹）','云鼎独立提供方；菜单权限汇集平台统一鉴权；YXF负责编排与 MCP 服务统筹（09-13 定盘）；待 Y3 对齐后启动','pend','09-13 定盘；09-14 原 P1-4 移入','YXF（云鼎侧服务与权限汇集见 Y1/Y2）',''],
+ ]}
+]},
+  {id:'zx', tab:'直销系统', sub:'5 条 · 待对齐', pane:'bodyZx', groups: [
+ {id:'Z', name:'Z · 直销系统', note:'来源：09-13 用户定盘 ＋ 全景总图对客面｜⚠️ 细节待与直销方对齐，本页为初始框架', items:[
+  ['Z1','提供对外接口清单','直销系统提供其对外接口清单','直销系统<b>只出接口</b>；整体 skill 编排与 MCP 服务统筹由智能体平台负责','pend','09-13 定盘','待与直销方对齐',''],
+  ['Z2','接口对接规范（鉴权／环境／限流／报文）','约定接口对接的技术规范','待定；需明确鉴权方式、测试与生产环境、限流与报文约定','pend','待补','待与直销方对齐',''],
+  ['Z3','测试环境与联调配合','提供测试环境并配合联调','待定','pend','待补','待与直销方对齐',''],
+  ['Z4','分工与责任边界书面确认','把「直销只出接口、编排归智能体平台」的分工书面确认','已由 09-13 定盘；需与直销方书面确认','pend','09-13 定盘','待书面确认',''],
+  ['Z5','直销接口对客包装','把直销系统接口包装为对客服务能力（YXF侧编排统筹）','直销只出接口；整体 skill 编排与 MCP 服务统筹由YXF负责（09-13 定盘）；待 Z2 对齐后启动','pend','09-13 定盘；09-14 原 P1-5 移入','YXF（直销侧接口清单见 Z1）',''],
+ ]}
+]},
+];
+
+/* 页签栏 */
+$('#tabbar').innerHTML = SYSTEMS.map((S,i)=>
+  `<button data-sys="${S.id}" class="${i===0?'on':''}">${S.tab}<span class="tsub">${S.sub}</span></button>`).join('');
+
+/* 渲染某个系统的面板 */
+function renderPane(S){
+  $('#'+S.pane).innerHTML = S.groups.map(g=>`
+    <h2 id="${S.id}-${g.id}">${g.name} <span class="cnt">${g.items.length} 条</span></h2>
+    <div class="note" style="${g.desc?'border-left-color:#1f6feb;background:#f0f6ff;color:#1f3a5f':'border-left-color:#94a3b8;background:#f8fafc;color:#475569'}">${g.desc||g.note||''}</div>
+    <div class="tblwrap"><table>
+      <thead><tr><th>#</th><th>任务项名称</th><th>任务项内容</th><th>实现技术要求描述</th><th>时间要求</th><th>状态</th><th>完成度</th></tr></thead>
+      <tbody>${g.items.map(it=>`<tr data-id="${it[0]}" data-g="${g.id}" data-sys="${S.id}">
+        <td class="num" data-l="#">${it[0]}</td>
+        <td class="c-name" data-l="任务项名称">${it[1]}</td>
+        <td class="c-cont" data-l="任务项内容">${it[2]}</td>
+        <td class="c-tech" data-l="实现技术要求描述">${it[3]}</td>
+        <td class="c-time" data-l="时间要求"><input type="date" data-t="time-${it[0]}"></td>
+        <td class="c-st" data-l="状态"><select class="stsel v-${it[4]}" data-s="st-${it[0]}">${STS.map(v=>`<option value="${v}"${v===it[4]?' selected':''}>${ST[v]}</option>`).join('')}</select></td>
+        <td class='c-pct' data-l="完成度"><input type='text' inputmode='decimal' data-p='${it[0]}' placeholder='${DEFV[it[4]]}'></td>
+      </tr>`).join('')}</tbody>
+    </table></div>
+    ${g.apx?`<details class="apx"><summary>📎 附录 · 来源与口径记录（${g.items.length} 条）</summary><div class="apx-b">${g.apx}</div></details>`:''}`).join('');
+}
+SYSTEMS.forEach(renderPane);
+
+/* 归属系统（用于筛选范围） */
+function activeSys(){ const b = document.querySelector('.tabbar button.on'); return b ? b.dataset.sys : 'mgr'; }
+
+/* 本机留存回填（按 DOM 行，覆盖全部系统） */
+const PREFILL = {};
+SYSTEMS.forEach(S=>S.groups.forEach(g=>g.items.forEach(it=>{ PREFILL[it[0]] = it[7] || ''; })));
+const ORIG = {};
+document.querySelectorAll('tbody tr').forEach(tr=>{ const s=tr.querySelector('.stsel'); if(s) ORIG[tr.dataset.id]=s.value; });
+document.querySelectorAll('tbody tr').forEach(tr=>{
+  const id = tr.dataset.id;
+  const ti = tr.querySelector(`input[data-t="time-${id}"]`);
+  if (ti){ const v = localStorage.getItem('time-'+id);
+    const ok = v && /^\d{4}-\d{2}-\d{2}$/.test(v); if (ok){ ti.value=v; ti.classList.add('has'); }
+    else if (PREFILL[id] && /^\d{4}-\d{2}-\d{2}$/.test(PREFILL[id])){ ti.value=PREFILL[id]; ti.classList.add('has'); localStorage.setItem('time-'+id, PREFILL[id]); } else if (v){ localStorage.removeItem('time-'+id); } }
+  const sel = tr.querySelector(`select[data-s="st-${id}"]`);
+  if (sel){ const v = localStorage.getItem('st-'+id);
+    if (v && ST[v]) sel.value = v;
+    sel.className = 'stsel v-' + sel.value; }
+  const pi = tr.querySelector(`input[data-p='${id}']`);
+  if (pi){ const v = localStorage.getItem('pct-'+id);
+    if (v !== null){ if (v !== ''){ pi.value=v; pi.classList.add('has'); } } }
+});
+
+/* 交互绑定 */
+function paint(sel){ sel.className = 'stsel v-' + sel.value; }
+document.querySelectorAll('.stsel').forEach(sel=>{
+  sel.addEventListener('change', ()=>{ paint(sel); localStorage.setItem('st-'+sel.dataset.s.slice(3), sel.value); apply(); });
+});
+document.querySelectorAll('input[data-t]').forEach(inp=>{
+  inp.addEventListener('input', ()=>{ const k='time-'+inp.dataset.t.slice(5);
+    if (inp.value.trim()){ localStorage.setItem(k, inp.value); inp.classList.add('has'); }
+    else { localStorage.removeItem(k); inp.classList.remove('has'); } });
+});
+
+document.querySelectorAll('input[data-p]').forEach(inp=>{
+  inp.addEventListener('input', ()=>{ const k='pct-'+inp.dataset.p;
+    const x = parseFloat(inp.value);
+    const has = inp.value.trim() !== '';
+    let bad = false;
+    if (has){ if (isNaN(x)) bad = true; else { if (x<0) bad = true; if (x>100) bad = true; } }
+    if (has){ if (bad){ localStorage.removeItem(k); inp.classList.remove('has'); } else { localStorage.setItem(k, String(x)); inp.classList.add('has'); } }
+    else { localStorage.removeItem(k); inp.classList.remove('has'); } });
+});
+
+/* 分组下拉：按当前系统刷新 */
+function refreshGroups(){
+  const sys = activeSys(), fg = $('#fg');
+  const cur = fg.value;
+  fg.innerHTML = '<option value="">全部分组</option>';
+  const S = SYSTEMS.find(x=>x.id===sys);
+  S.groups.forEach(g=>{ const o=document.createElement('option'); o.value=g.id;
+    o.textContent=g.id+' · '+g.name.split('·')[1].trim().slice(0,20); fg.appendChild(o); });
+  fg.value = [...fg.options].some(o=>o.value===cur) ? cur : '';
+}
+
+/* KPI：按当前系统 */
+function renderKpi(){
+  const sys = activeSys(); const S = SYSTEMS.find(x=>x.id===sys);
+  const pane = $('#'+S.pane);
+  const rows = [...pane.querySelectorAll('tbody tr')];
+  const c = {done:0,bdone:0,wip:0,todo:0,pend:0};
+  rows.forEach(tr=>{ const v = tr.querySelector('.stsel').value; if (c[v]!==undefined) c[v]++; });
+  $('#kpis').innerHTML =
+    `<div class="kpi"><div class="n">${rows.length}</div><div class="l">${S.tab} · 条目</div></div>
+     <div class="kpi"><div class="n">${S.groups.length}</div><div class="l">分组</div></div>
+     <div class="kpi"><div class="n" style="color:#64748b">${c.todo}</div><div class="l">未开始</div></div>
+     <div class="kpi"><div class="n" style="color:#2563eb">${c.wip}</div><div class="l">进行中</div></div>
+     <div class="kpi"><div class="n" style="color:#16a34a">${c.done}</div><div class="l">已完成</div></div>
+     <div class="kpi"><div class="n" style='color:#b45309'>${c.bdone}</div><div class='l'>基本完成</div></div>
+     <div class="kpi"><div class="n" style="color:#dc2626">${c.pend}</div><div class="l">待确认</div></div>`;
+}
+
+/* 页签切换 */
+function showSys(id, silent){
+  SYSTEMS.forEach(S=>{ $('#'+S.pane).hidden = (S.id !== id); });
+  document.querySelectorAll('.tabbar button').forEach(b=>b.classList.toggle('on', b.dataset.sys===id));
+  refreshGroups();
+  renderKpi();
+  if (!silent) apply();
+}
+document.querySelectorAll('.tabbar button').forEach(b=>{
+  b.addEventListener('click', ()=>{ showSys(b.dataset.sys); window.scrollTo({top:0,behavior:'smooth'}); });
+});
+
+/* 筛选（只作用当前系统；页末附表随FMP面板） */
+function apply(){
+  const q = $('#q').value.trim().toLowerCase();
+  const fg = $('#fg').value, fs = $('#fs').value, only = $('#onlyFb').dataset.on==='1';
+  const sys = activeSys();
+  let shown = 0;
+  document.querySelectorAll(`#${SYSTEMS.find(S=>S.id===sys).pane} tbody tr`).forEach(tr=>{
+    const id = tr.dataset.id;
+    let ok = true;
+    if (q && !(tr.textContent + ' ' + id).toLowerCase().includes(q)) ok = false;
+    if (fg && tr.dataset.g !== fg) ok = false;
+    const sel = tr.querySelector('.stsel');
+    if (fs && sel.value !== fs) ok = false;
+    if (only && !((localStorage.getItem('time-'+id)||'').trim())) ok = false;
+    tr.classList.toggle('hidden', !ok);
+    if (ok) shown++;
+  });
+  const pane = $('#' + SYSTEMS.find(S=>S.id===sys).pane);
+  pane.querySelectorAll('h2').forEach(h=>{
+    const nb = h.nextElementSibling, wrap = nb && nb.nextElementSibling;
+    if (wrap && wrap.classList.contains('tblwrap')){
+      const any = [...wrap.querySelectorAll('tbody tr')].some(t=>!t.classList.contains('hidden'));
+      h.classList.toggle('hidden', !any); nb.classList.toggle('hidden', !any); wrap.classList.toggle('hidden', !any);
+    }
+  });
+  const apH = document.getElementById('appendix-self');
+  if (apH){
+    const apNote = apH.nextElementSibling, apWrap = apNote && apNote.nextElementSibling;
+    const any = (apWrap && apWrap.querySelectorAll) ? [...apWrap.querySelectorAll('tbody tr')].some(t=>!t.classList.contains('hidden')) : true;
+    apH.classList.toggle('hidden', !any);
+    if (apNote) apNote.classList.toggle('hidden', !any);
+    if (apWrap) apWrap.classList.toggle('hidden', !any);
+  }
+  let e = document.getElementById('noRes');
+  if (shown === 0){ if(!e){ e=document.createElement('div'); e.id='noRes'; e.className='empty';
+      e.textContent='没有匹配的条目——换个关键词或清空筛选。'; pane.prepend(e);} }
+  else if (e) e.remove();
+}
+['q','fg','fs'].forEach(id=>{const el=document.getElementById(id);el.addEventListener('input',apply);el.addEventListener('change',apply);});
+$('#onlyFb').addEventListener('click',()=>{const b=$('#onlyFb');b.dataset.on=b.dataset.on==='1'?'0':'1';b.classList.toggle('pri',b.dataset.on==='1');apply();});
+
+/* 导出：全部系统一起导出，按系统分组 */
+$('#expBtn').addEventListener('click',()=>{
+  const bySys = [];
+  SYSTEMS.forEach(S=>{
+    const pane = $('#'+S.pane);
+    const lines = [...pane.querySelectorAll('tbody tr')].map(tr=>{
+      const id = tr.dataset.id;
+      const sel = tr.querySelector('select[data-s]');
+      const st = sel ? sel.value : 'todo';
+      const name = (tr.querySelector('.c-name')||{}).textContent.trim() || id;
+      const orig = ORIG[id] || st;
+      const tm = (localStorage.getItem('time-'+id)||'').trim();
+      const chg = st !== orig;
+      if (!tm && !chg) return null;
+      return `  ${id}（${name}）｜状态：${ST[st]}${chg?'（原：'+(ST[orig]||orig)+'）':''}｜时间要求：${tm||'（未填）'}`;
+    }).filter(Boolean);
+    if (lines.length) bySys.push(`【${S.tab}】
+` + lines.join('\n'));
+  });
+  const txt = bySys.length
+    ? `走读结果（按系统）\n生成时间：${new Date().toLocaleString('zh-CN')}\n\n` + bySys.join('\n\n')
+    : '（还没有填写任何时间要求，也没有改过状态）';
+  $('#expBox').value = txt; $('#expBar').classList.remove('hidden'); $('#expBox').focus(); $('#expBox').select();
+});
+$('#copyBtn').addEventListener('click', async ()=>{
+  const t = $('#expBox'); t.select();
+  try { await navigator.clipboard.writeText(t.value); } catch(e){ document.execCommand('copy'); }
+  const b=$('#copyBtn'), old=b.textContent; b.textContent='✅ 已复制'; setTimeout(()=>b.textContent=old,1200);
+});
+$('#closeExp').addEventListener('click',()=>$('#expBar').classList.add('hidden'));
+showSys('mgr');
+</script>
+</body>
+</html>
