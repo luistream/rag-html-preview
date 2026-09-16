@@ -168,7 +168,7 @@ tr:last-child td { border-bottom: none; }
 <div class="header">
   <div>
     <h1>银小管-小帆业务助手智能体平台及MCP服务手册 <span style="font-size:.6em;background:#dc2626;color:#fff;border-radius:6px;padding:2px 8px;vertical-align:middle;">单文件分享版</span></h1>
-    <div class="sub">银小管/小帆智能体平台 · 管理人助手 · v1.104 · 2026-09-13（走读批量①：通道图升四通道——新增④ C 通道（机构智能体平台·服务账号 client_credentials 换票）＋第四消费方；C-1 第三方 AI 客户端范围收窄「查答类·工具级消费」、鉴权定「OAuth 用户级授权」；C-2 静态 Key 移出方案（仅①预演通道保留）；C-5 agent-setup 拆两份（正式 OAuth 版＋开发环境版）；fmp-ai-proxy 59 处旧口径待链路确认后专项）</div>
+    <div class="sub">银小管/小帆智能体平台 · 管理人助手 · v1.104 · 2026-09-13（走读批量①：通道图升四通道——新增④ C 通道（机构智能体平台·服务账号 client_credentials 换票）＋第四消费方；C-1 第三方 AI 客户端范围收窄「查答类·工具级消费」、鉴权定「OAuth 用户级授权」；C-2 静态 Key 移出方案（仅①预演通道保留）；C-5 agent-setup 拆两份（正式 OAuth 版＋开发环境版）；fmp-ai-proxy 59 处口径 09-16 已定：新增 fmp-ai-proxy 代理服务·经其转发——原「改写为既有 AI 对话框服务」方向作废）</div>
   </div>
   <div><span class="badge" style="background:#2563eb;color:#fff">77 业务场景 · MCP & Skill 服务 · 4 服务健康</span></div>
 </div>
@@ -181,7 +181,7 @@ tr:last-child td { border-bottom: none; }
   <button class="tab-btn" data-tab="api"><span class="tab-icon">📡</span>智能体平台服务</button>
   
   <button class="tab-btn" data-tab="pdf"><span class="tab-icon">📑</span>管理人平台对接</button>
-  <button class="tab-btn" data-tab="mgrlist"><span class="tab-icon">📋</span>管理人平台侧工作面条目</button>
+  <button class="tab-btn" data-tab="mgrlist"><span class="tab-icon">📋</span>项目任务明细计划</button>
   <button class="tab-btn" data-tab="prefill"><span class="tab-icon">🧩</span>表单预填方案</button>
   
   <button class="tab-btn" data-tab="scenarios"><span class="tab-icon">📋</span>业务场景清单</button>
@@ -194,7 +194,7 @@ tr:last-child td { border-bottom: none; }
 <!-- ========== TAB 1: 架构总览 ========== -->
 <div class="tab-content active" id="tab-arch">
   <div class="card">
-    <div class="card-title">管理人侧 AI 服务体系架构 <span style="font-size:.72em;color:#2563eb;font-weight:600;">💡 点各框角上的百分比按钮 → 展开该框承载的任务大类与完成情况（数据取自本板《管理人平台侧工作面条目》清单）</span></div>
+    <div class="card-title">管理人侧 AI 服务体系架构 <span style="font-size:.72em;color:#2563eb;font-weight:600;">💡 点各框角上的百分比按钮 → 展开该框承载的任务大类与完成情况（数据取自本板《项目任务明细计划》清单）</span></div>
     <div class="card-body">
       <p>银小管智能体平台作为管理人服务平台的内嵌 AI 能力，提供两种服务方式：<strong>内嵌式 AI 交互服务</strong>（嵌入管理人平台页面）和 <strong>开放能力服务</strong>（MCP + SKILL 供外部智能体加载）。</p>
     </div>
@@ -304,7 +304,7 @@ tr:last-child td { border-bottom: none; }
           a_agt:{n:'A·智能体平台', t:'银小管：只认平台 → 功能闸 → 数据闸', w:'怎么判定', s:'have', b:'①核对 API Key——只认平台、不认人；②筛子：tools/list 按张三权限预过滤可见工具（fail-open）；③功能闸按调用路径分两类：平台接口工具（经过平台）透传身份由平台按对应表拦；直连工具（不经过平台）先问平台权限接口（fail-closed·403 转述）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（平台代问）」。'},
           b_chip:{n:'B', t:'对接方式 B · 桌面智能体工具', w:'跨信任边界 · OAuth 2.1', s:'todo', b:'张三自己电脑上的 AI 工具（Trae / WorkBuddy / 千问办公 / 豆包 / 客户自建）。有浏览器、有用户，走授权码＋PKCE；认证全程经管理人平台。'},
           b_caller:{n:'B·调用方', t:'Trae · 张三桌面的 AI 工具', w:'谁在调用', s:'todo', b:'接入编号 clientId 绑张三名下；粘贴 MCP 链接即用（首连 401 指路 → 官方授权页）；少数不支持自动注册的工具走用户中心手动开通。'},
-          b_mp:{n:'B·平台', t:'管理人平台：授权页＋发一张凭证', w:'平台做什么', s:'todo', b:'①首连被拒（401），按提示打开官方授权页；②张三用平台账号登录并点「同意」——功能权限管理员已预配置，页仅确认，PKCE 防截获；③发放一张访问凭证（≤8 小时·随源登录会话·每次调用都带；不发放跨会话长效凭证，过期重走授权）。凭证只装身份：张三 · 某某基金（scope 六域已退役）——菜单明细不进凭证。'},
+          b_mp:{n:'B·平台', t:'管理人平台：授权页＋发一张凭证', w:'平台做什么', s:'todo', b:'①首连被拒（401），按提示打开官方授权页；②张三用平台账号登录并点「同意」——功能权限管理员已预配置，页仅确认，PKCE 防截获；③发放访问凭证（1 小时）＋续期凭证（闲置 30 天滑动、总上限 90 天；不贴浏览器会话，客户端自动续期）。凭证只装身份：张三 · 某某基金（scope 六域已退役）——菜单明细不进凭证。'},
           b_agt:{n:'B·智能体平台', t:'银小管：验 token → 功能闸 → 数据闸', w:'怎么判定', s:'todo', b:'①验凭证，解出张三 · 某某基金（身份·机构）；②筛子：按管理员预配置权限预过滤可见工具；③功能闸：平台接口工具→平台拦 · 直连工具→代问权限接口（同 A 行）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（经 Trae · tr_88…）」。'},
           c_chip:{n:'C', t:'对接方式 C · 管理人自建智能体平台（直连）', w:'跨信任边界 · client_credentials', s:'todo', b:'机构部署在自己机房的后端系统——全程无人参与、没有浏览器，代表机构不代表某个员工。典型场景：夜间定时批量同步净值。申请流程与页面原型见「权限认证需求设计」页签 · 第四章 C 通道。'},
           c_caller:{n:'C·调用方', t:'XX资管自建智能体平台', w:'谁在调用', s:'todo', b:'机构服务器对服务器直连。没有浏览器也没有人，因此不走授权页——身份来自经三岗审批开户的机构服务账号（clientId＋clientSecret）。'},
@@ -536,7 +536,7 @@ tr:last-child td { border-bottom: none; }
     <text x="555" y="749" font-size="9.8" fill="#475569" text-anchor="middle">③ 银小管不承担路由职责｜④ 专业域直达（合规/绩效等）经主入口 skill 路由；对外只呈现「两个对客服务专员」的契约面</text>
     <text x="960" y="322" font-size="9.5" fill="#94a3b8" text-anchor="middle">四渠道 → 两专员 → 四类输出</text>
     <text x="20" y="778" font-size="9.5" fill="#94a3b8">名词对照：银小帆＝智能体平台（主服务·运营多渠道＋对客主入口）｜银小管＝客服机器人（独立机器人·客服问答/提醒 · 经接口委托）｜对客四渠道：预演（演示）/ 内嵌（FMP）/ 第三方 AI 客户端 / 机构平台</text>
-    <text x="20" y="794" font-size="9.5" fill="#94a3b8">设计出处：F:\AIDEV\agentdesgin（渠道层/网关已投产 · 核心层重构中）｜本图为对客服务体系走读草稿，定稿后并入综合板总览页签｜内嵌 A 通道转发链路待 C-3 确认真实链路后回填（fmp-ai-proxy＝接口集合项目·非运行时网关）</text>
+    <text x="20" y="794" font-size="9.5" fill="#94a3b8">设计出处：F:\AIDEV\agentdesgin（渠道层/网关已投产 · 核心层重构中）｜本图为对客服务体系走读草稿，定稿后并入综合板总览页签｜内嵌 A 通道转发链路＝经管理人后端新增 fmp-ai-proxy 代理服务（09-16 确认；fmp-ai-proxy 另有同名「接口集合」义·勿混）</text>
 
     <!-- ===== 连线层（最后绘制；接续链条仅终点落框保留箭头）===== -->
     <g stroke="#64748b" stroke-width="1.5" fill="none">
@@ -578,6 +578,7 @@ tr:last-child td { border-bottom: none; }
   </div>
   <p style="font-size:0.84em;color:#64748b;margin:10px 0 0;line-height:1.6;">源文件：<code>docs/智能体平台内部结构-20260913.html</code>（走读草稿 v0.15，含全景总图＋业务语言版＋技术实现版三图）——改图请改源文件后同步本板（双写），只改一边即产生版本漂移。</p>
   <p style="font-size:0.84em;color:#64748b;margin:6px 0 0;line-height:1.6;">注：① <b>名词消歧</b>——对外契约文档（《对外接口文档》v1.19、agent-setup 接入指引）中的「银小管」指本平台对外服务名；本图沿用综合板口径——「银小帆」＝智能体平台主服务、「银小管」＝客服机器人（独立机器人）。② <b>图例</b>——实线框＝银小管域内；虚线框＝外部系统或跨专业域直连（橙色＝专业直连，灰色＝外部/委托）。③ <b>桌面端</b>（桌面胶囊）领域已于 2026-09-13 迁出本项目（S5 角色注销、desktop_capsule 冻结），图中保留仅为呈现对运营渠道全景与当时确定的直连设计。</p>
+  <p style="font-size:0.84em;color:#b45309;margin:6px 0 0;line-height:1.6;">⚠ <b>视角差异（2026-09-14 用户拍板标注）</b>：本图为<b>对客服务体系视角</b>（渠道 · 专员 · 对客输出 · 外部能力来源）；「工作总览」页签 24 节点为<b>对外服务面工程视角</b>（服务边界 · 三原语供给 · 能力实现 · 内部服务 · 横切治理）。两图口径不同、互有剪裁——edge-mcp/oauth/gate、gov-*、sup-portable、cap-card、int-fmp 仅入工作总览；两专员、对客四类输出、云鼎 MCP、直销接口、运营面三层仅入本图——<b>非同一台账的两种画法，请勿互相对表</b>。</p>
 </div>
 </div>
 
@@ -833,8 +834,8 @@ tr:last-child td { border-bottom: none; }
   "chan-platform":{ title:"FMP（管理人平台）", ext:false, sub:"对客主入口 · A 通道发起方", desc:"管理人登录 FMP 使用智能体服务；功能闸与数据闸的判定权威。设计意图（09-13 用户走读澄清）：FMP 做的是内嵌 AI 服务——对接智能体平台、在 FMP 页面协助客户完成办理（预填/预审规则等由 AI 服务承担）；FMP 不作为 MCP 客户端开发，编排与开发尽量由智能体平台承担。", tasks:[
     {s:"done",o:"银小管＋FMP",t:"平台菜单-接口对应关系表初始数据登记（盘点表 53 条底稿：银小管整理、平台录入）"},
     {s:"done",o:"FMP",t:"「按工具权限设置功能」管控口径对齐（工具即权限单元）"},
-    {s:"open",o:"FMP",t:"#13 聚合工具判定语义 AND 书面确认（银小管已实现并注接口文档 v1.19）"},
-    {s:"open",o:"FMP",t:"#6 submit_ta_order 业务侧网关路径（审批链路真触发前提）"},
+    {s:"done",o:"FMP",t:"#13 已拍（0914）：免平台书面确认，AND 语义直接执行（实现与接口文档 v1.19 均已按 AND）"},
+    {s:"done",o:"FMP",t:"#6 已拍（0914）：submit_ta_order 不进只读 MCP 目录；审批演示改 5089 原生 stub，真实录单走独立写通道（后续立项）"},
     {s:"done",o:"银小管＋FMP",t:"设计意图定盘（09-13 走读澄清）：FMP=内嵌 AI 服务对接智能体平台，协助客户完成办理（预填/预审规则等由 AI 服务承担）；FMP 不做 MCP 客户端开发、免深度改造，编排与开发归智能体平台"}]},
   "chan-ai":{ title:"第三方 AI 客户端", ext:false, sub:"Trae / CLI / 通用 MCP 客户端", desc:"以 MCP 协议接入银小管的通用 AI 客户端。", tasks:[
     {s:"done",o:"银小管",t:"agent-setup 拆两份：正式 OAuth 版（agent-setup.md）＋开发环境版（agent-setup-dev.md）"},
@@ -845,19 +846,19 @@ tr:last-child td { border-bottom: none; }
   "chan-plugin":{ title:"银小帆浏览器插件", ext:false, sub:"认申赎录单场景 · 表单自动填充", desc:"Chrome/Edge 插件，承载录单场景深链、表单映射与自动填充。", tasks:[
     {s:"done",o:"插件域",t:"认申赎录单 Skill 场景跑通（open-day 自动合并 batch / 参数规范化 / pre_review 注管理人）"},
     {s:"done",o:"插件域",t:"插件版本发布链（release.py build-first / test→latest / /version 自动更新）"}]},
-  "chan-capsule":{ title:"桌面胶囊", ext:true, sub:"真机桌宠 · 对话入口", desc:"PySide6 桌面客户端，对话引擎移植插件链路。", tasks:[
+  "chan-capsule":{ title:"桌面胶囊", ext:true, sub:"真机桌宠 · 对话入口（已迁出）", desc:"PySide6 桌面客户端，对话引擎移植插件链路。<b>⚠️ S5 域已于 2026-09-13 迁出至其他项目、本仓 desktop_capsule 冻结</b>（节点保留作历史）。", tasks:[
     {s:"done",o:"胶囊域",t:"MVP（P1+P2）E2E 跑通「我的哪些产品今天是开放日」（19 产品反查→批量→4 只命中）"},
-    {s:"doing",o:"胶囊域＋用户",t:"真机窗口人工走查（待验证）"}]},
+    {s:"done",o:"胶囊域＋用户",t:"真机走查随域迁出终结（S5 域 09-13 迁出，本仓冻结）"}]},
   "edge-mcp":{ title:"对外唯一 MCP server（5089）", ext:false, sub:"一个 URL · 一套鉴权 · 一份工具清单", desc:"银小管对客唯一契约面。JSON-RPC tools/list + tools/call；对内多实现不对外暴露。", tasks:[
     {s:"done",o:"银小管",t:"/mcp 端点（JSON-RPC），静态 API Key 兼容通道（内网测试默认）"},
     {s:"done",o:"银小管",t:"tools/list 筛子预过滤（fail-open，覆盖全部工具；_EXCLUDED_FMP_TOOLS 跳过降级项）"},
     {s:"done",o:"银小管",t:"RFC9728 保护资源元数据端点（双路径）"},
     {s:"done",o:"银小管",t:"中间件：静态 Key 兼容 + token introspect 校验（15s/5s 缓存 fail-closed）+ L2 scope 校验（-32002 附指引）"},
     {s:"done",o:"银小管",t:"「对外唯一 MCP server」契约写入板 v1.91 / 接口文档 v1.17 并全链收口"},
-    {s:"open",o:"银小管",t:"判定链降级边界两处（接口明确拒绝不降级 / 影子比对）——板与接口文档已标「待拍板」"}]},
+    {s:"doing",o:"银小管",t:"判定链降级边界——★B 已拍（0914）：接口明确拒绝＝不降级硬拦；无应答/超时＝fail-closed；影子比对仅过渡观察（落地随 P2-6）"}]},
   "edge-oauth":{ title:"OAuth 2.1 方式B（认证授权）", ext:false, sub:"默认关闭 · MCP_OAUTH_ENABLED=0 线上零变更", desc:"授权服务器（5095 承载）+ 资源服务器（5089 双角色面）；B 凭证只装身份。", tasks:[
     {s:"done",o:"银小管",t:"OAuth 2.1 授权码 + PKCE demo 全链（授权页仅确认身份，不列工具清单——♀拍板）"},
-    {s:"done",o:"银小管",t:"单凭证档A：≤8h 随源会话、不发放跨会话长效凭证、撤销走内省（接口文档 v1.15→v1.16）"},
+    {s:"done",o:"银小管",t:"凭证模型修订：短 access（1h）＋长 refresh（闲置 30 天滑动／总上限 90 天）、不贴浏览器会话、撤销走内省（接口文档 v1.20；原 v1.15→v1.16 单凭证口径作废）"},
     {s:"done",o:"银小管",t:"L2 工具 → 6 业务域 scope 映射（_TOOL_SCOPES：account/trade/precheck/monitor/…）"},
     {s:"done",o:"银小管",t:"可选岗位权限现查插件点（MCP_PERM_CHECK_URL，fail-closed）"},
     {s:"done",o:"银小管",t:"MCP 中间件鉴权缓存盘点（token 15s/权限 60s，设计期语义非 bug）"}]},
@@ -873,8 +874,8 @@ tr:last-child td { border-bottom: none; }
     {s:"done",o:"银小管",t:"同名双源去重：query_raise_flow / query_product_info 按直连优先（运行态口径）"},
     {s:"done",o:"银小管",t:"聚合工具判定语义 AND 定稿并注接口文档 v1.19"},
     {s:"done",o:"银小管",t:"工具元数据统一 _tools_meta()（L1/L2 + 所需 scope，场景卡/文档共用）"},
-    {s:"open",o:"FMP",t:"#13 AND 语义待管理人平台书面确认"},
-    {s:"open",o:"FMP",t:"#6 服务器 MCP 目录补 submit_ta_order（等业务侧网关路径）"}]},
+    {s:"done",o:"FMP",t:"#13 已拍（0914）：AND 语义直接执行，免书面确认"},
+    {s:"done",o:"FMP",t:"#6 已拍（0914）：不进只读 MCP 目录（MCP 链路无审批闸门，入目录＝绕过审批）；审批演示改 5089 原生 stub"}]},
   "sup-resources":{ title:"Resources 原语（场景卡）", ext:false, sub:"yxg://skills/index + yxg://skills/{id}/scenecard", desc:"向客户端供场景卡：流程步骤 + 工具清单 + 可移植正文。", tasks:[
     {s:"done",o:"银小管",t:"Resources 出口上线（索引 + 场景卡模板，a97d7a784）"},
     {s:"done",o:"银小管",t:"get_skill_flow 升级场景卡 v2（flows+tools+portable_flow+strip_report）——修复原文截断 4000 字符带私有指令外发问题（ca931438a）"},
@@ -893,8 +894,8 @@ tr:last-child td { border-bottom: none; }
     {s:"done",o:"银小管",t:"53 条平台接口清单登记（盘点表，含 requiresIdentity 50/53 标注）"},
     {s:"done",o:"银小管",t:"Route C 聚合工具 #55 query_rule_calc_flow 保留（#53/#54 降级为场景内编排）"},
     {s:"done",o:"银小管",t:"降级影响全链收口：全集 85→83、运行态 83→81"},
-    {s:"open",o:"银小管＋FMP",t:"#14 直连旁路 16 项治理还款计划（建议试点 query_raise_flow 改挂平台 REST——平台有现成等价接口 #21）"},
-    {s:"done",o:"银小管＋FMP",t:"fmp-ai-proxy 口径定盘（09-13 走读）：＝分析 FMP 代码库所得「平台可提供服务接口集合」项目——两部分分工：①FMP 提供接口、②智能体平台封装为 tools/MCP（本节点 53 条即②的产物）"}]},
+    {s:"doing",o:"银小管＋FMP",t:"#14 已拍（0914）口径重定：演示环境走直连旁路（正当路径），正式生产一律走正路（平台判权限）随 H2 切换；原 16 项还款计划作废（试点 query_raise_flow 随阶段三）"},
+    {s:"done",o:"银小管＋FMP",t:"fmp-ai-proxy（接口集合）口径定盘（09-13 走读）：＝分析 FMP 代码库所得「平台可提供服务接口集合」项目——两部分分工：①FMP 提供接口、②智能体平台封装为 tools/MCP（本节点 53 条即②的产物）。09-16 澄清：同名两物——此为「接口集合」义；内嵌 A 通道运行时另经新增 fmp-ai-proxy 代理服务（见走读页 M3）"}]},
   "cap-direct":{ title:"直连工具（30）", ext:false, sub:"旁路 16 + 纯内部 14", desc:"类②工具：不经平台 REST（CSP / dblink / 内部逻辑），须前置查平台权限接口管控。", tasks:[
     {s:"done",o:"银小管",t:"数据路径逐工具核实（fund.PRD_PROP@fmp、PRD_SCALE_INDEX_MONITOR@fmp 等 dblink 实证）"},
     {s:"done",o:"银小管",t:"L1/L2 分级表 + L2→scope 映射维护（_TOOL_LEVELS / _TOOL_SCOPES）"},
@@ -905,7 +906,7 @@ tr:last-child td { border-bottom: none; }
     {s:"done",o:"银小管",t:"样卡格式审定（用户四问拍板：五要素定型 / 内部字段标注 / 字段级示意 / md+HTML 双产出）"},
     {s:"done",o:"银小管",t:"10 工具契约卡交付（docs/MCP工具契约卡-认申赎-10工具-20260911.{md,html}，事实基线 10a252873 逐卡核对）"},
     {s:"done",o:"银小管",t:"副作用与语义陷阱披露（reminders 企微推送 / stop-buy 无记录≠正常 / raise-flow 同名双源 / 客户名包含式匹配）"},
-    {s:"doing",o:"银小管",t:"契约卡挂外网 Pages 或 5095 工作台（HTML 已备好，上传路径待定）"}]},
+    {s:"doing",o:"银小管",t:"契约卡挂载——★E 已拍（0914）：只挂 5095 工作台、不挂外网；HTML 已备好待上传 5095"}]},
   "int-fmp":{ title:"fmp-business-mcp（5077）", ext:true, sub:"对内 MCP 聚合层 · qa/intel/memory/business/docs", desc:"银小管内部消费的 MCP 聚合服务（Route C 源），不对外暴露。", tasks:[
     {s:"done",o:"银小管",t:"五 server 健康（qa/intel/memory/business/docs 全 ok）"},
     {s:"done",o:"银小管",t:"SSE 代理集成（_FMP_PROXY_TOOLS 动态发现 + 排除表过滤）"},
@@ -940,14 +941,14 @@ tr:last-child td { border-bottom: none; }
     {s:"done",o:"银小管",t:"通道建立并三次推送（Git Data API）"},
     {s:"done",o:"银小管",t:"board.html 重推 v1.94（Contents API，commit e7c89da，线上实测通过——C8 改判执行）"},
     {s:"done",o:"银小管",t:"发布脚本安全化（固定主机白名单 + 禁重定向，过 Mimosa SSRF 门禁）"},
-    {s:"doing",o:"银小管",t:"契约卡 HTML 挂外网（contract-cards.html，待定）"}]},
-  "gov-todo":{ title:"治理待办台账", ext:false, sub:"pending-decisions · 交接锚点", desc:"跨批次治理事项统一登记（docs/pending-decisions.md）。", tasks:[
-    {s:"open",o:"FMP",t:"#13 聚合 AND 语义平台书面确认（等外部）"},
-    {s:"open",o:"银小管",t:"#14 直连旁路 16 项还款计划（等用户择期启动试点）"},
-    {s:"open",o:"银小管",t:"#15 工具上架与权限登记门禁（等新工具上架场景落实）"},
-    {s:"open",o:"FMP",t:"#6 submit_ta_order（等业务侧网关路径）"},
-    {s:"open",o:"银小管",t:"判定链降级边界（接口明确拒绝不降级 / 影子比对）"},
-    {s:"open",o:"银小管",t:"鉴权缓存 TTL 收紧（配置化/写时失效，设计期语义，待拍板再动）"}]}
+    {s:"done",o:"银小管",t:"★E 已拍（0914）：契约卡不挂外网，挂载统一走 5095 工作台（外网挂载事项终结）"}]},
+  "gov-todo":{ title:"治理待办台账", ext:false, sub:"pending-decisions · 交接锚点（0914 批次已全部拍毕）", desc:"跨批次治理事项统一登记（docs/pending-decisions.md）。<b>0914 用户逐条拍板后本节点 6 条全部闭环</b>；执行项在各域节点与清单页签跟踪。", tasks:[
+    {s:"done",o:"FMP",t:"#13 已拍：免平台书面确认，AND 直接执行"},
+    {s:"done",o:"银小管",t:"#14 已拍：口径重定——演示走旁路/生产走正路，原 16 项还款计划作废（执行跟踪见 P3-9）"},
+    {s:"done",o:"银小管",t:"#15 已拍：定为持续机制（新工具上架必同步登记对应表/权限项），随首个新工具上架触发检验"},
+    {s:"done",o:"FMP",t:"#6 已拍：不进只读 MCP 目录；审批演示 5089 原生 stub；真实录单独立写通道后续立项"},
+    {s:"done",o:"银小管",t:"★B 已拍：不降级硬拦＋fail-closed；影子比对仅过渡观察（落地跟踪见 P2-6）"},
+    {s:"done",o:"银小管",t:"★C 已拍：维持现状（demo 观感值），随 H2 平台权限接口上线一并收紧为配置化 TTL"}]}
   };
   function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;"); }
   function cnt(id){ var n=N[id], c={done:0,doing:0,open:0}; n.tasks.forEach(function(t){c[t.s]++;}); c.total=n.tasks.length; return c; }
@@ -1277,7 +1278,7 @@ python -m agents.business_review_agent.skill_portable --export &lt;目录&gt;   
           a_agt:{n:'A·智能体平台', t:'银小管：只认平台 → 功能闸 → 数据闸', w:'怎么判定', s:'have', b:'①核对 API Key——只认平台、不认人；②筛子：tools/list 按张三权限预过滤可见工具（fail-open）；③功能闸按调用路径分两类：平台接口工具（经过平台）透传身份由平台按对应表拦；直连工具（不经过平台）先问平台权限接口（fail-closed·403 转述）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（平台代问）」。'},
           b_chip:{n:'B', t:'对接方式 B · 桌面智能体工具', w:'跨信任边界 · OAuth 2.1', s:'todo', b:'张三自己电脑上的 AI 工具（Trae / WorkBuddy / 千问办公 / 豆包 / 客户自建）。有浏览器、有用户，走授权码＋PKCE；认证全程经管理人平台。'},
           b_caller:{n:'B·调用方', t:'Trae · 张三桌面的 AI 工具', w:'谁在调用', s:'todo', b:'接入编号 clientId 绑张三名下；粘贴 MCP 链接即用（首连 401 指路 → 官方授权页）；少数不支持自动注册的工具走用户中心手动开通。'},
-          b_mp:{n:'B·平台', t:'管理人平台：授权页＋发一张凭证', w:'平台做什么', s:'todo', b:'①首连被拒（401），按提示打开官方授权页；②张三用平台账号登录并点「同意」——功能权限管理员已预配置，页仅确认，PKCE 防截获；③发放一张访问凭证（≤8 小时·随源登录会话·每次调用都带；不发放跨会话长效凭证，过期重走授权）。凭证只装身份：张三 · 某某基金（scope 六域已退役）——菜单明细不进凭证。'},
+          b_mp:{n:'B·平台', t:'管理人平台：授权页＋发一张凭证', w:'平台做什么', s:'todo', b:'①首连被拒（401），按提示打开官方授权页；②张三用平台账号登录并点「同意」——功能权限管理员已预配置，页仅确认，PKCE 防截获；③发放访问凭证（1 小时）＋续期凭证（闲置 30 天滑动、总上限 90 天；不贴浏览器会话，客户端自动续期）。凭证只装身份：张三 · 某某基金（scope 六域已退役）——菜单明细不进凭证。'},
           b_agt:{n:'B·智能体平台', t:'银小管：验 token → 功能闸 → 数据闸', w:'怎么判定', s:'todo', b:'①验凭证，解出张三 · 某某基金（身份·机构）；②筛子：按管理员预配置权限预过滤可见工具；③功能闸：平台接口工具→平台拦 · 直连工具→代问权限接口（同 A 行）；④数据闸：按机构的产品范围过滤（org_id）；⑤审计记「张三（经 Trae · tr_88…）」。'},
           c_chip:{n:'C', t:'对接方式 C · 管理人自建智能体平台（直连）', w:'跨信任边界 · client_credentials', s:'todo', b:'机构部署在自己机房的后端系统——全程无人参与、没有浏览器，代表机构不代表某个员工。典型场景：夜间定时批量同步净值。申请流程与页面原型见「权限认证需求设计」页签 · 第四章 C 通道。'},
           c_caller:{n:'C·调用方', t:'XX资管自建智能体平台', w:'谁在调用', s:'todo', b:'机构服务器对服务器直连。没有浏览器也没有人，因此不走授权页——身份来自经三岗审批开户的机构服务账号（clientId＋clientSecret）。'},
@@ -1422,7 +1423,7 @@ python -m agents.business_review_agent.skill_portable --export &lt;目录&gt;   
       <div class="mp-shell" style="border:1px solid #cbd5e1;border-radius:12px;overflow:hidden;background:#f8fafc;box-shadow:0 3px 12px rgba(15,23,42,.08);">
         <div style="height:44px;background:#0f2f5f;color:#fff;display:flex;align-items:center;padding:0 18px;font-size:14px;font-weight:600;">银河管理人平台 <span style="opacity:.65;margin:0 8px;">/</span> <span id="mpBreadcrumb">我的授权</span><span style="margin-left:auto;font-size:12px;font-weight:400;opacity:.8;">张三 · 某某基金管理有限公司</span></div>
         <div style="display:grid;grid-template-columns:180px 1fr;min-height:410px;"><aside style="background:#fff;border-right:1px solid #e2e8f0;padding:14px 10px;font-size:13px;color:#475569;"><div style="padding:9px 10px;color:#0f2f5f;font-weight:700;border-bottom:1px solid #e2e8f0;margin-bottom:6px;">用户中心</div><div class="mp-nav" data-mp-page="myAuth">首页</div><div class="mp-nav">修改密码</div><div class="mp-nav">修改绑定手机</div><div class="mp-nav active-nav" data-mp-page="myAuth">我的授权</div><div class="mp-nav" data-mp-page="provision">开通智能体工具</div><div class="mp-nav">退出登录</div></aside>
-          <main style="padding:22px 26px;background:#f8fafc;"><section class="mp-page" data-mp-page="myAuth"><h3 style="margin:0 0 6px;color:#0f172a;font-size:20px;">我的授权</h3><p style="margin:0 0 18px;color:#64748b;font-size:13px;">管理已授权访问银小管的智能体工具。你可以查看授权范围，也可以随时撤销。</p><div style="background:#fff;border:1px solid #e2e8f0;border-radius:9px;overflow:hidden;"><table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#f1f5f9;text-align:left;"><th style="padding:10px;">应用名称</th><th>应用类型</th><th>授权范围</th><th>最近使用</th><th>状态</th><th>操作</th></tr></thead><tbody><tr><td style="padding:11px 10px;font-weight:600;">Trae</td><td>管理人用户智能体端</td><td>查询类工具</td><td>2026-08-26 15:20</td><td><span class="mp-status-ok">有效</span></td><td><button class="mp-link" data-mp-action="detail">查看详情</button> <button class="mp-link danger" data-mp-action="revoke">撤销</button></td></tr><tr style="border-top:1px solid #e2e8f0;"><td style="padding:11px 10px;font-weight:600;">WorkBuddy</td><td>管理人用户智能体端</td><td>只读查询</td><td>2026-08-25 10:12</td><td><span class="mp-status-ok">有效</span></td><td><button class="mp-link" data-mp-action="detail">查看详情</button> <button class="mp-link danger" data-mp-action="revoke">撤销</button></td></tr></tbody></table></div><div id="mpAuthDetail" style="display:none;margin-top:14px;background:#fff;border:1px solid #bfdbfe;border-radius:9px;padding:14px;font-size:12px;color:#334155;"><strong style="font-size:14px;color:#0f172a;">Trae 授权详情</strong><div style="display:grid;grid-template-columns:120px 1fr;gap:7px;margin-top:10px;"><span>授权主体</span><b>张三</b><span>所属机构</span><b>某某基金管理有限公司</b><span>授权范围</span><b>查询类工具、表单信息准备</b><span>有效期</span><b>Access Token 随源登录会话（≤8 小时）· 不发放续期凭证</b></div></div><div id="mpAuthMsg" style="margin-top:12px;font-size:12px;color:#2563eb;"></div></section>
+          <main style="padding:22px 26px;background:#f8fafc;"><section class="mp-page" data-mp-page="myAuth"><h3 style="margin:0 0 6px;color:#0f172a;font-size:20px;">我的授权</h3><p style="margin:0 0 18px;color:#64748b;font-size:13px;">管理已授权访问银小管的智能体工具。你可以查看授权范围，也可以随时撤销。</p><div style="background:#fff;border:1px solid #e2e8f0;border-radius:9px;overflow:hidden;"><table style="width:100%;border-collapse:collapse;font-size:12px;"><thead><tr style="background:#f1f5f9;text-align:left;"><th style="padding:10px;">应用名称</th><th>应用类型</th><th>授权范围</th><th>最近使用</th><th>状态</th><th>操作</th></tr></thead><tbody><tr><td style="padding:11px 10px;font-weight:600;">Trae</td><td>管理人用户智能体端</td><td>查询类工具</td><td>2026-08-26 15:20</td><td><span class="mp-status-ok">有效</span></td><td><button class="mp-link" data-mp-action="detail">查看详情</button> <button class="mp-link danger" data-mp-action="revoke">撤销</button></td></tr><tr style="border-top:1px solid #e2e8f0;"><td style="padding:11px 10px;font-weight:600;">WorkBuddy</td><td>管理人用户智能体端</td><td>只读查询</td><td>2026-08-25 10:12</td><td><span class="mp-status-ok">有效</span></td><td><button class="mp-link" data-mp-action="detail">查看详情</button> <button class="mp-link danger" data-mp-action="revoke">撤销</button></td></tr></tbody></table></div><div id="mpAuthDetail" style="display:none;margin-top:14px;background:#fff;border:1px solid #bfdbfe;border-radius:9px;padding:14px;font-size:12px;color:#334155;"><strong style="font-size:14px;color:#0f172a;">Trae 授权详情</strong><div style="display:grid;grid-template-columns:120px 1fr;gap:7px;margin-top:10px;"><span>授权主体</span><b>张三</b><span>所属机构</span><b>某某基金管理有限公司</b><span>授权范围</span><b>查询类工具、表单信息准备</b><span>有效期</span><b>Access Token 1 小时 · 续期凭证闲置 30 天滑动（总上限 90 天）· 不贴浏览器会话</b></div></div><div id="mpAuthMsg" style="margin-top:12px;font-size:12px;color:#2563eb;"></div></section>
             <section class="mp-page" data-mp-page="consent" style="display:none;max-width:620px;"><div style="background:#fff;border:1px solid #dbeafe;border-radius:10px;padding:24px;box-shadow:0 2px 8px rgba(37,99,235,.08);"><div style="font-size:12px;color:#2563eb;font-weight:700;letter-spacing:.04em;">银河管理人平台 · 授权确认</div><h3 style="margin:8px 0 4px;font-size:21px;color:#0f172a;">Trae 请求访问银小管</h3><p style="font-size:13px;color:#64748b;margin:0 0 18px;">当前登录用户：<strong style="color:#334155;">张三</strong>（某某基金管理有限公司）</p><div style="background:#f8fafc;border-radius:8px;padding:14px;font-size:13px;color:#334155;"><strong>该应用将获得以下权限：</strong><div style="margin-top:9px;line-height:2;">✓ 查询允许访问的业务数据<br>✓ 使用表单信息准备能力<br><span style="color:#94a3b8;">✕ 不会获得你的平台密码<br>✕ 不会获得未授权的办理权限</span></div></div><p style="font-size:12px;color:#64748b;line-height:1.7;margin:16px 0;">你的平台密码不会提供给 Trae。授权完成后，Trae 只持有一张有期限、可撤销的访问通行证。</p><div style="display:flex;justify-content:flex-end;gap:10px;"><button class="mp-btn secondary" data-mp-action="deny">拒绝</button><button class="mp-btn primary" data-mp-action="agree">同意并继续</button></div><div id="mpConsentMsg" style="margin-top:12px;font-size:12px;"></div></div></section><section class="mp-page" data-mp-page="provision" style="display:none;max-width:620px;"><h3 style="margin:0 0 6px;color:#0f172a;font-size:20px;">开通智能体工具接入</h3><p style="margin:0 0 18px;color:#64748b;font-size:13px;">大多数工具（如 Trae）首次连接时自动注册，无需本页；仅少数不支持自动注册的工具需在此人工开通。</p><div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;box-shadow:0 2px 8px rgba(37,99,235,.06);"><div style="display:grid;grid-template-columns:110px 1fr;gap:12px;font-size:13px;color:#334155;align-items:center;"><span>工具名称</span><input id="mpProvName" placeholder="如：XX 智能体客户端" style="border:1px solid #cbd5e1;border-radius:7px;padding:8px 10px;font-size:13px;"><span>工具类型</span><select style="border:1px solid #cbd5e1;border-radius:7px;padding:8px 10px;font-size:13px;background:#fff;"><option>桌面智能体端（B 通道）</option><option>其他</option></select><span>回调地址</span><input placeholder="可选——支持自动跳回的工具填写" style="border:1px solid #cbd5e1;border-radius:7px;padding:8px 10px;font-size:13px;"></div><div style="display:flex;justify-content:flex-end;margin-top:16px;"><button class="mp-btn primary" data-mp-action="provision">开通并发放 clientId</button></div><div id="mpProvResult" style="display:none;margin-top:14px;background:#f0fdf4;border:1px solid #bbf7d0;border-radius:9px;padding:14px;font-size:12.5px;color:#166534;line-height:1.8;"><strong style="font-size:13.5px;">开通成功（演示）</strong><div style="display:grid;grid-template-columns:110px 1fr;gap:6px;margin-top:8px;"><span>clientId</span><b style="font-family:monospace;">cli_7f9e2a41</b><span>归属台账</span><b>张三 · 某某基金管理有限公司</b><span>下一步</span><b>该工具首次连接银小管时弹出「② OAuth 授权确认」，本人同意后即可使用；随时可在「③ 我的授权」撤销</b></div></div><div id="mpProvMsg" style="margin-top:12px;font-size:12px;color:#2563eb;"></div></div></section></main>
         </div>
       </div>
@@ -2361,8 +2362,8 @@ data: [DONE]</code></pre>
       <table>
         <thead><tr><th>凭据</th><th>签发方</th><th>用途</th><th>生命周期</th><th>备注</th></tr></thead>
         <tbody>
-          <tr><td><code>OAuth access_token</code></td><td>管理人平台（授权服务器）</td><td>B/C 通道跨边界访问银小管/MCP</td><td>B＝随源登录会话（≤8h）· C＝约 1h</td><td>JWT；B=个人 / C=机构两种身份；<strong>不发放续期凭证</strong></td></tr>
-          <tr><td><code>refresh_token</code></td><td>—</td><td><strong>B 通道不发放</strong>——凭证与用户平台登录同寿命，不发放跨会话长效凭证（机器对接走 C 通道密钥治理）</td><td>—</td><td>撤销经 token 内省（RFC 7662）即时生效；「我的授权」页可撤销</td></tr>
+          <tr><td><code>OAuth access_token</code></td><td>管理人平台（授权服务器）</td><td>B/C 通道跨边界访问银小管/MCP</td><td>B＝access 1h、refresh 闲置 30 天滑动／总上限 90 天；C＝约 1h</td><td>JWT；B=个人 / C=机构两种身份；<strong>B 通道发放续期凭证（不贴浏览器会话）</strong></td></tr>
+          <tr><td><code>refresh_token</code></td><td>—</td><td><strong>B 通道：闲置 30 天滑动、总寿命 90 天封顶（轮换）</strong>——不贴浏览器会话（MCP 凭证与浏览器登录各自独立）；机器对接走 C 通道密钥治理</td><td>—</td><td>撤销经 token 内省（RFC 7662）即时生效；「我的授权」页可撤销</td></tr>
           <tr><td><code>session_token</code></td><td>银小管 handshake</td><td>预演通道会话凭据（非 OAuth）</td><td>约 2h</td><td><strong>≠ OAuth token</strong>，不可混用</td></tr>
           <tr><td><code>X-Fmp-User-Token</code></td><td>管理人平台会话体系</td><td>A 通道随路携带用户登录态</td><td>随平台会话</td><td>非鉴权凭据；银小管暂存供回调</td></tr>
           <tr><td>静态 API Key</td><td>银小管部署配置</td><td>内网调用直连</td><td>长期（轮换需双侧同步）</td><td>内网凭据，持续使用</td></tr>
@@ -2490,7 +2491,7 @@ data: [DONE]</code></pre>
       </table>
     </div>
     <div class=&quot;prose&quot;><p>注册端点未启用时，B 通道走用户中心人工开户（§8.4 少数不支持自动注册的工具）；C 通道不走动态注册，开户走《MCP 申请授权流程》三岗审批。全部端点域名与真实路径以平台部署清单为准，本文档 §08 中均为占位。</p></div>
-    <div class='prose'><p><strong>授权页语义（B 通道）</strong>：授权页只做<strong>身份确认与告知</strong>（凭证只装身份——功能权限管理员已预配置），不列工具全量清单——工具可见性由银小管 <code>tools/list</code> 预过滤（筛子·fail-open）在每次连接时实时呈现，单一判定点不漂移；平台亦无需反向拉取智能体平台工具清单。授权页如需预期管理，按<strong>菜单/业务域粒度</strong>做摘要即可（平台用既有菜单权限数据聚合，不引入工具概念）。<strong>B 通道只发放一张 access_token</strong>——有效期随源登录会话（≤8 小时），<strong>不发放跨会话长效凭证</strong>（refresh_token 不发放）：凭证生命 ≤ 会话生命，隔夜失效后次日重新登录；撤销经 token 内省（RFC 7662）即时生效。</p></div>
+    <div class='prose'><p><strong>授权页语义（B 通道）</strong>：授权页只做<strong>身份确认与告知</strong>（凭证只装身份——功能权限管理员已预配置），不列工具全量清单——工具可见性由银小管 <code>tools/list</code> 预过滤（筛子·fail-open）在每次连接时实时呈现，单一判定点不漂移；平台亦无需反向拉取智能体平台工具清单。授权页如需预期管理，按<strong>菜单/业务域粒度</strong>做摘要即可（平台用既有菜单权限数据聚合，不引入工具概念）。<strong>B 通道采用「短 access＋长 refresh」</strong>——访问凭证 1 小时，续期凭证闲置 30 天滑动、总寿命 90 天封顶，<strong>不贴浏览器会话</strong>（MCP 凭证与浏览器登录各自独立）：日常使用免重复授权、超期强制重新确认；撤销经 token 内省（RFC 7662）即时生效。</p></div>
     <div class=&quot;prose&quot;><p><strong>核定清单存储（签发数据源）</strong>：C 通道 access_token 签发时 scope 取自申请核定记录——平台须将审批通过的服务账号核定结果落库（clientId / 所属机构 / 核定场景清单 / IP 白名单 / 状态，扩展既有 API 授权映射表结构，如 <code>MCP_AUTH_MAPPING</code>），token 端点按库签发对应 scope；吊销/暂停账号即时阻断换票。B 通道 scope 取自用户授权页勾选结果，同样落库作为签发与「我的授权」页展示的数据源。</p></div>
     <div class=&quot;prose&quot;><p><strong>页面类需求指路</strong>：授权页、我的授权、用户中心开通、C 通道 MCP 服务授权页等页面 UI 与业务逻辑需求，详见看板「权限认证需求设计」页签第四章原型（B 通道 3 页 · C 通道原型）——本章只约定机器端点契约。</p></div>
     <div class=&quot;subsection&quot;><div class=&quot;subsection-title&quot;>11.2 表单预填存取端点（存票 / 取件 · 契约引用）</div></div>
@@ -2640,6 +2641,8 @@ data: [DONE]</code></pre>
       <h2 class=&quot;section-title&quot;>版本变更说明</h2>
     </div>
 
+    <div class='subsection'><div class='subsection-title'>v1.20（2026-09-16）· B 通道改「短 access＋长 refresh」（0916 定盘）</div></div>
+    <div class='prose'><p>拍板：B 通道签发<strong>短效访问凭证（1 小时）＋续期凭证（闲置 30 天滑动续期、总寿命 90 天封顶、轮换）</strong>；<strong>不贴浏览器会话</strong>——MCP 凭证与浏览器登录各自独立（「MCP 负责 MCP 的、浏览器负责浏览器的」）。refresh 按授权计寿命；换发的新 access 由平台网关同样接受。涉及 §8.5 凭据对照表（access 行 TTL 改 1h、refresh 行恢复「发放」）、§11.1（token 端点恢复 refresh_token）。v1.16「单凭证 ≤8h 不发放 refresh」被本版取代，历史条目保留。</p></div>
     <div class='subsection'><div class='subsection-title'>v1.19（2026-09-11）· 聚合工具处置落板（运行态 83→81 · 判定语义 AND）</div></div>
     <div class='prose'><p>按《方案探讨》§9 处置建议拍板：三个聚合工具中 <code>query_rule_calc_flow</code> 保留（2 接口＝同一动作两步）；<code>query_product_lifecycle</code>（7 接口）与 <code>query_mgr_overview</code>（6 接口）<strong>改造为场景内编排、不作为对客工具</strong>（一个权限项打包 6~7 个跨域动作，管理员无法理解、最小必要集核定失效）——平台接口工具 55→53、全集 85→83、MCP 运行态 83→81。聚合工具（1:N 接口映射）判定语义＝<strong>AND</strong>（与接口层逐个拦的运行时语义一致）；平台侧书面确认后固化、此前实现按 AND。管理页补聚合工具依赖清单（可解释性）列入排期。§01/§08/§8.4/§8.6/§11.4 数字与注记同步；板内实现层参考清单移除 2 项降级工具（全集 83＝53＋30；运行态 81）。</p></div>
     <div class='subsection'><div class='subsection-title'>v1.18（2026-09-11）· 三原语供给上线（Tools ＋ Resources 场景卡 ＋ Prompts 剧本包）</div></div>
@@ -13263,10 +13266,10 @@ div.oac-overflow-y-auto.oac-overflow-x-hidden.oac-fixed.oac-h-full.scrollbar-hid
 
 
 <!-- ========== TAB: 表单预填方案 ========== -->
-<!-- ========== TAB: 管理人平台侧工作面条目（清单·走读页） ========== -->
+<!-- ========== TAB: 项目任务明细计划（清单·走读页） ========== -->
 <div class="tab-content tab-full" id="tab-mgrlist">
   <div class="iframe-toolbar">
-    <div class="doc-title">📋 管理人平台侧工作面 · 完整条目清单（走读页） <span class="src">· 四系统页签：管理人平台／智能体平台（我方）／云鼎／直销 · 时间要求与状态可填、一键导出</span></div>
+    <div class="doc-title">📋 项目任务明细计划（走读页） <span class="src">· 四系统页签：FMP／智能体平台（YXF）／云鼎／直销 · 时间要求与状态可填、一键导出</span></div>
     <div class="doc-actions" style="font-size:.75rem;color:var(--muted);">单文件版 · 内容已内嵌</div>
   </div>
   <iframe class="iframe-frame" srcdoc="<!DOCTYPE html>
@@ -13274,7 +13277,7 @@ div.oac-overflow-y-auto.oac-overflow-x-hidden.oac-fixed.oac-h-full.scrollbar-hid
 <head>
 <meta charset=&quot;utf-8&quot;>
 <meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1&quot;>
-<title>管理人平台侧工作面 · 完整条目清单 · 走读稿 v0.2</title>
+<title>项目任务明细计划 · 走读稿 v0.2</title>
 <style>
   :root{
     --bg:#f8fafc; --surface:#ffffff; --surface-2:#f1f5f9; --ink:#1e293b; --ink-strong:#0f172a;
@@ -13285,7 +13288,7 @@ div.oac-overflow-y-auto.oac-overflow-x-hidden.oac-fixed.oac-h-full.scrollbar-hid
   *{box-sizing:border-box}
   body{margin:0;background:var(--bg);color:var(--ink);line-height:1.6;
     font-family:-apple-system,BlinkMacSystemFont,&quot;Segoe UI&quot;,&quot;Microsoft YaHei&quot;,&quot;PingFang SC&quot;,sans-serif;font-size:14px}
-  .wrap{max-width:1480px;margin:0 auto;padding:24px 18px 80px}
+  .wrap{max-width:none;margin:0 auto;padding:24px 18px 80px}
   h1{font-size:23px;margin:0 0 6px;color:var(--ink-strong);border-bottom:3px solid var(--primary);padding-bottom:10px}
   .sub{color:var(--muted);font-size:12.5px;margin-bottom:14px}
   h2{font-size:16px;margin:28px 0 8px;color:var(--ink-strong);display:flex;align-items:center;gap:8px}
@@ -13314,36 +13317,31 @@ div.oac-overflow-y-auto.oac-overflow-x-hidden.oac-fixed.oac-h-full.scrollbar-hid
   .btn.pri{background:var(--primary);border-color:var(--primary);color:#fff}
   .tblwrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);overflow-x:auto}
   table{width:100%;border-collapse:collapse;font-size:12.5px;table-layout:fixed}
-  /* 固定列宽：后三列（时间要求/状态/意见）必须始终可见，不横向滚出视野 */
+  /* 固定列宽：后两列（时间要求/状态）必须始终可见，不横向滚出视野 */
   thead th:nth-child(1){width:40px}
-  thead th:nth-child(2){width:112px}
-  thead th:nth-child(3){width:172px}
+  thead th:nth-child(2){width:140px}
+  thead th:nth-child(3){width:400px}
   thead th:nth-child(4){width:auto}
-  thead th:nth-child(5){width:170px}
-  thead th:nth-child(6){width:114px}
-  thead th:nth-child(7){width:132px}
+  thead th:nth-child(5){width:128px}
+  thead th:nth-child(6){width:92px}
+  thead th:nth-child(7){width:70px}
   td.c-name,td.c-cont,td.c-tech{overflow-wrap:anywhere;word-break:break-word}
   thead th{background:var(--surface-2);text-align:left;font-weight:650;color:var(--ink-strong);
     padding:8px 9px;border-bottom:1px solid var(--border);white-space:nowrap;font-size:12px}
-  tbody td{padding:9px 9px;border-bottom:1px solid #eef2f7;vertical-align:top}
+  tbody td{padding:7px 9px;border-bottom:1px solid #eef2f7;vertical-align:top;line-height:1.45}
   tbody tr:last-child td{border-bottom:none}
   tbody tr:hover{background:#fbfdff}
   td.num{white-space:nowrap;font-family:ui-monospace,Consolas,monospace;font-weight:700;color:var(--primary);width:38px}
-  td.c-name{width:126px;font-weight:650;color:var(--ink-strong)}
-  td.c-cont{width:210px;color:#334155}
+  td.c-name{width:140px;font-weight:650;color:var(--ink-strong)}
+  td.c-cont{width:400px;color:#334155}
   td.c-tech{color:#334155;min-width:300px}
-  td.c-time{width:158px}
-  td.c-st{width:132px;white-space:nowrap}
-  td.c-fb{width:140px}
+  td.c-time{width:128px}
+  td.c-st{width:92px;white-space:nowrap}
   .c-time input{width:100%;padding:5px 7px;font-size:11.5px;border:1px solid var(--border);border-radius:6px;
     background:#fff;color:var(--ink);font-family:inherit}
   .c-time input::placeholder{color:var(--muted-2)}
   .c-time input.has{background:#fff8e6;border-color:#d4a72c}
-  .c-fb input{width:100%;padding:5px 7px;font-size:12px;border:1px solid var(--border);border-radius:6px;
-    background:#fff;color:var(--ink)}
-  .c-fb input::placeholder{color:var(--muted-2)}
-  .c-fb input.has{background:#fff8e6;border-color:#d4a72c}
-  .c-pct input{width:64px;text-align:right}
+  .c-pct input{width:100%;max-width:70px;text-align:right}
   .stsel{font-size:11.5px;font-weight:650;border-radius:6px;padding:3px 6px;border:1px solid transparent;
     cursor:pointer;font-family:inherit;max-width:100%}
   .v-done{background:#dafbe1;color:#1a7f37;border-color:#a7e8b8}
@@ -13371,8 +13369,7 @@ div.oac-overflow-y-auto.oac-overflow-x-hidden.oac-fixed.oac-h-full.scrollbar-hid
   footer{margin-top:30px;padding-top:13px;border-top:1px solid var(--border);color:var(--muted-2);font-size:12px}
   @media print{
     body{background:#fff;font-size:10px}
-    .toolbar,.alert,.c-fb,#expBar,.stnote{display:none !important}
-    td.c-fb{display:none !important}
+    .toolbar,.alert,#expBar,.stnote{display:none !important}
     tbody tr{break-inside:avoid}
   }
   .apx { margin:0 0 16px; border:1px dashed #cbd5e1; border-radius:8px; background:#fcfdff; }
@@ -13385,56 +13382,16 @@ div.oac-overflow-y-auto.oac-overflow-x-hidden.oac-fixed.oac-h-full.scrollbar-hid
 <body>
 <div class=&quot;wrap&quot;>
 
-  <h1>管理人平台侧工作面 · 完整条目清单</h1>
-  <div class=&quot;sub&quot;>走读稿 v0.10（2026-09-14 · S3-1）—— 多系统页签：管理人平台 <b>42 条/6 大类</b> · 智能体平台（我方）<b>93 条/9 方面</b> · 云鼎系统 <b>4 条</b> · 直销系统 <b>4 条</b>｜下表中的平台侧工作面基本属<b>正式方案</b>；<b>演示方案仍走平台零改造</b>（平台侧几乎无新增开发）｜字段：任务项名称 / 任务项内容 / 实现技术要求描述 / 时间要求 / 状态（＋走读意见）</div>
+  <h1>项目任务明细计划</h1>
+  <div class=&quot;sub&quot;>走读稿 v0.10（2026-09-14 · S3-1）—— 多系统页签：FMP <b>38 条/6 个任务包</b> · 智能体平台（YXF）<b>91 条/9 个任务包</b> · 云鼎系统 <b>5 条</b> · 直销系统 <b>5 条</b>｜下表中的平台侧工作面基本属<b>正式方案</b>；<b>演示方案仍走平台零改造</b>（平台侧几乎无新增开发）</div>
 
-  <div class=&quot;note&quot;>
-    <b>🗂 走读指引</b>：<b>四个页签</b>：管理人平台／智能体平台（我方）／云鼎系统／直销系统——点顶部页签切换，「导出」会按系统分组输出。先看 <a href=&quot;#conflicts&quot;>冲突与定盘记录</a>（冲突 1 已定盘：fmp-ai-proxy＝平台提供存量接口服务清单，B 组已收敛为 1 条；冲突 2 已定盘（两套并行）：<b>正式版＝管理人平台判权限</b>（建对应表·平台接口层拦／非平台接口代问）；<b>演示版＝智能体平台判权限</b>（零改造·银小管侧白名单））→ 再逐组过条目。
-    <b>按编号反馈</b>（例 <code>A1</code>、<code>P1-1</code>、<code>X2</code>、<code>Y3</code>）。<b>「时间要求」可直接填</b>（A1 已按示例填好，其余留空待你走读时定），<b>「状态」可下拉改</b>；两列与意见均存本机，工具栏可一键导出。
-  </div>
+  
 
   <div class=&quot;stats&quot; id=&quot;kpis&quot;></div>
 
-  <div class=&quot;alert&quot;>
-    ⚠️ <b>台账覆盖率</b>：管理人平台侧 42 条中，综板台账只登记了 9 条（去重后）——漏的 33 条集中在 A 通道前端与网关部署、B/C 通道页面与发证、表单预填全部实现项。<b>智能体平台侧 93 条系从台账 24 节点逐条搬运</b>，故其对台账的覆盖是完整的；其中「对客服务线 / skills 测试台」两方面台账无节点，为新建项。
-  </div>
+  
 
-  <details class=&quot;linkmap&quot; open>
-    <summary>🔀 三通道链路对照——消息<b>谁接</b>、<b>谁转发</b>、<b>谁判权限</b>（09-14 定盘）</summary>
-    <table>
-      <thead><tr><th>通道</th><th>调用方 → 受理方</th><th>管理人平台在链路中的角色</th><th>权限判断主体</th></tr></thead>
-      <tbody>
-        <tr>
-          <td><b>A · 内嵌</b></td>
-          <td>平台页面 → <b>平台既有的「AI 对话框服务」转发</b> → 智能体平台（5089）</td>
-          <td><b>在链路上</b>（负责转发）＋ 被回调</td>
-          <td rowspan=&quot;3&quot; style=&quot;background:#f0fdf4&quot;>
-            <b>正式版 · 管理人平台判权限</b><br>
-            平台接口工具→平台接口层按「菜单-接口对应表」拦；非平台接口→银小管代问平台权限接口<br>
-            <hr style=&quot;border:none;border-top:1px solid #bbf7d0;margin:6px 0&quot;>
-            <b>演示版 · 智能体平台判权限</b><br>
-            平台零改造，靠银小管侧白名单圈定开放范围
-          </td>
-        </tr>
-        <tr>
-          <td><b>B · 用户智能体端</b></td>
-          <td>用户客户端 → 管理人平台<b>授权</b>后 → <b>智能体平台受理消息</b>并判断 → 调用 tools</td>
-          <td><b>不在消息链路上</b>：OAuth <b>授权服务器</b>（签发 token）＋ 被回调方（调用平台工具时判权限）</td>
-        </tr>
-        <tr>
-          <td><b>C · 机构智能体平台</b></td>
-          <td>机构自建平台 →（<code>client_credentials</code> 换票）→ <b>智能体平台受理消息</b>并判断 → 调用 tools</td>
-          <td>同 B</td>
-        </tr>
-      </tbody>
-    </table>
-    <p class=&quot;lm-note&quot;>
-      <b>B 通道完整流程（09-14 用户口径）</b>：用户客户端 → 管理人平台<b>授权</b> → 智能体平台获取用户消息、做判断 → 调用 tools → 若该工具是<b>管理人平台的</b>，则<b>管理人平台在此判权限</b>。<br>
-      <b>权限判断双轨（09-14 定盘）</b>：<b>正式版＝管理人平台判断权限</b>；<b>演示版＝智能体平台判断权限</b>（平台零改造，银小管侧白名单）。——这条把两个方案下「筛子／闸落在谁身上」一次讲清了。<br>
-      <b>依据</b>：接口文档 §8.1／§8.2／§8.3——银小管＝OAuth <b>资源服务器</b>（B/C 请求由它用 JWKS 本地验签，不回调平台做鉴权）；管理人平台＝OAuth <b>授权服务器</b>。「MCP 回调」是<b>反方向</b>：银小管为取用户数据／判权限而回调平台 API。<br>
-      ⚠️ <b>需随之修订</b>：接口文档 §2.1 现写「A 通道由 fmp-ai-proxy 网关代为转发请求」——应改为「由平台既有的 AI 对话框服务转发」。
-    </p>
-  </details>
+  
 
   <div class=&quot;toolbar&quot;>
     <input type=&quot;search&quot; id=&quot;q&quot; placeholder=&quot;搜索：名称 / 内容 / 技术要求 / 编号&quot;>
@@ -13446,7 +13403,7 @@ div.oac-overflow-y-auto.oac-overflow-x-hidden.oac-fixed.oac-h-full.scrollbar-hid
       <option value=&quot;done&quot;>已完成</option>
       <option value=&quot;pend&quot;>待确认</option>
     </select>
-    <button class=&quot;btn&quot; id=&quot;onlyFb&quot;>只看已填（意见/时间）</button>
+    <button class=&quot;btn&quot; id=&quot;onlyFb&quot;>只看已填（时间）</button>
     <button class=&quot;btn pri&quot; id=&quot;expBtn&quot;>📋 导出</button>
     <button class=&quot;btn&quot; onclick=&quot;window.print()&quot;>🖨 打印/存 PDF</button>
   </div>
@@ -13465,48 +13422,6 @@ div.oac-overflow-y-auto.oac-overflow-x-hidden.oac-fixed.oac-h-full.scrollbar-hid
   <div id=&quot;bodyYd&quot; class=&quot;panel&quot; hidden></div>
   <div id=&quot;bodyZx&quot; class=&quot;panel&quot; hidden></div>
 
-  <h2 id=&quot;conflicts&quot;>✅ 冲突与定盘记录 <span class=&quot;cnt&quot;>3 项全部定盘</span></h2>
-
-  <div class=&quot;cf&quot; style=&quot;background:#fff;border:1px solid var(--border);border-left:5px solid #16a34a;border-radius:0 10px 10px 0;padding:13px 15px;margin:0 0 11px&quot;>
-    <h3 style=&quot;margin:0 0 7px;font-size:14.5px;color:#15803d&quot;>✅ 冲突 1（已定盘 09-13）· fmp-ai-proxy 的定性</h3>
-    <p style=&quot;font-size:13px;margin:0 0 5px&quot;><b style=&quot;color:#64748b&quot;>原《交互方案》§3.3（08-21）</b>把它写成「<b>新增 fmp-ai-proxy 代理服务</b>」——独立无状态后端服务（JDK 21＋galaxyspringboot、SseEmitter、模块结构 8 包、线程模型核心 8/最大 64），即一个<b>运行时网关组件</b>。</p>
-    <p style=&quot;font-size:13px;margin:0 0 5px&quot;><b style=&quot;color:#64748b&quot;>用户 09-13 定盘</b><b>fmp-ai-proxy 不是运行时网关组件</b>，而是「<b>管理人平台需提供所有当前页面的接口服务清单</b>」这件事——<b>存量任务，不需要新开发接口，只是提供接口服务</b>。</p>
-    <div style=&quot;font-size:12.5px;background:#f0fdf4;border-radius:8px;padding:7px 10px;color:#166534&quot;>
-      <b>据此落地</b>：B 组由 4 条（服务本体／接口／流式链路／线程模型）<b>收敛为 1 条</b>「提供当前页面接口服务清单」。<br>
-      <b>仍需跟进</b>：①《交互方案》§3.3 那段代理服务技术设计需相应修订，平台方手上是 08-21 版；②C 组四条（Nginx／Gateway／响应头）原为「新建代理服务」配套，<b>其前提是否成立取决于 A 通道对话的转发主体——仍待明确</b>。<br><b>✅ 已收口（09-13 用户）</b>：A 通道<b>由平台既有的「AI 对话框服务」转发</b>到智能体平台——<b>不新建代理服务</b>。故《交互方案》§3.3 那段 fmp-ai-proxy 代理服务设计<b>两种方案下都不适用</b>，需修订；C 组四条随之改为「为平台既有 AI 对话框服务链路做流式配置」（保留·换主语）。
-    </div>
-  </div>
-
-  <div class=&quot;cf&quot; style=&quot;background:#fff;border:1px solid var(--border);border-left:5px solid #16a34a;border-radius:0 10px 10px 0;padding:13px 15px;margin:0 0 11px&quot;>
-    <h3 style=&quot;margin:0 0 7px;font-size:14.5px;color:#15803d&quot;>✅ 冲突 2（已定盘 09-13）· A 通道权限校验要不要平台改造</h3>
-    <p style=&quot;font-size:13px;margin:0 0 5px&quot;><b style=&quot;color:#64748b&quot;>原《交互方案》§3.5/§4</b>称权限校验「由现有网关服务实现，<b>保持现有权限控制方式不变</b>」「走现有网关解析鉴权（<b>零改造</b>）」。</p>
-    <p style=&quot;font-size:13px;margin:0 0 5px&quot;><b style=&quot;color:#64748b&quot;>定盘 = <span style=&quot;color:#b45309&quot;>两套并行</span></b></p>
-    <p style=&quot;font-size:13px;margin:0 0 4px&quot;><b style=&quot;color:#166534&quot;>【正式方案】</b><b>A 通道权限校验需要平台改造</b>——A 通道需有「<b>页面菜单 ↔ 接口</b>」的对应关系表；<b>智能体平台调用的所有接口，都需要调用走管理人平台</b>，通过<b>接口和菜单</b>来验证权限。</p>
-    <p style=&quot;font-size:13px;margin:0 0 5px&quot;><b style=&quot;color:#b45309&quot;>【演示方案】</b><b>仍基于零改造安排</b>——平台不建对应表、不建权限功能；<b>权限判断由智能体平台承担</b>（银小管侧白名单圈定，1~2 家真实客户灰度）；平台权限机制上线后白名单平移为接口判定。（即板内 authdesign 配图①第四行「演示备用方案 · 平台零改造过渡态」，对应「① 预演通道」）</p>
-    <div style=&quot;font-size:12.5px;background:#f0fdf4;border-radius:8px;padding:7px 10px;color:#166534&quot;>
-      <b>据此落地</b>：① H2 属<b>正式方案</b>任务，且<b>范围扩大</b>——不再只 53 项平台接口工具，而是「所有接口都走平台」；② D1 的「零改造」<b>不是错，而是演示方案口径</b>——正式方案下鉴权通道仍走现有网关、但权限判定需新增对应表；③ H6② 直连旁路 16 项<b>方向确定（正式方案）</b>——应改挂平台 REST；演示方案下维持现状（白名单圈定）；④ 本清单 42 条基本属<b>正式方案</b>的平台侧工作面；<b>演示方案平台侧几乎无新增开发</b>，只需配合白名单与灰度确认。<br>
-      <b>✅ 补充澄清（09-13 用户）</b>：<b>「所有接口」的说法是说绝对了</b>——接口应分两类：<b>① 管理人平台的接口</b>（调用经平台）／<b>② 非管理人平台的接口</b>（调用不物理经平台）。但从权限管控看，<b>非平台接口也需由管理人平台登记并控制权限</b>。<br>
-      → 据此落地：a) H2 的对应表范围<b>覆盖两类接口</b>；b) <b>H3「银小管代问」接口确认保留</b>（非平台接口的权限判定数据源）；c) 纯内部工具（14 项无平台数据）是否纳入登记，见我方工作项 <b>X3</b>。
-    </div>
-  </div>
-
-  <div class=&quot;cf&quot; style=&quot;background:#fff;border:1px solid var(--border);border-left:5px solid #16a34a;border-radius:0 10px 10px 0;padding:13px 15px;margin:0 0 11px&quot;>
-    <h3 style=&quot;margin:0 0 7px;font-size:14.5px;color:#15803d&quot;>✅ 冲突 3（已定盘 09-13）· MCP 申请授权流程 v1.0 的授权模型已落后于 09-10 拍板</h3>
-    <p style=&quot;font-size:13px;margin:0 0 5px&quot;><b style=&quot;color:#64748b&quot;>v1.0（08-29）</b>磁盘上 <code>docs/银小管-MCP申请授权流程-业务需求与UI参考.{md,html}</code>——<b>写于《对外接口文档》v1.4 / 板 v1.55 时代</b>，此后隔了 15 个接口文档版本。其模型：<b>授权双层</b>（<code>access_class</code> public／restricted 两档）＋ <b>可用工具 ＝ scope（动作类四值）∩（公共基础 ∪ 核定受控）</b>；公共基础 <b>68 项</b>开通即用免申请；元数据表字段 tool_name／required_scope／group／billing／access_class；需新增字典 <code>MCP_TOOL_GROUP</code>。</p>
-    <p style=&quot;font-size:13px;margin:0 0 5px&quot;><b style=&quot;color:#64748b&quot;>现口径（09-10 拍板）</b><b>工具即权限单元</b>（按工具批·按工具判，77 场景退役为展示维度）；<b>scope 六域已退役</b>——凭证只装身份、授权页仅确认；判定权威＝管理人平台（平台接口工具由平台接口层按对应表拦／直连工具由银小管前置查平台权限接口）；C 通道<b>按工具批逐工具勾选</b>（公共工具免申默认含）。</p>
-    <p style=&quot;font-size:13px;margin:0 0 5px&quot;><b style=&quot;color:#64748b&quot;>代码实况（已核）</b><code>_TOOL_LEVELS</code> 只覆盖 <b>30 项自有工具</b>（L0 <b>5</b>／L1 10／L2 15），L0 全是 <code>get_platform_health</code> 这类<b>平台公共信息</b>；<code>_TOOL_SCOPES</code> 是 <b>6 个业务域</b>（yxg:account／trade／precheck／monitor／workflow／chat）映射 15 项 L2 工具，且<b>仅 OAuth 模式下校验</b>；<b>53 项平台接口代理工具既无 L 分级、也无 scope 映射</b>。v1.0 的 scope 四值与 <code>access_class</code>／<code>MCP_TOOL_GROUP</code> <b>全仓零命中（从未落码）</b>。</p>
-    <div style=&quot;font-size:12.5px;background:#fff7ed;border-radius:8px;padding:7px 10px;color:#9a3412&quot;>
-      <b>实质分歧只有一个：公共／免申请的边界画在哪。</b>v1.0 把非敏感业务查询（产品信息／净值／交易日历／公告／看板…）都算公共免申（68 项）；现口径的公共工具仅 L0 那 5 项平台元信息。<br><b style=&quot;color:#15803d&quot;>✅ ① 已定方向（09-13）</b>：<b>取中间——梳理并确定「1 个可枚举的子集」</b>（不是 68、也不是 5）；<b>该梳理工作属智能体平台（我方）的工作事项</b>，见「智能体平台（我方）」页签 · P9。<br>
-      <b>✅ ② 已定盘（09-13 用户）</b>：<b>不需要 scope 了</b>——凭证只装身份；授权时<b>只做摘要性告知、且不提供选择</b>。（与接口文档 §11.1「授权页只做身份确认与告知，可做一句摘要」一致）<br>
-      <b>✅ ③ 已澄清（板内 v1.1 早已定义，非待定）</b>：工具元数据表字段＝<code>tool_name</code> / <code>调用路径分类（平台接口工具·直连工具）</code> / <code>工具分组</code> / <code>access_class</code>，银小管维护、管理人平台只读同步（按需拉取或增量推送）。<b>无</b> <code>required_scope</code>／<code>billing</code>／<code>level</code>——磁盘 v1.0 里那套字段（required_scope/group/billing/access_class）作废。<br>
-      <b>剩余真实工作</b>（属我方，见「智能体平台（我方）」页签 · P9）：把这张表逐项产出（83 项 × 4 字段），其 <code>access_class</code> 取值就是 X1「可枚举公共子集」的落地处。<br>
-      <b>另注</b>：v1.0 自身算术不自洽——68＝83−15 吻合，但它的受控清单又列了「投资者基本信息／反洗钱／TA 持仓」三个 53 代理工具，需重算（该文件整体作废，此点仅作留痕）。
-    </div>
-
-  <footer>
-    本页为<b>多系统走读稿</b>（4 个页签）：<b>管理人平台</b>源 <code>docs/管理人平台侧工作面条目-20260913.md</code>；<b>智能体平台（我方）</b>逐条搬运自综板「🗂 工作总览·走读」台账 24 节点中归属我方的任务；<b>云鼎系统</b>／<b>直销系统</b>为 09-13 定盘后的初始框架、细节待与对方对齐｜来源：《6.智能体平台交互方案》（ONES·2026-08-21）·《银小管-智能体表单预填·管理人平台对接方案》v1.0 ·《银小管 MCP 申请授权流程·业务需求与UI参考》v1.0 ·《对外接口文档》v1.19 §11 · 综板「工作总览·走读」台账<br>
-    整理：S3-1（ZCode·zc0913-s31）· 2026-09-13
-  </footer>
 </div>
 
 <script>
@@ -13518,193 +13433,187 @@ const DEFV = {done:100, bdone:80, wip:50, todo:0, pend:0};
 const $ = (s)=>document.querySelector(s);
 const STS = ['todo','wip','done','bdone','pend'];
 
-/* 各系统数据（管理人平台沿用原 42 条；其余为本轮新增） */
+/* 各系统数据（FMP沿用原 42 条；其余为本轮新增） */
 const SYSTEMS = [
-  {id:'mgr', tab:'管理人平台', sub:'45 条 · 6 大类', pane:'body', groups: [
- {id:'M1', name:'大类一 · 平台前端：页面内嵌 AI 对话', desc:'在管理人平台页面内嵌入 AI 对话入口，管理人员登录后即可提问与办理。', apx:'<p><b>来源记录</b>：<b>原 A 组</b>：来源：交 §3.2–3.3</p><p><b>逐条来源</b>：A1 → 交 §3.2.1｜A2 → 交 §3.2.3–3.2.5｜A3 → 交 §3.2.6｜A4 → 交 §3.3｜A5 → 交 §3.2.3、§3.2.8</p>', items:[
-  ['A1','平台页面内嵌 AI 对话入口','在管理人平台现有页面上直接打开 AI 对话，管理人员登录后即可提问与办理，无需切换系统。','5 模块：ChatWindow（悬浮/侧边栏·开闭·单一活跃窗口约束）／MessageList（用户右对齐·助手左对齐·滚动到底）／SSE Client（建立维持 SSE·解析 event-stream）／Handshake Manager（session_token 获取·localStorage·重置）／Token Provider（从登录态取 token 注入每次请求）','todo','交 §3.2.1','','2026年11月底开发完成'],
-  ['A2','对话逐字显示与断线自动恢复','AI 回复边生成边逐字显示，无需等待整段完成；网络波动或连接中断时自动重连，已收到的内容不丢失。','chunk 到达即逐字追加（避免整段等待）；3 类断开场景自动重连——网络抖动/临时中断、代理·网关超时掐断、连续失败；重连间隔递增 1s→2s→5s、上限 3 次，超限降级手动重试并保留已收内容','todo','交 §3.2.3–3.2.5','',''],
-  ['A3','异常场景的提示与处置','四类异常给出明确提示与下一步动作：服务暂不可用（可重试）、连接中断（自动重连中）、服务繁忙（稍后重试）、登录失效（引导重新登录）。','handshake 失败→「服务暂不可用」＋重试按钮＋session_token 置空；SSE 中断→自动重连＋「重连中」；银小管 429/504→「服务繁忙，请稍后重试」；登录令牌过期→识别回调被网关拦截→弹窗「登录已失效」→跳登录页','todo','交 §3.2.6','',''],
-  ['A4','对话内直达业务页面并带入已填内容','AI 在回答中给出办理页面的入口与已备好的信息，点击即可跳转到对应业务页面；可自动带入的字段自动填好，带不进去时保留信息供人工填写。','从对话消息中识别 prepare_form_data 返回的表单结构（page_url 等）→ 触发跳转而非纯文本展示；按 fill_order 分步填充、每步按 wait_after 等待；跳转/填充受限时保留 fill_data 供用户手动填写','todo','交 §3.3','',''],
-  ['A5','登录身份与会话标识的安全传递','每轮对话同时携带登录身份与会话标识，缺一即拒；两者不落在浏览器可长期读取的位置；同一页面仅允许一个对话窗口，刷新或重新打开时重新建立会话。','登录 token 放请求头 Authorization、session_token 放请求体；两者均不落 localStorage 敏感位；同一页面仅允许一个活跃聊天窗口（模块级单例）；刷新/重开窗口重新握手换新 session_token','todo','交 §3.2.3、§3.2.8','',''],
+  {id:'mgr', tab:'FMP', sub:'38 条 · 6 个任务包', pane:'body', groups: [
+ {id:'M1', name:'任务包一 · FMP 前端：页面内嵌 AI 对话', desc:'在FMP页面内嵌入 AI 对话入口，管理人员登录后即可提问与办理。', apx:'<p><b>来源记录</b>：<b>原 A 组</b>：来源：交 §3.2–3.3</p><p><b>逐条来源</b>：A1 → 交 §3.2.1｜A2 → 交 §3.2.3–3.2.5｜A3 → 交 §3.2.6｜A4 → 交 §3.3｜A5 → 交 §3.2.3、§3.2.8</p>', items:[
+  ['A1','搭建 FMP 页面内嵌 AI 对话入口','功能：管理人员登录 FMP 后，在现有页面内直接打开 AI 对话提问与办理，无需切换系统。价值：AI 嵌入客户日常作业界面，不改变使用习惯、零学习成本。','5 模块：ChatWindow（悬浮/侧边栏·开闭·单一活跃窗口约束）／MessageList（用户右对齐·助手左对齐·滚动到底）／SSE Client（建立维持 SSE·解析 event-stream）／Handshake Manager（session_token 获取·localStorage·重置）／Token Provider（从登录态取 token 注入每次请求）','todo','交 §3.2.1','','2026-11-30'],
+  ['A2','实现对话逐字显示与断线恢复能力','功能：AI 回复边生成边逐字显示；网络波动或连接中断时自动重连、已收内容不丢失。价值：等待感更短、体验接近即时对话，弱网环境下对话不中断。','chunk 到达即逐字追加（避免整段等待）；3 类断开场景自动重连——网络抖动/临时中断、代理·网关超时掐断、连续失败；重连间隔递增 1s→2s→5s、上限 3 次，超限降级手动重试并保留已收内容','todo','交 §3.2.3–3.2.5','','2026-11-30'],
+  ['A3','补齐对话异常场景的提示与处置','功能：服务暂不可用、连接中断、服务繁忙、登录失效四类异常，给出明确提示与下一步动作。价值：客户遇到问题知道怎么办，不用求助人工排查。','handshake 失败→「服务暂不可用」＋重试按钮＋session_token 置空；SSE 中断→自动重连＋「重连中」；YXF 429/504→「服务繁忙，请稍后重试」；登录令牌过期→识别回调被网关拦截→弹窗「登录已失效」→跳登录页','todo','交 §3.2.6','','2026-11-30'],
+  ['A4','实现对话内直达业务页面与内容带入','功能：AI 回答中给出办理页面入口并带上已备信息，点击跳转、可填字段自动填好，带不进去时保留信息供人工填写。价值：从「问」到「办」一步到位，减少找菜单与手工录入。','AI 回答中直接给出办理页入口与已备信息，点击即跳转；能自动带入的字段自动填好；<b>技术实现细节（表单数据接口结构、分步填充参数与节奏）下沉附录</b>，主表用业务语言；跳转或自动填充受限时保留已备信息供人工填写','todo','交 §3.3','','2026-11-30'],
+  ['A5','加固登录身份与会话标识的安全传递','功能：每轮对话同时携带登录身份与会话标识、缺一即拒；敏感标识不落在浏览器可长期读取的位置；同一页面仅一个对话窗口。价值：防止会话冒用与信息泄露，满足安全合规要求。','登录 token 放请求头 Authorization、session_token 放请求体；两者均不落 localStorage 敏感位；同一页面仅允许一个活跃聊天窗口（模块级单例）；刷新/重开窗口重新握手换新 session_token','todo','交 §3.2.3、§3.2.8','','2026-11-30'],
  ]},
- {id:'M2', name:'大类二 · 平台后端：接口清单、权限登记与令牌', desc:'把平台现有接口整理成服务清单，建立「菜单-接口」权限对应关系，并打通登录身份与令牌传递。', apx:'<p><b>来源记录</b>：<b>原 B 组</b>：来源：用户 09-13 定盘｜原《交互方案》§3.3「新增 fmp-ai-proxy 代理服务」的 4 条技术设计（服务本体／接口／流式链路／线程模型）按此定盘作废，该方案需相应修订；<b>原 D 组</b>：来源：交 §3.5；<b>原 H 组</b>：来源：接 §8.4/§11 导语/§11.4、台账</p><p><b>逐条来源</b>：B1 → 用户 09-13 定盘｜D1 → 交 §3.5 ＋ 用户 09-13 定盘｜D2 → 交 §3.5.2｜D3 → 交 §3.6.1、§5.1｜H1 → 账 chan-platform｜H2 → 用户 09-13 定盘｜H3 → 接 §11.4 ＋ 用户 09-13 定盘｜H4 → 接 §11 导语｜H5 → 账 chan-platform、sup-tools｜H6 → 账 edge-gate、cap-proxy、chan-platform</p><p><p><b>状态补充说明</b>：B1 → 存量任务·不新开发接口｜D1 → 正式方案；演示阶段走白名单｜D2 → 口径已定｜H1 → 平台侧全量匹配｜H2 → ✅ 定盘｜H3 → ✅ 定盘·仍需保留｜H4 → 已落地｜H5 → 口径已定；AND 待书面确认｜H6 → 待定/待外部</p>', items:[
-  ['B1','提供平台页面接口服务清单','由管理人平台梳理并提供其全部现有页面（菜单）对应的接口服务清单；智能体平台侧在编写 skills、封装 tools / MCP 服务时，可直接调试并采纳，减少平台侧的翻译工作量。','<b>存量任务</b>：不新开发接口，只需把现存的接口服务提供出来（清单化交付）。建议清单含：接口路径／请求方式／入参出参／归属菜单／是否需身份。底稿可参考我方已整理的平台接口清单（<code>tools.yaml</code> 结构化导出）；平台全量接口另见 <code>FMPALL/docs/mcp-inventory-A.md</code> 可作扩展全集','wip','用户 09-13 定盘','存量任务·不新开发接口；09-14 用户口径：代码梳理途径已完成约五成',''],
-  ['D1','A 通道权限判定·对应表与平台接口层拦截（管理人平台）','正式方案：A 通道的权限判定由管理人平台承担——调用进入平台后，由平台接口层按「菜单 ↔ 接口」对应关系校验该用户是否有权限。演示阶段不建对应表，暂由我方按白名单圈定开放范围。','鉴权通道不变：银小管回调平台 API 时携带用户登录 token，走现有网关解析。字段映射：登录 token（网关签发·权限凭证）／session_token（银小管下发·会话标识）／session_id ＝ session_token。权限判定以平台侧「菜单-接口对应关系表」为准（对应表建设见同类目 H2）。演示阶段不建表：白名单兜底与权限直查路由已由我方具备（见 X4）。','todo','交 §3.5 ＋ 用户 09-13 定盘','责任方＝管理人平台；演示阶段走白名单（我方已具备）',''],
-  ['D2-1','双令牌·银小管侧签发与校验','对话会话标识由银小管下发：平台前端以登录 token 握手换取 session_token，此后每轮对话双令牌齐备、缺一即拒','session_token 签发（JWT）＋握手接口已实现；登录 token 随操作续期＋会话最长 8 小时窗口；多端同时在线不做单点限制；机制成文交 §3.5.2。剩余＝与平台前端联调（随 A 组）','bdone','交 §3.5.2','09-14 多责任方拆分·我方侧',''],
-  ['D2-2','双令牌·平台握手前端模块（管理人平台）','平台页面 AI 对话的前端握手与令牌注入','Handshake Manager（带登录 token 换 session_token）＋ Token Provider（每轮对话注入双令牌）；随平台前端 A 组排期','todo','交 §3.2.x','09-14 多责任方拆分·平台侧；随 A 组排期',''],
-  ['D3-1','反调带身份·银小管侧实现与验证','反向调用平台接口时请求头携带该用户登录凭证，让平台识别「这是哪位用户」','MCP 回调改写/丢失 Authorization 头 → 联调专项验证；若不支持仅透传则改自定义头 X-Fmp-User-Token。已知问题：同用户多 Web 会话共用上下文——靠前端单窗口约束缓解','todo','交 §3.6.1、§5.1','09-14 多责任方拆分·我方侧',''],
-  ['D3-2','反调身份头的网关透传确认（管理人平台）','平台网关对 AI 回调携带的身份头「仅透传不校验」的配置确认','若网关强制校验/改写 Authorization，需平台侧配置透传或认可自定义头方案','todo','交 §3.6.1','09-14 多责任方拆分·平台侧',''],
-  ['H1','建立「菜单 ↔ 接口」对应关系清单','由管理人平台完成其全部页面菜单与接口的对应关系清单（全量匹配，不限我方已梳理的接口），作为后续权限判定的基础。','清单建议含：菜单编码／菜单名称／接口路径／请求方式／是否需身份。我方已有的接口清单底稿可作参考，平台侧需覆盖其全部菜单与接口。','todo','账 chan-platform','平台侧全量匹配',''],
-  ['H2','按「菜单 × 接口」建立权限校验','管理人平台按「菜单 ↔ 接口」对应关系建立权限校验：调用进入平台时，由接口层按对应关系判断该用户是否有权限。不在平台上的接口（调用不经过平台）也需在平台登记，由我方在调用时代问平台权限接口（见 H3）。','平台需新建并维护「页面菜单 ↔ 接口」对应关系表；接口分两类：① 管理人平台的接口——调用经平台，由平台接口层按对应表拦；② 非管理人平台的接口——调用不物理经平台，但平台也要登记并控制权限（由银小管调用时代问，见 H3）。登记项含「调用路径分类」（平台接口／非平台接口／纯内部）。','todo','用户 09-13 定盘','✅ 定盘',''],
-  ['H3','权限查询接口（我方调用前代问）','有些工具走的是不在管理人平台上的接口，调用不经过平台、平台没法在入口处拦。为了让这些调用同样受平台权限管控，由我方在调用前「代问」平台一句「这个用户能不能用这个工具」，平台按自己的菜单与权限数据回答能/不能，我方据此放行或拒绝（拿不到答复时默认不放行）。','<code>GET {权限服务基址}/agent-perm?user=&amp;amp;tool=</code> → <code>{has_permission, reason}</code>；覆盖直连工具调用前判定 ＋ 工具清单预过滤；建议 3 秒内应答；阶段一平台可按只读库直查；fail-closed（无应答即拒）。','todo','接 §11.4 ＋ 用户 09-13 定盘','✅ 定盘·仍需保留',''],
-  ['H4','权限数据源（平台侧已具备）','平台侧已提供菜单/岗位权限只读视图与产品范围链路','只读视图 <code>v_agent_user_perm</code>（用户菜单编码全集＋岗位角色清单，后台数据库层实现）；机构产品范围沿用 <code>manager_scope</code> 既有链路（query_user_product_scope：查询＋5 分钟缓存＋心跳刷新）','done','接 §11 导语','已落地',''],
-  ['H5','按工具权限管控与 AND 语义确认','按工具维度配置功能权限，并书面确认聚合工具判定语义','「按工具权限设置功能」口径对齐——权限单元＝工具、77 场景退役为展示维度（台账已 done）；聚合工具判定语义＝AND（扇出接口全部有权限才算可用）待管理人平台书面确认','todo','账 chan-platform、sup-tools','口径已定；AND 待书面确认',''],
-  ['H6','过渡态与治理待办','推进灰度白名单、直连旁路还款计划与业务网关路径','① <b>演示方案</b>（平台零改造过渡态）：<b>权限判断在智能体平台侧</b>——全权限演示 → 银小管侧白名单圈定 1~2 家真实客户灰度；平台权限机制上线后白名单平移为接口判定② 直连旁路 16 项治理还款计划（<b>方向已定 09-13</b>：所有接口都要走管理人平台 → 应改挂平台 REST；可先试点 query_raise_flow）③ #6 submit_ta_order 业务侧网关路径（审批链路真触发前提）','pend','账 edge-gate、cap-proxy、chan-platform','待定/待外部',''],
+ {id:'M2', name:'任务包二 · FMP 后端：接口清单、权限登记与令牌', desc:'把 FMP 现有接口整理成服务清单，建立「菜单-接口」权限对应关系，并打通登录身份与令牌传递。', apx:'<p><b>来源记录</b>：<b>原 B 组</b>：来源：用户 09-13 定盘｜《交互方案》§3.3「新增 fmp-ai-proxy 代理服务」的 4 条技术设计（服务本体／接口／流式链路／线程模型）<b>有效·保留</b>（09-16 用户更正：与 MCP 接口梳理产出的同名「fmp-ai-proxy 接口集合」系同名两物，09-13 混同致误判作废）；<b>原 D 组</b>：来源：交 §3.5；<b>原 H 组</b>：来源：接 §8.4/§11 导语/§11.4、台账</p><p><b>逐条来源</b>：B1 → 用户 09-13 定盘｜D1 → 交 §3.5 ＋ 用户 09-13 定盘｜D2 → 交 §3.5.2｜D3 → 交 §3.6.1、§5.1｜H1 → 账 chan-platform｜H2 → 用户 09-13 定盘｜H2-1 → 09-15 走读定盘（H2／H3 延伸·已定单列页面）｜H3 → 接 §11.4 ＋ 用户 09-13 定盘｜H4 → 接 §11 导语｜H5 → 账 chan-platform、sup-tools｜H6 → 账 edge-gate、cap-proxy、chan-platform</p><p><p><b>状态补充说明</b>：B1 → 存量任务·不新开发接口｜D1 → 正式方案；演示阶段走白名单｜D2 → 口径已定｜H1 → 平台侧全量匹配｜H2 → ✅ 定盘｜H2-1 → 已定单列页面·待排期开发｜H3 → ✅ 定盘·仍需保留｜H4 → 已落地｜H5 → 已并入 H2/H3（0916 拍板）｜H6 → 已移除（0916 拍板）·治理总纲·执行项见 P2-16/P3-9/#6</p><p><b>分层原则（0916 拍板）</b>：工具＝接口在 MCP 协议面的投影；唯一管理主体是接口；工具粒度＝业务动作（跨域组合归 skill 编排、不单列胖工具）；接口级溯源落在工具元数据表（tool→接口[]），不落在 skill 正文。</p>', items:[
+  ['B1','编制 FMP 接口服务清单（存量接口清单化交付）','功能：由 FMP 梳理并提供全部现有页面（菜单）对应的接口服务清单，供智能体平台编写技能、封装 MCP 服务时直接调试采纳。价值：减少 FMP 侧重复翻译工作量，为工具封装与权限对应表提供底稿。','<b>存量任务</b>：不新开发接口，只需把现存的接口服务提供出来（清单化交付）。建议清单含：接口路径／请求方式／入参出参／归属菜单／是否需身份。底稿可参考YXF已整理的平台接口清单（<code>tools.yaml</code> 结构化导出）；平台全量接口另见 <code>FMPALL/docs/mcp-inventory-A.md</code> 可作扩展全集','wip','用户 09-13 定盘','存量任务·不新开发接口；09-14 用户口径：代码梳理途径已完成约五成','2026-09-30'],
+  ['D1','实现内嵌通道权限判定（FMP 接口层拦截）','功能：内嵌通道调用进入 FMP 后，由 FMP 接口层按「菜单↔接口」对应关系校验用户权限；演示阶段暂由白名单圈定开放范围。价值：权限判定回归 FMP 统一管控，用户只能用其有权访问的功能。','鉴权通道不变：YXF回调平台 API 时携带用户登录 token，走现有网关解析。字段映射：登录 token（网关签发·权限凭证）／session_token（YXF下发·会话标识）／session_id ＝ session_token。权限判定以平台侧「菜单-接口对应关系表」为准（对应表建设见同类目 H2）。演示阶段不建表：白名单兜底与权限直查路由已由YXF具备（见 X4）。','todo','交 §3.5 ＋ 用户 09-13 定盘','责任方＝FMP；演示阶段走白名单（YXF已具备）','2026-11-30'],
+  ['D2-1','落地双令牌签发与校验（智能体平台侧）','功能：FMP 前端以登录 token 握手换取会话标识，此后每轮对话双令牌齐备、缺一即拒；会话最长 8 小时、多端可同时在线。价值：身份＋会话双重校验，防止会话冒用。','session_token 签发（JWT）＋握手接口已实现；登录 token 随操作续期＋会话最长 8 小时窗口；多端同时在线不做单点限制；每轮对话双令牌齐备、缺一即拒；机制成文交 §3.5.2。剩余＝与 FMP 前端联调（随 A 组）','bdone','交 §3.5.2','09-14 多责任方拆分·YXF侧','2026-11-30'],
+  ['D2-2','开发 FMP 前端握手与令牌注入模块','功能：在 FMP 页面内实现握手换取会话标识、每轮对话注入双令牌。价值：与前端对话组件配套，完成双令牌链路的前端侧闭环。','Handshake Manager（带登录 token 换 session_token）＋ Token Provider（每轮对话注入双令牌）；随 FMP 前端 A 组排期','todo','交 §3.2.x','09-14 多责任方拆分·FMP侧；随 A 组排期','2026-11-30'],
+  ['D3-1','打通反向调用的用户身份带入（智能体平台侧）','功能：AI 反向调用 FMP 接口时携带该用户登录凭证，让 FMP 识别「这是哪位用户」；不支持透传时改用自定义头方案。价值：回调链路上的权限判定与操作留痕能对应到真实用户。','MCP 回调改写/丢失 Authorization 头 → 联调专项验证；若不支持仅透传则改自定义头 X-Fmp-User-Token。已知问题：同用户多 Web 会话共用上下文——靠前端单窗口约束缓解','todo','交 §3.6.1、§5.1','09-14 多责任方拆分·YXF侧','2026-11-15'],
+  ['D3-2','确认 FMP 网关对身份头的透传配置','功能：与 FMP 确认网关对 AI 回调携带身份头的处理方式（是否校验来源、是否替换头、业务接口读哪个头），必要时由 FMP 加透传配置或认可自定义头。价值：打通回调鉴权链路最后一段配置，避免用户身份在网关处丢失。','与FMP确认网关对 Authorization 头的处理三问：① 网关是否校验调用方来源（非浏览器即拒？）② 验后是否剥/换 Authorization ③ 业务接口读原始头还是网关塞回的上下文——①②命中则FMP侧加透传配置，或认可自定义头 <code>X-Fmp-User-Token</code>（网关不识自定义头天然透传）。YXF侧须实测 HTTP 库重定向剥离 Authorization 行为（见 D3-1）','todo','交 §3.6.1','09-14 多责任方拆分·FMP侧；建议随下一轮对接沟通与 D2-2/B1 一并提出','2026-11-30'],
+  ['H1','编制「菜单↔接口」对应关系清单','功能：由FMP完成全部页面菜单与接口的对应关系清单（全量匹配，不限已梳理范围）。价值：权限判定与工具登记的基础数据，是权限校验与代问接口的前置输入。','清单建议含：菜单编码／菜单名称／接口路径／请求方式／是否需身份。YXF已有的接口清单底稿可作参考，平台侧需覆盖其全部菜单与接口。','todo','账 chan-platform','FMP 侧全量匹配','2026-11-15'],
+  ['H2','建立「菜单×接口」权限校验机制','功能：FMP 按对应关系表在接口层校验权限；非 FMP 接口也在 FMP 登记、由智能体平台调用时代问。价值：所有工具调用统一受 FMP 权限管控，堵住绕过入口的旁路。','平台需新建并维护「页面菜单 ↔ 接口」对应关系表；接口分两类：① FMP的接口——调用经平台，由平台接口层按对应表拦；② 非FMP的接口——调用不物理经平台，但平台也要登记并控制权限（由YXF调用时代问，见 H3）。登记项含「调用路径分类」（平台接口／非平台接口／纯内部）。<b>权限单元＝工具</b>——「按工具权限设置功能」口径已定盘、77 场景退役为展示维度（原 H5①·0916 拍板并入）。','todo','用户 09-13 定盘','✅ 定盘','2026-11-30'],
+  ['H2-1','搭建 AI 工具权限登记页（FMP 管理后台）','功能：管理后台新增「智能体工具权限登记」页——展示 83 项工具、对 44 项非 FMP 接口做权限登记、与智能体平台同步工具元数据，登记结果作为权限判定数据源。价值：给「菜单↔接口」对应表提供管理界面，未登记的工具无处遁形；MVP 先做只读视图＋编辑弹窗。','FMP 管理后台·权限／系统管理下新增「智能体工具权限登记」页。功能：① 列表展示 83 项工具（tool_name／调用路径分类·平台·直连·内部／归属菜单·业务域／access_class／是否需身份／状态）；② 新增登记：对 44 项非平台接口手动录入（接口名／路径描述／所需岗位权限映射／是否需身份）；③ 从YXF同步工具元数据增量 diff 确认（咬合 X5 供数）；④ 登记结果作为 <code>/agent-perm</code> 权限判定数据源（联动 H3）；⑤ 复用既有岗位／角色／菜单权限模型，变更走 G5 审批链。MVP 先做只读视图＋编辑弹窗。','todo','H2／H3 延伸·09-15 走读定盘','已定单列页面·待排期开发','2026-11-30'],
+  ['H3','实现权限代问接口（调用前查询）','功能：智能体平台在调用不经过 FMP 的工具前「代问」FMP「该用户可否使用该工具」，FMP 按权限数据回答；拿不到答复默认不放行。价值：不在 FMP 上的接口同样受统一管控，覆盖全部工具。','<code>GET {权限服务基址}/agent-perm?user=&amp;amp;tool=</code> → <code>{has_permission, reason}</code>；覆盖直连工具调用前判定 ＋ 工具清单预过滤；建议 3 秒内应答；阶段一平台可按只读库直查；fail-closed（无应答即拒）。<b>聚合工具判定语义＝AND</b>（扇出接口全部有权限才算可用；无需平台书面确认、按 AND 直接执行，实现与接口文档 v1.19 均已按 AND；原 H5②·0916 拍板并入）。','todo','接 §11.4 ＋ 用户 09-13 定盘','✅ 定盘·仍需保留','2026-11-30'],
+  ['H4','盘点权限数据源（FMP 侧已具备）','功能：FMP 已提供用户菜单/岗位权限只读视图与机构产品范围查询链路。价值：权限判定的数据基础无需另建、直接复用。','只读视图 <code>v_agent_user_perm</code>（用户菜单编码全集＋岗位角色清单，后台数据库层实现）；机构产品范围沿用 <code>manager_scope</code> 既有链路（query_user_product_scope：查询＋5 分钟缓存＋心跳刷新）','done','接 §11 导语','已落地',''],
  ]},
- {id:'M3', name:'大类三 · 网关与部署：流式链路打通', desc:'打通对话流式输出所依赖的网关与部署链路（不缓冲、不断流、可逐层验证）。', apx:'<p><b>来源记录</b>：<b>原 C 组</b>：来源：交 §3.4–3.4.5、§5.1｜✅ <b>转发主体已定盘（09-13 用户）</b>：A 通道由<b>平台既有的「AI 对话框服务」</b>转发到智能体平台——<b>不新建代理服务</b>。故本组四条<b>保留</b>，主语从「新建的 fmp-ai-proxy」改为「平台既有 AI 对话框服务链路」</p><p><b>逐条来源</b>：C1 → 交 §3.4.2 ＋ 09-13 定盘｜C2 → 交 §3.4.3 ＋ 09-13 定盘｜C3 → 交 §3.4.4｜C4 → 交 §3.4.5、§5.1 ＋ 09-13 定盘</p><p><p><b>状态补充说明</b>：C1 → 主语＝平台既有 AI 对话框服务｜C2 → 主语＝平台既有 AI 对话框服务｜C3 → 已确认无需改动｜C4 → 主语＝平台既有 AI 对话框服务</p>', items:[
-  ['C1','两层 Nginx SSE 配置','在管理人 NG 与前端服务 NG 两处关闭缓冲，保障流式不被攒包','两处 SSE location 均配：<code>proxy_buffering off</code>、<code>X-Accel-Buffering no</code>、read/send timeout 3600s、<code>proxy_http_version 1.1</code>、<code>proxy_set_header Connection &quot;&quot;</code>、<code>Accept text/event-stream</code>','todo','交 §3.4.2 ＋ 09-13 定盘','主语＝平台既有 AI 对话框服务',''],
-  ['C2','网关路由与超时配置','在 Spring Cloud Gateway 配置流式路由并拉长响应超时','路由指向承载 A 通道对话的<b>既有 AI 对话框服务</b>地址，predicate <code>Path=/api/agent/**</code>；网关 <code>response-timeout: 360000</code>（ms，SSE 长连接拉长）','todo','交 §3.4.3 ＋ 09-13 定盘','主语＝平台既有 AI 对话框服务',''],
-  ['C3','F5（LTM）流式确认','确认负载均衡层不缓冲、不压缩事件流','已咨询王铎：默认未开启缓冲、Buffer streaming response 无需改动；仅需确认不对 <code>text/event-stream</code> 压缩/缓存','done','交 §3.4.4','已确认无需改动',''],
-  ['C4','响应头与分层验证','约定流式响应头，并逐层验证流式效果','响应头 4 项（Content-Type: text/event-stream／Cache-Control: no-cache／Connection: keep-alive／X-Accel-Buffering: no）；上线清单逐层独立 curl 验证「数据持续小批输出」','todo','交 §3.4.5、§5.1 ＋ 09-13 定盘','主语＝平台既有 AI 对话框服务',''],
+ {id:'M3', name:'任务包三 · 网关与部署：流式链路打通', desc:'打通对话流式输出所依赖的网关与部署链路（不缓冲、不断流、可逐层验证）。', apx:'<p><b>来源记录</b>：<b>原 C 组</b>：来源：交 §3.4–3.4.5、§5.1｜⚠️ <b>转发主体更正（09-16 用户）</b>：内嵌通道由<b>管理人后端新增的 fmp-ai-proxy 代理服务</b>转发到智能体平台——<b>该新增服务是需要的</b>（09-13「用既有 AI 对话框服务·不新建」系与 MCP 接口梳理产出的同名「fmp-ai-proxy 接口集合」混同所致，作废）。本组四条<b>保留</b>，主语＝<b>新增 fmp-ai-proxy</b>（同《交互方案》§3.3/§3.4 原始设计）</p><p><b>逐条来源</b>：C1 → 交 §3.4.2 ＋ 09-13 定盘｜C2 → 交 §3.4.3 ＋ 09-13 定盘｜C3 → 交 §3.4.4｜C4 → 交 §3.4.5、§5.1 ＋ 09-13 定盘</p><p><p><b>状态补充说明</b>：C1 → 主语＝新增 fmp-ai-proxy｜C2 → 主语＝新增 fmp-ai-proxy｜C3 → 已确认无需改动｜C4 → 主语＝新增 fmp-ai-proxy</p>', items:[
+  ['C1','配置两层 Nginx 的 SSE 流式','功能：在管理人 NG 与前端服务 NG 两处关闭缓冲，保障流式输出不被攒包。价值：对话逐字输出依赖此配置，是流式体验的基础设施。','两处 SSE location 均配：<code>proxy_buffering off</code>、<code>X-Accel-Buffering no</code>、read/send timeout 3600s、<code>proxy_http_version 1.1</code>、<code>proxy_set_header Connection &quot;&quot;</code>、<code>Accept text/event-stream</code>','todo','交 §3.4.2 ＋ 09-13 定盘','主语＝新增 fmp-ai-proxy','2026-11-15'],
+  ['C2','配置网关流式路由与超时','功能：Spring Cloud Gateway 配置流式路由并拉长响应超时，路由指向新增代理服务。价值：长对话不断流，打字机效果端到端生效的中间环节。','路由指向承载 内嵌通道对话的<b>新增 fmp-ai-proxy</b> 地址，predicate <code>Path=/api/agent/**</code>；网关 <code>response-timeout: 360000</code>（ms，SSE 长连接拉长）','todo','交 §3.4.3 ＋ 09-13 定盘','主语＝新增 fmp-ai-proxy','2026-11-15'],
+  ['C3','确认负载均衡不缓冲流式（F5）','功能：确认负载均衡层不缓冲、不压缩事件流（已咨询确认无需改动）。价值：排除链路上最后一个潜在断流点。','已咨询王铎：默认未开启缓冲、Buffer streaming response 无需改动；仅需确认不对 <code>text/event-stream</code> 压缩/缓存','done','交 §3.4.4','已确认无需改动',''],
+  ['C4','约定流式响应头并分层验证','功能：约定 4 项流式响应头，并对链路逐层独立验证「数据持续小批输出」。价值：上线前逐层排雷，保证流式效果在网络各层都成立。','响应头 4 项（Content-Type: text/event-stream／Cache-Control: no-cache／Connection: keep-alive／X-Accel-Buffering: no）；上线清单逐层独立 curl 验证「数据持续小批输出」','todo','交 §3.4.5、§5.1 ＋ 09-13 定盘','主语＝新增 fmp-ai-proxy','2026-11-30'],
  ]},
- {id:'M4', name:'大类四 · 办理类能力：表单预填', desc:'让 AI 能把办理页面的表单内容自动带入，减少客户手工录入。', apx:'<p><b>来源记录</b>：<b>原 E 组</b>：来源：预 §5–§10｜方案状态＝待平台方评审</p><p><b>逐条来源</b>：E1 → 预 §3.2、§6｜E2 → 预 §6.1｜E3 → 预 §5.3、§6｜E4 → 预 §5.2｜E5 → 预 §5.4、§6｜E6 → 预 §7、§8、§10｜E7 → 预 §9、§10</p><p><p><b>状态补充说明</b>：E1 → 方案待平台方评审；源文档估时 Phase 0·约 1 周｜E2 → 方案待平台方评审；源文档估时 Phase 1·约 2 周｜E3 → 方案待平台方评审；源文档估时 Phase 1·约 2 周｜E4 → 方案待平台方评审；源文档估时 Phase 1·约 2 周｜E5 → 方案待平台方评审；源文档估时 Phase 0·约 1 周｜E6 → 方案待平台方评审；源文档定 Phase 2·迭代｜E7 → 方案待平台方评审；源文档定 Phase 0~3 贯穿</p>', items:[
-  ['E1','permission.js 一行修复','修复未登录跳转丢 query 导致预填票据丢失','<code>src/permission.js:78</code>：<code>to.path</code> → <code>to.fullPath</code>。方案标注「无论是否做预填都建议修」','todo','预 §3.2、§6','方案待平台方评审；源文档估时 Phase 0·约 1 周',''],
-  ['E2','全局 prefill-mixin','新增全局通用回填器，业务页面零改动即可消费预填','约 40 行：读 <code>$route.query.pf_ticket</code> → 兑票 → <code>Object.assign(this.ruleForm, form_vars)</code> → 提示「已带入 N 项，请核对后提交」；无票或非表单页零影响；<code>Vue.mixin</code> 于 main.js 注册（或仅挂 process 路由公共 Layout）','todo','预 §6.1','方案待平台方评审；源文档估时 Phase 1·约 2 周',''],
-  ['E3','兑票端点与票箱存储','新增取件端点与票箱表，页面凭票取预填数据','<code>POST /fmp-bpm/redeemPrefill</code>（登录态）：单次有效＋TTL(15min)＋校验登录用户==bindUser＋审计留痕；票箱复用草稿表结构＋ticket/expiry/used/binded 列（DDL 1 份）','todo','预 §5.3、§6','方案待平台方评审；源文档估时 Phase 1·约 2 周',''],
-  ['E4','存票端点','新增存票接口，智能体侧存预填数据换一次性票据','<code>POST /fmp-bpm/issuePrefill</code>（银小管服务端→平台）：服务间凭证＋HMAC-SHA256 签名；幂等；返回 ticket＋expiresIn','todo','预 §5.2','方案待平台方评审；源文档估时 Phase 1·约 2 周',''],
-  ['E5','manifest 表单清单发布','发布各流程字段目录（中文名/类型/必填/取值来源），供智能体侧对齐字段','每 <code>processDefinitionKey</code> 的 form_vars 字段目录由平台发布·智能体平台只读；覆盖约 120 个业务流程 / 601 处 el-form；建议「静态扫描 ruleForm 声明＋BPM 流程定义元数据」组合，脚本离线不改运行时','todo','预 §5.4、§6','方案待平台方评审；源文档估时 Phase 0·约 1 周',''],
-  ['E6','Phase 2 扩展项','补齐草稿二选一交互、回执上报与复杂表单结构','用户草稿二选一（检测已有 draftInfo 不抢写，弹层让用户选「带入智能体预填／继续我的草稿」）；回执上报（applied/skipped/userEdited 回流 skill 侧）；批量/数组型 form_vars（openTable）','todo','预 §7、§8、§10','方案待平台方评审；源文档定 Phase 2·迭代',''],
-  ['E7','安全审计红线与分期验收','约定六条安全红线并按四期推进验收','6 条红线：URL 零业务明文（浏览器历史·代理日志·Referrer 三处归零）／ticket 单次＋TTL＋绑定用户＋绑定 processDefId／issue·redeem 全程审计／descriptor HMAC 防篡改／预填≠锁定（关键字段可改且留痕）／任何形态「平台下发可执行代码、平台执行」不做','todo','预 §9、§10','方案待平台方评审；源文档定 Phase 0~3 贯穿',''],
+ {id:'M4', name:'任务包四 · 办理提速：表单自动带入', desc:'把 AI 对话中已收集的信息自动带入办理页面表单，客户只需核对确认，减少手工录入与填错；本组实现须满足六条安全红线（链接不含明文、凭据一次性·限时·绑人、全程留痕、防篡改、预填可修改、不做下发代码执行）。', apx:'<p><b>来源记录</b>：<b>原 E 组</b>：来源：预 §5–§10｜0916 用户拍板：免评审直接排</p><p><b>逐条来源</b>：E1 → 预 §3.2、§6｜E2 → 预 §6.1｜E3 → 预 §5.3、§6｜E4 → 预 §5.2｜E5 → 预 §5.4、§6｜E6 → 预 §7、§8、§10｜E7 → 预 §9、§10（已归位为组级安全约束）</p><p><p><b>状态补充说明</b>：E1 → 免评审·直接排（0916 拍板）；源文档估时 Phase 0·约 1 周｜E2 → 免评审·直接排（0916 拍板）；源文档估时 Phase 1·约 2 周｜E3 → 免评审·直接排（0916 拍板）；源文档估时 Phase 1·约 2 周｜E4 → 免评审·直接排（0916 拍板）；源文档估时 Phase 1·约 2 周｜E5 → 免评审·直接排（0916 拍板）；源文档估时 Phase 0·约 1 周｜E6 → 免评审·直接排（0916 拍板）；源文档定 Phase 2·迭代｜E7 → 已移除（0916 拍板）：六条红线归位为本组「安全约束」（见下），不单列任务</p><p><b>安全约束（0916 拍板·原 E7 归位）</b>：本组 E1–E6 实现须满足六条红线——① 链接不含业务明文（浏览器历史·代理日志·Referrer 三处归零）；② 凭据一次性＋限时＋绑定用户＋绑定流程；③ 存取全程审计；④ 数据传输 HMAC 防篡改；⑤ 预填≠锁定（带入内容客户可修改、关键字段留痕）；⑥ 任何形态「下发可执行代码并执行」不做。验收随各条技术要求与 11-30 上线收口。</p>', items:[
+  ['E1','修复 FMP 既有 BUG：登录跳转后带入参数不丢失','功能：修复登录重定向丢弃链接参数的问题——未登录用户点开带预填凭据的办理链接，登录回来仍能自动带入。价值：保证「未登录→登录→带入」链路不中断；FMP 存量缺陷，修复后所有带参链接的登录跳转都受益。','<code>src/permission.js:78</code>：<code>to.path</code> → <code>to.fullPath</code>。方案标注「无论是否做预填都建议修」','todo','预 §3.2、§6','免评审·直接排（0916 拍板）；源文档估时 Phase 0·约 1 周','2026-10-16'],
+  ['E2','实现业务页面自动回填功能','功能：打开带预填参数的办理链接，页面自动把 AI 已备好的信息填入表单，并提示「已带入 N 项，请核对后提交」。价值：客户免手工录入、减少填错；一次建设全站通用，覆盖约 120 个业务流程，后续新增页面零改动即支持。','约 40 行：读 <code>$route.query.pf_ticket</code> → 兑票 → <code>Object.assign(this.ruleForm, form_vars)</code> → 提示「已带入 N 项，请核对后提交」；无票或非表单页零影响；<code>Vue.mixin</code> 于 main.js 注册（或仅挂 process 路由公共 Layout）；<b>预填≠锁定</b>：带入内容仅为初始值、客户可自由修改，关键字段修改留痕（安全红线⑤）','todo','预 §6.1','免评审·直接排（0916 拍板）；源文档估时 Phase 1·约 2 周','2026-11-06'],
+  ['E3','开发预填数据取件功能（一次性凭据）','功能：办理页面凭一次性凭据取回预填数据——15 分钟内有效、仅可使用一次、仅限本人、取用留痕。价值：业务数据不在链接里明文暴露，取用可控、可追溯。','<code>POST /fmp-bpm/redeemPrefill</code>（登录态）：单次有效＋TTL(15min)＋校验登录用户==bindUser＋绑定流程（processDefId）＋审计留痕；票箱复用草稿表结构＋ticket/expiry/used/binded 列（DDL 1 份）','todo','预 §5.3、§6','免评审·直接排（0916 拍板）；源文档估时 Phase 1·约 2 周','2026-11-06'],
+  ['E4','实现预填数据存入与凭据发放功能','功能：AI 侧先把预填数据存入 FMP、换发一次性凭据，再把办理链接交给用户。价值：链接不含业务明文、凭据防伪造，客户数据全程受控。','<code>POST /fmp-bpm/issuePrefill</code>（YXF服务端→平台）：服务间凭证＋HMAC-SHA256 签名；幂等；返回 ticket＋expiresIn；存取（issue·redeem）全程审计留痕（红线③；HMAC 签名防篡改＝红线④）','todo','预 §5.2','免评审·直接排（0916 拍板）；源文档估时 Phase 1·约 2 周','2026-11-06'],
+  ['E5','编写业务表单字段目录（供 AI 对齐）','功能：整理并发布各业务流程的表单字段目录（字段名/类型/是否必填/取值来源），AI 按目录备好预填内容。价值：AI 知道每个流程该填什么，预填更准；覆盖约 120 个流程，表单改版后可再生成并做变更预警。','每 <code>processDefinitionKey</code> 的 form_vars 字段目录由平台发布·智能体平台只读；覆盖约 120 个业务流程 / 601 处 el-form；建议「静态扫描 ruleForm 声明＋BPM 流程定义元数据」组合，脚本离线不改运行时','todo','预 §5.4、§6','免评审·直接排（0916 拍板）；源文档估时 Phase 0·约 1 周','2026-10-16'],
+  ['E6','补充草稿冲突处理与回填效果反馈（二期）','功能：已有草稿时弹窗让用户选「带入 AI 预填」或「继续我的草稿」；把实际带入效果（已带入/已跳过/用户修改）回报给 AI；支持批量表格类字段。价值：不与客户既有习惯冲突，带入质量可度量、可持续优化。','用户草稿二选一（检测已有 draftInfo 不抢写，弹层让用户选「带入智能体预填／继续我的草稿」）；回执上报（applied/skipped/userEdited 回流 skill 侧）；批量/数组型 form_vars（openTable）','todo','预 §7、§8、§10','免评审·直接排（0916 拍板）；源文档定 Phase 2·迭代','2026-12-31'],
  ]},
- {id:'M5', name:'大类五 · 对外通道与授权：B／C 通道', desc:'面向外部客户端与机构平台的两条接入通道：授权服务器（OAuth）与 MCP 服务授权页。', apx:'<p><b>来源记录</b>：<b>原 F 组</b>：来源：接 §11.1、§8.4–8.5；<b>原 G 组</b>：来源：授 §3–§7</p><p><b>逐条来源</b>：F1 → 接 §11.1｜F2 → 接 §11.1、§8.4｜F3 → 接 §8.5、§11.1｜F4 → 接 §11.1；板内 authdesign 第四章原型｜G1 → 授 §3.1–3.2｜G2 → 授 §3.1｜G3 → 授 §3.3｜G4 → 授 §3.4｜G5 → 授 四｜G6 → 授 五｜G7 → 授 六｜G8 → 授 七</p><p><p><b>状态补充说明</b>：F2 → 口径已定｜F3 → 口径已定｜G4 → ⚠️ 分档口径见冲突 3｜G7 → ⚠️ 工具分档口径见冲突 3</p>', items:[
-  ['F1','OAuth 六端点','实现授权服务器六个标准端点','<code>GET /oauth2/authorize</code>（授权页：平台账号登录＋授权确认）／<code>POST /oauth2/token</code>（authorization_code＋PKCE、client_credentials）／<code>POST /oauth2/registration</code>（动态客户端注册·可选）／<code>GET /.well-known/oauth-authorization-server</code>（RFC 8414）／<code>GET /.well-known/jwks.json</code>（RFC 7517·供银小管验签）／<code>POST /oauth2/revoke</code>（RFC 7009＋平台扩展）','todo','接 §11.1','',''],
-  ['F2','授权页语义落地','授权页只做身份确认与告知，不列工具清单','工具可见性由银小管 tools/list 实时预过滤（单一判定点不漂移），平台无需反向拉取工具清单；<b>授权时只做摘要性告知、且不提供选择</b>——摘要按菜单/业务域粒度（用既有菜单权限数据聚合，不引入工具概念）','todo','接 §11.1、§8.4','口径已定',''],
-  ['F3','单凭证与授权结果落库','只发一张短效凭证，并把授权结果落库','access_token 随源登录会话 ≤8h、不发 refresh；授权结果落库作签发与「我的授权」页数据源；撤销经 token 内省即时生效','todo','接 §8.5、§11.1','口径已定',''],
-  ['F4','用户中心开通页与我的授权页','新增开通页与授权管理页两个页面','① 用户中心·开通页（仅少数不支持自动注册的工具需人工开 clientId：工具名称/工具类型/回调地址 → 开通并发放 clientId）②「我的授权」设备管理页（已授权工具列表／撤销／首次授权通知）','todo','接 §11.1；板内 authdesign 第四章原型','',''],
-  ['G1','新增第三页签与两个子页签','在「API 服务授权」页新增「MCP 服务授权」页签及其两个子页签','子页签一「MCP 服务授权信息」（已开通服务账号卡片：clientId 脱敏、授权范围、IP 白名单、状态、最近 token；最多 3 个账号）；子页签二「历史申请记录」（复用 callProInfoList，<code>prdDefKey=McpServiceAuthProcess</code>，详情复用 detailDialog）','todo','授 §3.1–3.2','',''],
-  ['G2','按钮组与账号原子动作','补齐申请/变更/停用按钮，以及吊销/暂停/重发三个账号动作','工具栏：MCP服务账号申请（<3 且走 startApiProcessPreCheck 防在途预检）／变更（对齐 API 四选）／停用（对齐「取消授权」＋「暂停可恢复」语义）／下载《MCP接入规范》；卡片动作：吊销密钥（旧 clientSecret 立即失效→token 随之失效）／暂停账号（可恢复）／重发密钥（旧永久失效）——均需短信验证码确认','todo','授 §3.1','',''],
-  ['G3','发起表单（复用 launchProcess）','发起申请表单，字段按 MCP 流程与 API 流程的差异改造','申请类型（新增／变更四选，同款）；账号标识改 <b>clientId（系统生成）</b>（变更·停用按 clientId 定位）；接口勾选改<b>工具勾选树</b>；IP 白名单（测试·生产公网 IP，生产必填、分号多值）；授权书改《MCP服务接入授权书》（模板新做 <code>downloadMcpAuthTemplate</code>）；秘钥接收邮箱 <code>secretKeyReceiveEmail</code>；联系人三件套；留言','todo','授 §3.3','',''],
-  ['G4','工具勾选树','按工具分组提供可勾选的核定清单','分组来自新字典 <code>MCP_TOOL_GROUP</code>，组内工具来自银小管工具元数据（required_scope/group/billing/access_class 同表）；按组勾选＋组内可展开剔除单项；变更时展示已核定清单（disabled 勾选态）','todo','授 §3.4','⚠️ 分档口径见冲突 3',''],
-  ['G5','三岗审批链与核减职责','复用 API 流程审批链，并增加最小必要集核减','01 提交（可撤回）→02 材料审核（授权书完整性、联系人）→包容网关按业务条件分流→03 外包资金划付岗/份额清算岗/估值核算岗（可多岗并行）→结束；03 岗除业务条件外核定申请工具是否为最小必要集（对照申请理由勾减超额项）','todo','授 四','',''],
-  ['G6','发证动作（后端五步）','审批通过后自动开户并发放凭据','① 生成 clientId（<code>mcp_</code> 前缀＋随机）＋clientSecret（强随机·仅存哈希）② 注册 OAuth 客户端（绑机构／核定清单／IP 白名单／token TTL：access 1h、不发 refresh）③ 落库 <code>MCP_AUTH_MAPPING</code>（对齐 API 映射表结构）④ 邮件送达（对齐 API 密钥邮件通道）⑤ 流程结束通知（复用站内信/邮件）；吊销即失效、重发换新 secret','todo','授 五','',''],
-  ['G7','数据与字典六项','准备流程所需的字典、元数据表、流程定义与授权书模板','字典 <code>MCP_TOOL_GROUP</code>（初始值我方提供）／工具元数据表（tool_name·required_scope·group·billing·access_class，我方维护·平台只读同步）／BPMN <code>McpServiceAuthProcess</code>／表 <code>MCP_AUTH_MAPPING</code>／《MCP服务接入授权书》word 模板／授权服务器注册接口','todo','授 六','⚠️ 工具分档口径见冲突 3',''],
-  ['G8','验收要点七条','按七条验收标准验收全链路','① 页签进入/发起/在途防重/撤回全链路可用 ② 邮件可达且能换 access_token、tools/list 只见「公共基础∪核定受控」③ 越权 403、办理类未核定不可见不可调、查询仅本机构产品范围 ④ IP 白名单外被拒 ⑤ 吊销后旧 token 立即失效、重发后新 secret 可用旧永久失效 ⑥ 变更即时生效（无需重新发证）⑦ 历史记录与 API 流程同页切换互不干扰','todo','授 七','',''],
+ {id:'M5', name:'任务包五 · 用户智能体端通道：OAuth 授权与凭证', desc:'面向个人用户自带 AI 工具（如 Trae）的 OAuth 授权通道：授权页确认、短 access＋长 refresh 凭证签发、「我的授权」管理；OAuth 授权服务（六端点）为两条通道共用底座。', apx:'<p><b>来源记录</b>：<b>原 F 组</b>：来源：接 §11.1、§8.4–8.5</p><p><b>逐条来源</b>：F1 → 接 §11.1｜F2 → 接 §11.1、§8.4｜F3 → 接 §8.5、§11.1｜F4 → 接 §11.1；板内 authdesign 第四章原型</p><p><p><b>状态补充说明</b>：F2 → 口径已定｜F3 → 口径已定</p><p><b>授权机制场景口径（0916 拍板·与任务包六共用）</b>：演示场景＝<b>不采用 OAuth</b>——按固定客户的固定人员发放固定 Key 完成认证；权限控制由智能体平台直读管理人平台用户权限表与菜单-接口对应表、自行维护对接（不依赖平台交表）。正式场景＝<b>管理人平台作 OAuth 授权服务器统一签发</b>（采用「短 access＋长 refresh」：access 1 小时；refresh 闲置 30 天滑动、总寿命 90 天封顶；不贴浏览器会话——MCP 凭证与浏览器登录各自独立；0916 已定），智能体平台 MCP 服务仅作<b>资源服务器</b>（验签＋权限判定，不签发票）。故 F/G 两包任务均为正式场景。</p>', items:[
+  ['F1','搭建 OAuth 授权服务（六端点·两通道共用）','功能：实现授权、换票、注册、元数据发现、公钥、撤销六个标准端点。价值：为「用户智能体端」「机构智能体平台」两条对外通道提供标准接入底座。','<code>GET /oauth2/authorize</code>（授权页：平台账号登录＋授权确认）／<code>POST /oauth2/token</code>（authorization_code＋PKCE、client_credentials）／<code>POST /oauth2/registration</code>（动态客户端注册·可选）／<code>GET /.well-known/oauth-authorization-server</code>（RFC 8414）／<code>GET /.well-known/jwks.json</code>（RFC 7517·供YXF验签）／<code>POST /oauth2/revoke</code>（RFC 7009＋平台扩展）','todo','接 §11.1','','2026-11-30'],
+  ['F2','实现授权页（用户智能体端通道）','功能：授权页只做身份确认与摘要告知、不列工具清单；工具可见性由智能体平台实时预过滤。价值：判定点单一不漂移，客户授权体验简单可信。','工具可见性由YXF tools/list 实时预过滤（单一判定点不漂移），平台无需反向拉取工具清单；<b>授权时只做摘要性告知、且不提供选择</b>——摘要按菜单/业务域粒度（用既有菜单权限数据聚合，不引入工具概念）','todo','接 §11.1、§8.4','口径已定','2026-11-30'],
+  ['F3','落地凭证签发与授权结果落库（用户智能体端通道）','功能：签发短效访问凭证（1 小时）＋续期凭证（闲置 30 天滑动续期、总寿命 90 天封顶）；不贴浏览器会话（MCP 凭证与浏览器登录各自独立）；授权结果落库作为「我的授权」页数据源；撤销即时生效。价值：日常使用免重复授权、超期强制重新确认，安全边界清晰。','access_token 1h；refresh 闲置 30 天滑动、总上限 90 天（轮换＋绑定客户端）；不贴浏览器会话；授权结果落库作签发与「我的授权」页数据源；撤销经 token 内省即时生效','todo','接 §8.5、§11.1','0916 定盘：短 access＋长 refresh（30 天滑动／90 天封顶）·不贴浏览器会话；原 ≤8h 单凭证口径作废，随接口文档 v1.20','2026-11-30'],
+  ['F4','开发开通页与「我的授权」页（用户智能体端通道）','功能：用户中心新增开通页（人工开通工具获取凭证）与「我的授权」页（已授权列表/撤销/通知）。价值：客户自助管理授权，服务闭环完整。','① 用户中心·开通页（仅少数不支持自动注册的工具需人工开 clientId：工具名称/工具类型/回调地址 → 开通并发放 clientId）②「我的授权」设备管理页（已授权工具列表／撤销／首次授权通知）','todo','接 §11.1；板内 authdesign 第四章原型','','2026-11-30'],
  ]},
- {id:'M6', name:'大类六 · 联调与验收', desc:'与平台方联调、方案评审回执与工作量口径确认。', apx:'<p><b>来源记录</b>：<b>原 I 组</b>：来源：台账 ＋ 三份方案页首</p><p><b>逐条来源</b>：I1 → 账 chan-ai｜I2 → 账 chan-platform｜I3 → 三份方案页首｜I4 → 接 §11 导语 vs 本清单</p><p><p><b>状态补充说明</b>：I2 → 09-13 走读已定｜I3 → 未见回执</p>', items:[
-  ['I1','Trae 等客户端实测接入','完成 B 通道客户端实测联调','B 通道全链联调（修复后可用，待实际联调）；银小管＋平台双方共同','wip','账 chan-ai','',''],
-  ['I2','设计意图定盘（免深度改造）','确认平台侧只做内嵌 AI 服务对接、不做 MCP 客户端开发','FMP ＝ 内嵌 AI 服务对接智能体平台、协助客户完成办理（预填/预审规则由 AI 服务承担）；编排与开发归智能体平台','done','账 chan-platform','09-13 走读已定',''],
-  ['I3','方案评审状态跟踪','跟踪三份对接方案的平台方评审回执','《表单预填对接方案》标「待平台方评审」；《MCP 申请授权流程》标「提交管理人平台项目组作为设计开发输入」；《交互方案》为 ONES 页（附我方接口文档）——均未见平台方回执记录','pend','三份方案页首','未见回执',''],
-  ['I4','平台侧工作量口径纠偏','修正接口文档对平台侧工作量的低估表述','接口文档 §11 导语称「本章仅剩两类平台实现事项（OAuth 端点与核定存储、表单预填端点）」，与实测平台侧工作面（42 条）严重不符，需修正表述','pend','接 §11 导语 vs 本清单','',''],
+ {id:'M6', name:'任务包六 · 机构智能体平台通道：MCP 服务账号申请授权', desc:'面向客户机构自建平台的 MCP 服务账号通道：在线申请→材料审核→三岗审批→自动发证→验收全流程（时间要求晚于用户智能体端通道）。', apx:'<p><b>来源记录</b>：<b>原 G 组</b>：来源：授 §3–§7</p><p><b>逐条来源</b>：G1 → 授 §3.1–3.2｜G2 → 授 §3.1｜G3 → 授 §3.3｜G4 → 授 §3.4｜G5 → 授 四｜G6 → 授 五｜G7 → 授 六｜G8 → 授 七</p><p><p><b>状态补充说明</b>：G4 → ⚠️ 分档口径见 X1（免申子集定档）｜G7 → ⚠️ 工具分档口径见 X1（免申子集定档）</p><p><b>场景口径</b>：演示/正式两档见任务包五附录「授权机制场景口径（0916 拍板）」（两包共用）。</p>', items:[
+  ['G1','开发 MCP 服务授权页签（机构智能体平台通道·两个子页签）','功能：在「API 服务授权」页新增「MCP 服务授权」页签及两个子页签（授权信息卡片、历史申请记录）。价值：沿用客户熟悉的授权入口，降低使用门槛。','子页签一「MCP 服务授权信息」（已开通服务账号卡片：clientId 脱敏、授权范围、IP 白名单、状态、最近 token；最多 3 个账号）；子页签二「历史申请记录」（复用 callProInfoList，<code>prdDefKey=McpServiceAuthProcess</code>，详情复用 detailDialog）','todo','授 §3.1–3.2','','2027-03-31'],
+  ['G2','补齐授权账号动作按钮组（机构智能体平台通道）','功能：补齐申请/变更/停用按钮与吊销/暂停/重发三个账号动作（均需短信验证确认）。价值：账号全生命周期可自助管理，关键动作有二次确认。','工具栏：MCP服务账号申请（<3 且走 startApiProcessPreCheck 防在途预检）／变更（对齐 API 四选）／停用（对齐「取消授权」＋「暂停可恢复」语义）／下载《MCP接入规范》；卡片动作：吊销密钥（旧 clientSecret 立即失效→token 随之失效）／暂停账号（可恢复）／重发密钥（旧永久失效）——均需短信验证码确认','todo','授 §3.1','','2027-03-31'],
+  ['G3','改造 MCP 服务申请表单（机构智能体平台通道）','功能：按 MCP 流程与 API 流程的差异改造发起表单（客户端标识、工具勾选树、IP 白名单、授权书等）。价值：申请要素完备、与审批链配套，一次填清。','申请类型（新增／变更四选，同款）；账号标识改 <b>clientId（系统生成）</b>（变更·停用按 clientId 定位）；接口勾选改<b>工具勾选树</b>；IP 白名单（测试·生产公网 IP，生产必填、分号多值）；授权书改《MCP服务接入授权书》（模板新做 <code>downloadMcpAuthTemplate</code>）；秘钥接收邮箱 <code>secretKeyReceiveEmail</code>；联系人三件套；留言','todo','授 §3.3','','2027-03-31'],
+  ['G4','实现工具勾选树（机构智能体平台通道的核定清单）','功能：按工具分组提供可勾选清单（工具名/调用路径分类/工具分组/权限档），组内可剔除单项、变更时展示已核定项。价值：申请范围可视化勾选，核定有据可依。','分组来自新字典 <code>MCP_TOOL_GROUP</code>，组内工具来自YXF工具元数据——<b>四字段口径</b>：tool_name／调用路径分类（平台接口·直连·内部）／工具分组／access_class；<b>旧字段 required_scope/group/billing 作废</b>；按组勾选＋组内可展开剔除单项；变更时展示已核定清单（disabled 勾选态）','todo','授 §3.4','四字段口径已定盘','2027-03-31'],
+  ['G5','打通三岗审批链与最小必要集核减（机构智能体平台通道）','功能：复用 API 流程审批链（提交→材料审核→三业务岗并行审批），业务岗审批时核减非必要工具。价值：多一道最小必要把关，控制权限过度授予。','01 提交（可撤回）→02 材料审核（授权书完整性、联系人）→包容网关按业务条件分流→03 外包资金划付岗/份额清算岗/估值核算岗（可多岗并行）→结束；03 岗除业务条件外核定申请工具是否为最小必要集（对照申请理由勾减超额项）','todo','授 四','','2027-03-31'],
+  ['G6','实现自动发证（机构智能体平台通道·开户与凭据发放）','功能：审批通过后自动生成账号与密钥（仅存哈希）、注册授权服务器客户端、落库映射、邮件送达、结束通知。价值：审批到发证全自动，客户拿到凭据即可接入。','① 生成 clientId（<code>mcp_</code> 前缀＋随机）＋clientSecret（强随机·仅存哈希）② 注册 OAuth 客户端（绑机构／核定清单／IP 白名单／token TTL：access 1h、不发 refresh）③ 落库 <code>MCP_AUTH_MAPPING</code>（对齐 API 映射表结构）④ 邮件送达（对齐 API 密钥邮件通道）⑤ 流程结束通知（复用站内信/邮件）；吊销即失效、重发换新 secret','todo','授 五','','2027-03-31'],
+  ['G7','备齐授权流程数据与字典（机构智能体平台通道·六项）','功能：准备工具分组字典、工具元数据表、流程定义、映射表、授权书模板与注册接口。价值：流程运行的底层数据齐备，是发证链路的运行基础。','字典 <code>MCP_TOOL_GROUP</code>（初始值YXF提供）／工具元数据表（<b>四字段口径同 G4</b>：tool_name·调用路径分类·工具分组·access_class，YXF维护·平台只读同步）／BPMN <code>McpServiceAuthProcess</code>／表 <code>MCP_AUTH_MAPPING</code>／《MCP服务接入授权书》word 模板／授权服务器注册接口','todo','授 六','四字段口径已定盘（同 G4）','2027-03-31'],
+  ['G8','制定 MCP 授权验收要点（机构智能体平台通道·七条）','功能：按七条标准验收全链路（申请/在途/撤回、邮件换票、越权 403、IP 白名单、吊销即时、变更即时、历史记录隔离）。价值：验收标准前置明确，交付质量可控。','① 页签进入/发起/在途防重/撤回全链路可用 ② 邮件可达且能换 access_token、tools/list 只见「公共基础∪核定受控」③ 越权 403、办理类未核定不可见不可调、查询仅本机构产品范围 ④ IP 白名单外被拒 ⑤ 吊销后旧 token 立即失效、重发后新 secret 可用旧永久失效 ⑥ 变更即时生效（无需重新发证）⑦ 历史记录与 API 流程同页切换互不干扰','todo','授 七','','2027-03-31'],
  ]},
 ]},
-{id:'agent', tab:'智能体平台（我方）', sub:'89 条 · 9 方面', pane:'bodyAgent', groups: [
- {id:'P1', name:'P1 · 客户服务支持专员（对客服务线）', note:'来源：全景总图对客面 ＋ 09-13 走读定盘｜⚠️ 台账 24 节点中<u>无对应节点</u>，本组为新建项', items:[
-  ['P1-1','银小帆对客服务专员（统一主入口）','建设平台内对客主入口专员，承接业务菜单查询与操作、业务办理类','skill 路由三层（关键词→向量→LLM）＋ 会话粘性 ＋ 回复统一出口（四渠道无需感知内部路由）；对外只呈现「两个对客服务专员」的契约面；现由业务预审专员兼任（底座约八成在线），剩余＝拆出专职角色与对外契约面','wip','全景总图＋09-13 走读；09-14 改判进行中','新建·台账无节点',''],
-  ['P1-2','对客四类输出落地（含委托银小管出口）','四类出口已通三：skill 驱动、MCP 服务能力、智能体对接（法规顾问已在生产对客）；委托银小管出口未建','① skill 驱动（P4 出口上线）② MCP 服务能力（P2）③ 智能体对接（法规顾问；跨平台 A2A 协议未立项不计）④ 委托银小管接口＝框4 预留项','wip','全景总图＋09-13 走读；09-14 原银小管委托调用与四类输出合并去重','新建·台账无节点',''],
-  ['P1-6','对客路由决策表落地','实现两条对客路由规则','① 动作性质——菜单操作／办理类→银小帆自身；纯咨询／FAQ→委托银小管；判不出→默认银小管 ② 会话粘性——同会话粘住首次命中的专员。三层意图路由（关键词→向量→LLM）已在线，剩余＝把帆/管分流与会话粘性写入','bdone','全景总图 v0.15','新建',''],
+{id:'agent', tab:'智能体平台（YXF）', sub:'91 条 · 9 个任务包', pane:'bodyAgent', groups: [
+ {id:'P1', name:'任务包一 · 客户服务支持专员（对客服务线）', note:'来源：全景总图对客面 ＋ 09-13 走读定盘｜⚠️ 台账 24 节点中<u>无对应节点</u>，本组为新建项', items:[
+  ['P1-1','组建银小帆对客服务专员（统一主入口）','功能：建设智能体平台内对客主入口专员，承接业务菜单查询与操作、业务办理类。价值：对外只呈现「两个对客服务专员」的契约面，客户一个入口办所有事；现由业务预审专员兼任（底座约八成在线），剩余＝拆出专职角色与对外契约面。','skill 路由三层（关键词→向量→LLM）＋ 会话粘性 ＋ 回复统一出口（四渠道无需感知内部路由）；对外只呈现「两个对客服务专员」的契约面；现由业务预审专员兼任（底座约八成在线），剩余＝拆出专职角色与对外契约面','wip','全景总图＋09-13 走读；09-14 改判进行中','新建·台账无节点','2026-11-15'],
+  ['P1-2','打通对客四类输出（含委托银小管出口）','功能：打通技能驱动、MCP 服务能力、智能体对接三类输出；委托银小管出口为预留项。价值：对客能力可按客户形态多路输出，覆盖不同接入方式。','① skill 驱动（P4 出口上线）② MCP 服务能力（P2）③ 智能体对接（法规顾问；跨平台 A2A 协议未立项不计）④ 委托银小管接口＝框4 预留项','wip','全景总图＋09-13 走读；09-14 原银小管委托调用与四类输出合并去重','新建·台账无节点','2026-11-30'],
+  ['P1-6','实现对客路由决策与会话粘性','功能：两类路由规则——菜单操作/办理类归银小帆自身，纯咨询/FAQ 转银小管，判不准默认银小管；同会话粘住首次命中的专员。价值：对话被准确分流，客户体验连贯不跳转。','① 动作性质——菜单操作／办理类→银小帆自身；纯咨询／FAQ→委托银小管；判不出→默认银小管 ② 会话粘性——同会话粘住首次命中的专员。三层意图路由（关键词→向量→LLM）已在线，剩余＝把帆/管分流与会话粘性写入','bdone','全景总图 v0.15','新建','2026-10-16'],
  ]},
- {id:'P2', name:'P2 · MCP server 与对外服务边界', note:'来源：台账「对外服务边界」3 节点（edge-*，共 16 条）', items:[
-  ['P2-1','/mcp 端点（JSON-RPC）','提供对外唯一 MCP server 的协议端点','JSON-RPC；静态 API Key 兼容通道（内网测试默认）','done','台账 edge-mcp','',''],
-  ['P2-2','tools/list 筛子预过滤','按用户权限预过滤可见工具清单','fail-open；覆盖全部工具；_EXCLUDED_FMP_TOOLS 跳过降级项','done','台账 edge-mcp','',''],
-  ['P2-3','RFC9728 保护资源元数据端点','供客户端 401 时自动发现授权服务器','双路径','done','台账 edge-mcp','',''],
-  ['P2-4','MCP 认证中间件','静态 Key 与 OAuth 双模式鉴权','静态 Key 兼容 ＋ token introspect 校验（15s／负 5s 缓存·fail-closed）＋ L2 scope 校验（-32002 附指引）<b>⚠️ scope 退役后此段需改，见 X2</b>','done','台账 edge-mcp','已完成·待随 X2 退役 scope',''],
-  ['P2-5','「对外唯一 MCP server」契约','契约句写入板与接口文档并全链收口','一个 URL ／ 一套鉴权 ／ 一份工具清单（一个 URL·一套鉴权·一份工具清单）','done','台账 edge-mcp','',''],
-  ['P2-6','判定链降级边界','约定判定链的降级边界两处','接口明确拒绝不降级 ／ 影子比对——板与接口文档已标「待拍板」','pend','台账 edge-mcp','待拍板',''],
-  ['P2-7','OAuth 2.1 授权码＋PKCE 全链','打通 B 通道 OAuth 授权链路','授权页仅确认身份、不列工具清单（09-13 定盘：只做摘要性告知、不提供选择）','done','台账 edge-oauth','口径已按 09-13 定盘对齐',''],
-  ['P2-8','单凭证档 A','确定凭证生命周期','≤8h 随源会话、不发放跨会话长效凭证、撤销走内省（接口文档 v1.15→v1.16）','done','台账 edge-oauth','',''],
-  ['P2-9','L2 工具 → 6 业务域 scope 映射','维护 L2 工具的 scope 映射表','_TOOL_SCOPES：account／trade／precheck／monitor／workflow／chat <b>⚠️ 按 09-13 定盘 scope 退役，本项转为 X2 退役任务</b>','done','台账 edge-oauth ＋ X2','已完成·待退役',''],
-  ['P2-10','岗位权限现查插件点','提供可选的岗位权限实时现查','MCP_PERM_CHECK_URL，fail-closed（独立机制，不随 scope 退役）','done','台账 edge-oauth','',''],
-  ['P2-11','鉴权缓存盘点','盘点鉴权缓存 TTL 并用文档说明','token 内省 15s／权限判定 60s，属设计期语义非 bug','done','台账 edge-oauth','',''],
-  ['P2-12','功能闸新口径全板改写','A 通道判定归平台的全面改写','全口径排查 4 批 4 提交，28 处 srcdoc 双写','done','台账 edge-gate','',''],
-  ['P2-13','工具分级 L0/L1/L2 落码','工具分级落到代码并驱动判定','L2 需 scope ＋ 可选岗位现查；L0/L1 认证即可用（L 级保留为展示维度）','done','台账 edge-gate','',''],
-  ['P2-14','权限判定图表头收口','统一权限判定图的表头口径','认人·定功能·定数据范围 ｜ B/C 发凭证·A 代转发','done','台账 edge-gate','',''],
-  ['P2-15','旧 scope 材料标注','旧 scope 材料标注为历史参考','scope 四值表／SKILL permission 块标注「历史设计参考」（保留不改）','done','台账 edge-gate','',''],
-  ['P2-16','灰度白名单开放集','演示方案过渡态的客户白名单','平台零改造过渡态：银小管侧白名单圈定 1~2 家真实客户灰度；平台权限机制上线后平移为接口判定','todo','台账 edge-gate','待定客户',''],
+ {id:'P2', name:'任务包二 · MCP server 与对外服务边界', note:'来源：台账「对外服务边界」3 节点（edge-*，共 16 条）', items:[
+  ['P2-1','搭建对外 MCP 服务统一端点','功能：提供对外唯一的 MCP 服务协议端点（兼容内网静态 Key 通道）。价值：所有外部接入只面对一个地址，接入方式标准化。','JSON-RPC；静态 API Key 兼容通道（内网测试默认）','done','台账 edge-mcp','',''],
+  ['P2-2','实现工具清单权限预过滤','功能：按用户权限过滤可见工具清单（覆盖全部工具）。价值：客户只见其可用工具，降低误用与困惑。','fail-open；覆盖全部工具；_EXCLUDED_FMP_TOOLS 跳过降级项','done','台账 edge-mcp','',''],
+  ['P2-3','新增授权服务器自动发现端点','功能：客户端未授权时自动发现授权服务器（双路径）。价值：第三方客户端接入更省事，减少人工配置。','双路径','done','台账 edge-mcp','',''],
+  ['P2-4','实现 MCP 双模式鉴权中间件','功能：静态 Key 与 OAuth 双模式鉴权（令牌内省校验＋缓存、异常即拦）。价值：不同接入方的鉴权统一收敛到一处（scope 校验部分随退役任务移除）。','静态 Key 兼容 ＋ token introspect 校验（15s／负 5s 缓存·fail-closed）＋ L2 scope 校验（-32002 附指引）<b>⚠️ scope 退役后此段需改，见 X2</b>','done','台账 edge-mcp','已完成·待随 X2 退役 scope',''],
+  ['P2-5','确立「对外唯一 MCP 服务」契约','功能：一个地址、一套鉴权、一份工具清单写入看板与接口文档并全链收口。价值：对外口径唯一，联调不再多头对表。','一个 URL ／ 一套鉴权 ／ 一份工具清单（一个 URL·一套鉴权·一份工具清单）','done','台账 edge-mcp','',''],
+  ['P2-6','约定权限判定降级边界','功能：接口明确拒绝不降级硬拦、无应答/超时同样拦截；影子比对仅作 FMP 接口上线前过渡观察。价值：故障与异常情况下不放松权限管控。','接口明确拒绝＝不降级硬拦（YXF不二次判定）；无应答/超时＝同样拦截（fail-closed）；影子比对仅作平台接口上线前过渡观察。板与接口文档按此落地','todo','台账 edge-mcp','待落地','2026-11-15'],
+  ['P2-7','打通 OAuth 2.1 授权链路（授权码＋PKCE）','功能：授权页仅确认身份、不提供工具选择（只做摘要告知）。价值：第三方客户端安全接入的标准底座。','授权页仅确认身份、不列工具清单（09-13 定盘：只做摘要性告知、不提供选择）','done','台账 edge-oauth','口径已按 09-13 定盘对齐',''],
+  ['P2-8','确认凭证生命周期（0916 改：短 access＋长 refresh）','功能：访问凭证 1 小时、续期凭证闲置 30 天滑动续期、总寿命 90 天封顶；不贴浏览器会话（MCP 凭证与浏览器登录各自独立）；撤销走内省。价值：长体验与可撤销兼得，权限仍按调用实时判定。','access 1h；refresh 闲置 30 天滑动／总上限 90 天；不贴浏览器会话；撤销走内省。YXF 侧同步支持 refresh 换票（小改，随 v1.20）','done','台账 edge-oauth','0916 更新：原 09-13「≤8h 单凭证」口径作废，新口径随接口文档 v1.20 实施；本条为口径定盘记录',''],
+  ['P2-9','维护工具与业务域映射（待随退役任务移除）','功能：维护工具到业务域的权限映射；按定盘 scope 退役、本项转入退役任务。价值：过渡期映射关系有据可查。','_TOOL_SCOPES：account／trade／precheck／monitor／workflow／chat <b>⚠️ 按 09-13 定盘 scope 退役，本项转为 X2 退役任务</b>','done','台账 edge-oauth ＋ X2','已完成·待退役',''],
+  ['P2-10','实现岗位权限实时查询插件点','功能：提供可选的岗位权限实时现查（异常即拦、独立机制）。价值：判定链可加装实时校验，不依赖缓存。','MCP_PERM_CHECK_URL，fail-closed（独立机制，不随 scope 退役）','done','台账 edge-oauth','',''],
+  ['P2-11','盘点鉴权缓存并成文','功能：盘点令牌内省与权限判定缓存有效期并以文档说明（属设计期语义非缺陷）。价值：缓存行为可解释、可审计。','token 内省 15s／权限判定 60s，属设计期语义非 bug','done','台账 edge-oauth','',''],
+  ['P2-12','完成内嵌通道判定归 FMP 的全口径改写','功能：四批排查与提交、28 处同步改写，把内嵌通道判定口径统一改为归 FMP。价值：全板口径一致，消除新旧说法打架。','全口径排查 4 批 4 提交，28 处 srcdoc 双写','done','台账 edge-gate','',''],
+  ['P2-13','落地工具分级（L0/L1/L2）','功能：分级落到代码并驱动判定（分级保留为展示维度）。价值：工具差异化管理，重要工具多一道校验。','L2 需 scope ＋ 可选岗位现查；L0/L1 认证即可用（L 级保留为展示维度）','done','台账 edge-gate','',''],
+  ['P2-14','统一权限判定图口径','功能：权限判定图统一为「认人·定功能·定数据范围｜对外通道发凭证·内嵌通道代转发」。价值：一图讲清权限体系，沟通成本降低。','认人·定功能·定数据范围 ｜ B/C 发凭证·A 代转发','done','台账 edge-gate','',''],
+  ['P2-15','旧权限材料标注为历史参考','功能：旧权限材料标注「历史设计参考」并保留不改。价值：历史沿革可追溯、不误导新读者。','scope 四值表／SKILL permission 块标注「历史设计参考」（保留不改）','done','台账 edge-gate','',''],
+  ['P2-16','圈定演示期客户白名单','功能：FMP 零改造过渡态——圈定 1~2 家真实客户灰度；FMP 权限机制上线后平移为接口判定。价值：演示期即可真实试点，不阻塞交付节奏。','平台零改造过渡态：YXF侧白名单圈定 1~2 家真实客户灰度；平台权限机制上线后平移为接口判定','todo','台账 edge-gate','待定客户','2026-10-31'],
  ]},
- {id:'P3', name:'P3 · MCP tools（工具与契约卡）', note:'来源：台账「三原语供给层·Tools」＋「能力实现层」两节点（sup-tools ＋ cap-*，共 19 条）', items:[
-  ['P3-1','全集口径定稿（83＝53＋30）','定稿工具全集口径','83 ＝ 53 平台接口代理 ＋ 30 直连（板 v1.94／接口文档 v1.19／盘点表全链同步）','done','台账 sup-tools','',''],
-  ['P3-2','聚合工具处置落板','处置三个聚合工具','query_product_lifecycle／query_mgr_overview 降级为场景内编排；运行态 83→81','done','台账 sup-tools','',''],
-  ['P3-3','同名双源去重','处理同名不同源的工具','query_raise_flow／query_product_info 按直连优先（运行态口径）','done','台账 sup-tools','',''],
-  ['P3-4','聚合工具判定语义 AND 定稿','确定聚合工具的判定语义','AND（扇出接口全部有权限才算可用）并注接口文档 v1.19','done','台账 sup-tools','待平台书面确认',''],
-  ['P3-5','工具元数据统一 _tools_meta()','统一工具元数据的供给','L1/L2 ＋ 所需 scope，场景卡／文档共用','done','台账 sup-tools','scope 字段待随 X2 退役',''],
-  ['P3-6','53 条平台接口清单登记','把平台接口清单登记入盘点表','含 requiresIdentity 50/53 标注','done','台账 cap-proxy','',''],
-  ['P3-7','Route C 聚合工具 #55 保留','保留 query_rule_calc_flow','#53/#54 降级为场景内编排，#55 保留（2 接口＝同一动作两步）','done','台账 cap-proxy','',''],
-  ['P3-8','降级影响全链收口','收敛降级带来的口径变化','全集 85→83、运行态 83→81','done','台账 cap-proxy','',''],
-  ['P3-9','直连工具分环境权限管控','推进直连旁路的治理还款','方向已定（09-13）：所有接口都要纳入平台权限管控 → 应改挂平台 REST；可先试点 query_raise_flow（平台有现成等价接口）','todo','台账 cap-proxy','方向已定·待启动',''],
-  ['P3-10','fmp-ai-proxy 口径定盘','明确 fmp-ai-proxy 的定性','＝分析平台代码库所得「平台可提供服务接口集合」项目；两部分分工：① FMP 提供接口 ② 智能体平台封装为 tools/MCP（53 条即②的产物）','done','台账 cap-proxy','09-13 定盘',''],
-  ['P3-11','直连工具数据路径逐工具核实','核实 30 项直连工具的数据路径','fund.PRD_PROP@fmp、PRD_SCALE_INDEX_MONITOR@fmp 等 dblink 实证','done','台账 cap-direct','',''],
-  ['P3-12','L1/L2 分级表维护','维护直连工具的分级与 scope 映射','_TOOL_LEVELS／_TOOL_SCOPES（分级保留为展示维度，scope 待退役）','done','台账 cap-direct','',''],
-  ['P3-13','TA 查询扩展 5 场景端点','扩展份额登记相关查询端点','confirm-rule／open-day／lock-period／raise-flow／redemption-fee（纯加法）','done','台账 cap-direct','',''],
-  ['P3-14','长期路径决策点成文','把每项直连工具的长期路径写成决策点','每工具二选一：改挂平台 REST ／ 维持旁路','done','台账 cap-direct','',''],
-  ['P3-15','新工具上线的权限登记把关','设新工具上架的登记门禁','新工具上架必须同步登记对应表／权限项','todo','台账 cap-direct','等新工具上架场景落实',''],
-  ['P3-16','契约卡样卡格式审定','审定工具契约卡的样卡格式','五要素定型／内部字段标注／字段级示意／md＋HTML 双产出','done','台账 cap-card','',''],
-  ['P3-17','10 工具契约卡交付','交付认申赎 10 工具契约卡','docs/MCP工具契约卡-认申赎-10工具-20260911.{md,html}，事实基线 10a252873 逐卡核对','done','台账 cap-card','',''],
-  ['P3-18','副作用与语义陷阱披露','在契约卡中披露副作用与语义陷阱','reminders 企微推送／stop-buy 无记录≠正常／raise-flow 同名双源／客户名包含式匹配','done','台账 cap-card','',''],
-  ['P3-19','工具说明卡发布至内部工作台','为契约卡提供对外查阅入口','HTML 已备好，上传路径待定','wip','台账 cap-card','待定',''],
+ {id:'P3', name:'任务包三 · MCP tools（工具与契约卡）', note:'来源：台账「三原语供给层·Tools」＋「能力实现层」两节点（sup-tools ＋ cap-*，共 19 条）', items:[
+  ['P3-1','定稿工具全集口径（83＝53＋30）','功能：全集口径在看板、接口文档、盘点表全链同步。价值：对外工具数字口径唯一，不再多版本。','83 ＝ 53 平台接口代理 ＋ 30 直连（板 v1.94／接口文档 v1.19／盘点表全链同步）','done','台账 sup-tools','',''],
+  ['P3-2','处置聚合工具（降级为场景内编排）','功能：两个聚合工具降级为场景内编排，运行态 83→81。价值：工具粒度归一到业务动作，避免胖工具。','query_product_lifecycle／query_mgr_overview 降级为场景内编排；运行态 83→81','done','台账 sup-tools','',''],
+  ['P3-3','归并同名双源工具（直连优先）','功能：同名不同源的工具按直连优先去重。价值：客户与联调方对上同一个工具口径。','query_raise_flow／query_product_info 按直连优先（运行态口径）','done','台账 sup-tools','',''],
+  ['P3-4','定稿聚合工具判定语义（AND）','功能：聚合工具按 AND 判定（扇出接口全部有权限才可用）并注明接口文档。价值：判定语义唯一、无歧义。','AND（扇出接口全部有权限才算可用）并注接口文档 v1.19','done','台账 sup-tools','待 FMP 书面确认',''],
+  ['P3-5','实现工具元数据统一供给','功能：工具元数据（分级/所需权限）统一供给、场景卡与文档共用；分层原则＝工具为接口的协议面投影、溯源在工具元数据表。价值：元数据单一来源，杜绝多处漂移。','L1/L2 ＋ 所需 scope，场景卡／文档共用；<b>分层原则（0916 拍板）</b>：工具＝接口在 MCP 协议面的投影、唯一管理主体是接口，接口级溯源落在工具元数据表（tool→接口[]），不落 skill 正文','done','台账 sup-tools','scope 字段待随 X2 退役',''],
+  ['P3-6','登记 FMP 接口清单（53 条）','功能：FMP 接口清单登记入盘点表（含身份要求标注）。价值：工具全景有账可查。','含 requiresIdentity 50/53 标注','done','台账 cap-proxy','',''],
+  ['P3-7','保留规则试算流工具（#55）','功能：保留 query_rule_calc_flow（两个接口＝同一动作两步），其余聚合项降级为场景内编排。价值：业务动作完整、不拆分。','#53/#54 降级为场景内编排，#55 保留（2 接口＝同一动作两步）','done','台账 cap-proxy','',''],
+  ['P3-8','收敛工具降级影响（全链口径）','功能：全集 85→83、运行态 83→81 的口径变化全链收口。价值：各处数字一致。','全集 85→83、运行态 83→81','done','台账 cap-proxy','',''],
+  ['P3-9','治理直连工具的分环境权限管控','功能：演示环境走直连旁路（白名单判权限）、正式生产一律走正路（FMP 判权限），切换随 FMP 权限接口上线。价值：过渡有路径、终态有秩序。','直连旁路＝<b>演示环境正当路径</b>（YXF白名单判权限，正路就绪后亦可切正路）；<b>正式生产一律走正路</b>（平台判权限），切换随 H2 平台权限接口上线。可先试点 query_raise_flow 挂平台 REST（平台有现成等价接口）','todo','台账 cap-proxy','阶段三启动','2026-12-31'],
+  ['P3-10','澄清 fmp-ai-proxy 口径（接口集合义）','功能：明确 fmp-ai-proxy（接口集合）＝FMP 可提供服务接口集合项目；与运行时新增代理服务同名两物已澄清。价值：消除同名混淆，避免误判。','＝分析平台代码库所得「平台可提供服务接口集合」项目；两部分分工：① FMP 提供接口 ② 智能体平台封装为 tools/MCP（53 条即②的产物）。<b>⚠️ 同名两物（09-16 澄清）</b>：本项＝MCP 接口梳理产出；《交互方案》§3.3 另有<b>管理人后端新增 fmp-ai-proxy 代理服务</b>（运行时转发组件·需要，见 M3 组）——同名勿混','done','台账 cap-proxy','09-13 定盘；09-16 澄清同名两物',''],
+  ['P3-11','核实直连工具数据路径（逐工具）','功能：核实 30 项直连工具的数据路径（数据库直连实证）。价值：每项工具数据来源有据、问题可定位。','fund.PRD_PROP@fmp、PRD_SCALE_INDEX_MONITOR@fmp 等 dblink 实证','done','台账 cap-direct','',''],
+  ['P3-12','维护直连工具分级与映射','功能：维护直连工具的分级与权限映射（权限字段待随退役任务移除）。价值：差异化管控有据可依。','_TOOL_LEVELS／_TOOL_SCOPES（分级保留为展示维度，scope 待退役）','done','台账 cap-direct','',''],
+  ['P3-13','扩展份额登记查询五类端点','功能：新增确认规则/开放日/锁定期/认申赎流水/赎回费五类查询端点（纯加法）。价值：份额登记类常见查询有数据支撑。','confirm-rule／open-day／lock-period／raise-flow／redemption-fee（纯加法）','done','台账 cap-direct','',''],
+  ['P3-14','明确直连工具长期路径','功能：每项直连工具二选一（改挂 FMP 接口/维持旁路）成文。价值：遗留问题有明确处置路径。','每工具二选一：改挂平台 REST ／ 维持旁路','done','台账 cap-direct','',''],
+  ['P3-15','把关新工具上线的权限登记','功能：新工具上架必须同步登记对应表/权限项。价值：增量不欠账，权限体系不腐化。','新工具上架必须同步登记对应表／权限项','todo','台账 cap-direct','等新工具上架场景落实',''],
+  ['P3-16','审定工具契约卡格式','功能：五要素定型、字段级示意、双格式产出。价值：对外工具说明有统一格式。','五要素定型／内部字段标注／字段级示意／md＋HTML 双产出','done','台账 cap-card','',''],
+  ['P3-17','交付认申赎 10 工具契约卡','功能：交付 10 张工具契约卡（逐卡核对事实基线）。价值：客户对接工具前有权威说明书。','docs/MCP工具契约卡-认申赎-10工具-20260911.{md,html}，事实基线 10a252873 逐卡核对','done','台账 cap-card','',''],
+  ['P3-18','披露工具副作用与语义陷阱','功能：契约卡披露提醒推送、无记录不等于正常、同名双源、包含式匹配等陷阱。价值：客户少踩坑、减少联调返工。','reminders 企微推送／stop-buy 无记录≠正常／raise-flow 同名双源／客户名包含式匹配','done','台账 cap-card','',''],
+  ['P3-19','发布工具说明卡至内部工作台','功能：为契约卡提供内部查阅入口（上传路径待定）。价值：工具说明可对内分发查阅。','HTML 已备好，上传路径待定','wip','台账 cap-card','待定','2026-10-31'],
  ]},
- {id:'P4', name:'P4 · skills 梳理编写与供给（三原语）', note:'来源：台账「三原语供给层」的 Resources／Prompts／剥离程序三节点（共 11 条）', items:[
-  ['P4-1','Resources 出口上线','上线场景卡出口','索引＋场景卡模板（a97d7a784）','done','台账 sup-resources','',''],
-  ['P4-2','get_skill_flow 升级场景卡 v2','场景卡升级到 v2 结构','flows（全量步骤）＋ tools（带权限域）＋ portable_flow（剥离版）＋ strip_report；修复原文截断 4000 字符带私有指令外发问题','done','台账 sup-resources','',''],
-  ['P4-3','6 业务助手 skill 零残留过检','6 个业务助手场景全量过检','实测零残留 ALL_CLEAN（unresolved_api_references 透明化）','done','台账 sup-resources','',''],
-  ['P4-4','Prompts 出口上线','上线剧本包出口','6 业务助手剧本包先行（skill_{skill_id}）','done','台账 sup-prompts','',''],
-  ['P4-5','get_skill_content 改剥离版','读取出口改返回可移植版','仅 MCP 工具层剥离；管理端 HTTP 端点保留原文，skill-explained 三页不受影响','done','台账 sup-prompts','',''],
-  ['P4-6','存量其余 11 个是否纳入 Prompts','判定存量 11 个（9 流程类＋2 小组件）是否纳入','多为测试案例——待资产归拢后定','wip','台账 sup-prompts','业务团队（工具＝测试台·出口＝我方）；09-14 用户口径：编写进行中约五成',''],
-  ['P4-7','剧本资产梳理归拢','梳理归拢剧本资产','09-13 用户走读拍板：现存量 17 个多为测试案例不作数——预估归拢后约 25 个（区间 20~30，以最终梳理结果为准）；归拢后再定 Prompts 扩面与交付','wip','台账 sup-prompts','业务团队（工具＝测试台·出口＝我方）；09-14 用户口径：编写进行中约五成',''],
-  ['P4-8','剥离程序独立模块转正','skill_portable 独立成模块','mcp_server 净删 112 行重复实现','done','台账 sup-portable','',''],
-  ['P4-9','离线 CLI（门禁与导出）','提供离线命令行','--check 残留门禁（有残留退码 1）／--export 批量导出审校件／--skills','done','台账 sup-portable','',''],
-  ['P4-10','零回归验证','验证改造前后输出一致','6 skill 输出逐字节一致（全 SAME）','done','台账 sup-portable','',''],
-  ['P4-11','CLI 输出 ASCII 化','修 CLI 在 GBK 控制台的崩溃','ASCII 化输出（59a746644，服务器实测暴露）','done','台账 sup-portable','',''],
+ {id:'P4', name:'任务包四 · skills 梳理编写与供给（三原语）', note:'来源：台账「三原语供给层」的 Resources／Prompts／剥离程序三节点（共 11 条）', items:[
+  ['P4-1','上线场景卡出口（Resources）','功能：上线索引＋场景卡模板出口。价值：外部可按规范读取业务流程场景卡。','索引＋场景卡模板（a97d7a784）','done','台账 sup-resources','',''],
+  ['P4-2','升级场景卡至 v2 结构','功能：场景卡含全量步骤、工具权限域、可移植版与剥离报告；修复原文截断导致的私有指令外发问题。价值：对外供给规范且无私有信息外泄。','flows（全量步骤）＋ tools（带权限域）＋ portable_flow（剥离版）＋ strip_report；修复原文截断 4000 字符带私有指令外发问题','done','台账 sup-resources','',''],
+  ['P4-3','完成 6 业务助手场景零残留过检','功能：6 个业务助手场景全量过检（实测零残留）。价值：对外供给内容合规可信。','实测零残留 ALL_CLEAN（unresolved_api_references 透明化）','done','台账 sup-resources','',''],
+  ['P4-4','上线剧本包出口（Prompts）','功能：6 业务助手剧本包先行供给。价值：客户可获得标准剧本提示词。','6 业务助手剧本包先行（skill_{skill_id}）','done','台账 sup-prompts','',''],
+  ['P4-5','改造读取出口返回可移植版','功能：对外读取仅剥离工具层，管理端保留原文。价值：对外安全、对内完整。','仅 MCP 工具层剥离；管理端 HTTP 端点保留原文，skill-explained 三页不受影响','done','台账 sup-prompts','',''],
+  ['P4-6','评估存量 11 个技能是否纳入供给','功能：逐个走测试台流程验证，通过才纳入正式资产。价值：存量资产去伪存真，纳入即合格。','多为测试案例——<b>逐个走测试台流程验证，通过才正式纳入正式 skill 剧本资产</b>；归拢后再定 Prompts 扩面','wip','台账 sup-prompts','业务团队（工具＝测试台·出口＝YXF）；编写进行中约五成','2026-10-31'],
+  ['P4-7','梳理归拢剧本资产','功能：存量 17 个多为测试案例不作数；预估归拢后约 25 个（区间 20~30），逐个验证后纳入。价值：正式资产清单明确，扩面有依据。','现存量 17 个多为测试案例不作数——预估归拢后约 25 个（区间 20~30，以最终梳理结果为准）；<b>逐个走测试台验证后纳入</b>；归拢后再定 Prompts 扩面与交付','wip','台账 sup-prompts','业务团队（工具＝测试台·出口＝YXF）；编写进行中约五成','2026-10-31'],
+  ['P4-8','拆出独立的剥离模块','功能：剥离程序独立成模块（服务代码净删 112 行重复实现）。价值：对外剥离能力单一实现、易维护。','mcp_server 净删 112 行重复实现','done','台账 sup-portable','',''],
+  ['P4-9','开发离线 CLI（残留门禁与批量导出）','功能：提供残留检查门禁（有残留即退码）与批量导出审校件命令。价值：对外供给有自动化质检闸门。','--check 残留门禁（有残留退码 1）／--export 批量导出审校件／--skills','done','台账 sup-portable','',''],
+  ['P4-10','验证改造零回归（输出一致）','功能：6 个技能改造前后输出逐字节一致。价值：改造不影响既有能力。','6 skill 输出逐字节一致（全 SAME）','done','台账 sup-portable','',''],
+  ['P4-11','修复 CLI 在服务器控制台崩溃','功能：输出字符集适配修复控制台崩溃（服务器实测暴露）。价值：工具在服务器环境可用。','ASCII 化输出（59a746644，服务器实测暴露）','done','台账 sup-portable','',''],
  ]},
- {id:'P5', name:'P5 · 演示浏览器插件（预演通道）', note:'来源：台账「客户与渠道层·银小帆浏览器插件」＋ 09-13 C-6 口径｜⚠️ 台账仅 2 条，对客演示端/运营生产端拆分待补', items:[
-  ['P5-1','认申赎录单 Skill 场景跑通','跑通插件的录单场景','open-day 自动合并 batch／参数规范化／pre_review 注管理人','done','台账 chan-plugin','',''],
-  ['P5-2','插件版本发布链','建立插件构建与发布链','release.py build-first／test→latest／/version 自动更新','done','台账 chan-plugin','',''],
-  ['P5-3','对客演示端／运营生产端拆分','按 C-6 口径把插件分两端','对客演示端（对外演示）＋ 运营生产端（业务操作）；插件盒副行改为「生产端（业务操作）」已有，拆分后的任务与验收待补','done','09-13 C-6 口径','台账未覆盖·待补',''],
-  ['P5-4','预演通道作为 A 通道验证形态','明确预演通道的定位与鉴权','静态 API Key；作为 A 通道的验证形态（接口文档 §8.1）；演示方案下平台零改造','done','全景总图＋接口文档','台账未覆盖·待补',''],
+ {id:'P5', name:'任务包五 · 演示浏览器插件（预演通道）', note:'来源：台账「客户与渠道层·银小帆浏览器插件」＋ 09-13 C-6 口径｜⚠️ 台账仅 2 条，对客演示端/运营生产端拆分待补', items:[
+  ['P5-1','跑通认申赎录单技能场景','功能：跑通插件录单场景（开放日自动合并批次、参数规范化、预审结论注管理人）。价值：客户录单效率显著提升。','open-day 自动合并 batch／参数规范化／pre_review 注管理人','done','台账 chan-plugin','',''],
+  ['P5-2','建立插件构建与发布链','功能：构建优先、测试与生产两档通道、版本自动更新。价值：插件迭代可稳定分发。','release.py build-first／test→latest／/version 自动更新','done','台账 chan-plugin','',''],
+  ['P5-3','拆分插件对客演示端与运营生产端','功能：按口径把插件分两端（对客演示/业务操作）。价值：演示与生产互不干扰。','对客演示端（对外演示）＋ 运营生产端（业务操作）；插件盒副行改为「生产端（业务操作）」已有，拆分后的任务与验收待补','done','09-13 C-6 口径','台账未覆盖·待补',''],
+  ['P5-4','明确预演通道定位与鉴权','功能：静态 Key、作为内嵌通道的验证形态（演示方案下 FMP 零改造）。价值：演示交付有独立可用通道。','静态 API Key；作为 内嵌通道的验证形态（接口文档 §8.1）；演示方案下平台零改造','done','全景总图＋接口文档','台账未覆盖·待补',''],
  ]},
- {id:'P6', name:'P6 · skills 测试台建设', note:'来源：⚠️ 台账 24 节点中<u>无对应节点</u>——本组内容摘自已登记的会话记录，<b>状态与进度须由 S3-2（插件与技能工作台）核对补全</b>，本页仅占位。09-14 用户核定四条基本完成（80%），待 S3-2 追认', items:[
-  ['P6-1','测试台全链（写法检查／客户说法／对话试跑）','建设 skill 测试工作台主链','三页签：写法检查／客户说法／对话试跑；技术细节入「🔧 工程视图」','bdone','会话记录摘录','用户0914核定基本完成·待S3-2追认',''],
-  ['P6-2','导入向导与文档符合性检查','提供 skill 导入向导与文档符合性检查','含导航编辑器（域名探活／页面地址捕获）','bdone','会话记录摘录','用户0914核定基本完成·待S3-2追认',''],
-  ['P6-3','建议引擎读权威底账','建议引擎改读权威底账','底账只读（用户拍板）；应用时底账与 SKILL.md 双写','bdone','会话记录摘录','用户0914核定基本完成·待S3-2追认',''],
-  ['P6-4','插件联动（平台页常驻捕获）','打通插件与测试台的捕获联动','插件 2.30.0 平台页右下角常驻「📍 就这个页面」按钮 → 回传 adopt 标记 → 编辑器自动落地址','bdone','会话记录摘录','用户0914核定基本完成·待S3-2追认',''],
+ {id:'P6', name:'任务包六 · skills 测试台建设', note:'来源：⚠️ 台账 24 节点中<u>无对应节点</u>——本组内容摘自已登记的会话记录，<b>状态与进度须由 S3-2（插件与技能工作台）核对补全</b>，本页仅占位。09-14 用户核定四条基本完成（80%），S3-2 已逐条追认（#80e4fd：全链/导入向导/建议引擎客观证据补齐/插件联动 80%）', items:[
+  ['P6-1','搭建技能测试工作台（全链）','功能：三页签（写法检查/客户说法/对话试跑）主链。价值：技能上线前有标准化验证场。','三页签：写法检查／客户说法／对话试跑；技术细节入「🔧 工程视图」','bdone','会话记录摘录','用户0914核定基本完成·S3-2已追认（三页签实测）','2026-09-30'],
+  ['P6-2','开发技能导入向导与文档符合性检查','功能：导入转换、自动备份、受保护确认、导航编辑器（域名探活/页面地址捕获）。价值：技能入库流程化且防误操作。','含导航编辑器（域名探活／页面地址捕获）','bdone','会话记录摘录','用户0914核定基本完成·S3-2已追认（含导航编辑器实测）','2026-09-30'],
+  ['P6-3','改造建议引擎读权威底账','功能：底账只读、技能文件单写；建议按底账生成。价值：建议有权威依据、不被双写污染。','底账只读（用户拍板）；<b>SKILL.md 单写·不回写底账</b>（S3-2 0914 追认纠偏：0911「不改底账」拍板后双写已不成立；消歧接口 <code>doc-expected</code> 等客观证据见其回执）','bdone','会话记录摘录','用户0914核定基本完成·S3-2已追认','2026-09-30'],
+  ['P6-4','实现插件与测试台页面捕获联动','功能：FMP 页面常驻按钮一键回传页面地址。价值：测试用例配置免手工抄地址。','插件 2.30.0 平台页右下角常驻「📍 就这个页面」按钮 → 回传 adopt 标记 → 编辑器自动落地址','bdone','会话记录摘录','用户0914核定基本完成·S3-2追认80%（差额＝待用户实机验证 2.30.2 确认按钮链路）','2026-09-30'],
  ]},
- {id:'P7', name:'P7 · 内部服务与数据对接', note:'来源：台账「内部服务与数据层」4 节点（int-*，现 8 条）。分工：接口提供与登记＝管理人平台（B1 接口清单·H1 对应表·H2 校验）；工具封装与调用对接＝智能体平台', items:[
-  ['P7-1','对内 MCP 聚合层五 server 健康','保障内部聚合层可用','qa／intel／memory／business／docs 五 server 健康检查全 ok','done','台账 int-fmp','',''],
-  ['P7-2','SSE 代理集成','集成本地 MCP 代理','_FMP_PROXY_TOOLS 动态发现 ＋ 排除表过滤','done','台账 int-fmp','',''],
-  ['P7-3','工具盘点路线 A 全集核对','核对平台全量接口清单','mcp-inventory-A.md','done','台账 int-fmp','',''],
-  ['P7-4','投资者份额与开户状态查询接通','接通 TA 三端点','account-status／investor／lock-period','done','台账 int-ta','',''],
-  ['P7-5','开放日 nearest_open_day 修复','修复开放日查询可靠性','无未来日期返回空，不回退历史','done','台账 int-ta','',''],
-  ['P7-7','query_contract_params 接入','接入合同要素查询','申购/赎回确认天数、锁定期字段提取（数据层归 S1）','done','台账 int-contract','',''],
-  ['P7-8','ob_fallback 直查链路核实','核实旁路直查链路并入盘点表；09-14 拍板：OB 兜底不再扩展（原 P7-6 撤销），存量保留为演示保命链路','16 项旁路路径实证','done','台账 int-csp','',''],
-  ['P7-9','CSP 不可用时 OB 备用源','提供备用数据源','product-status／product-by-name／manager-info／stop-buy','done','台账 int-csp','',''],
+ {id:'P7', name:'任务包七 · 内部服务与数据对接', note:'来源：台账「内部服务与数据层」4 节点（int-*，现 8 条）。分工：接口提供与登记＝FMP（B1 接口清单·H1 对应表·H2 校验）；工具封装与调用对接＝智能体平台', items:[
+  ['P7-1','保障内部 MCP 聚合层可用（五服务）','功能：五个内部 MCP 服务健康检查全通过。价值：内部数据与能力供给稳定。','qa／intel／memory／business／docs 五 server 健康检查全 ok','done','台账 int-fmp','',''],
+  ['P7-2','集成本地 MCP 代理（SSE）','功能：动态发现代理工具并过滤排除表。价值：内部工具接入自动化。','_FMP_PROXY_TOOLS 动态发现 ＋ 排除表过滤','done','台账 int-fmp','',''],
+  ['P7-3','核对 FMP 全量接口清单（路线 A）','功能：核对 FMP 全量接口清单。价值：接口全集有底、不遗漏。','mcp-inventory-A.md','done','台账 int-fmp','',''],
+  ['P7-4','接通投资者份额与开户状态查询','功能：三个份额登记查询端点接通。价值：客户份额类常见查询有数据支撑。','account-status／investor／lock-period','done','台账 int-ta','',''],
+  ['P7-5','修复开放日查询可靠性','功能：无未来日期返回空、不回退历史。价值：开放日查询结果可信。','无未来日期返回空，不回退历史','done','台账 int-ta','',''],
+  ['P7-7','接入合同要素查询','功能：申购/赎回确认天数、锁定期字段提取。价值：合同要素类问题有数据支撑。','申购/赎回确认天数、锁定期字段提取（数据层归 S1）','done','台账 int-contract','',''],
+  ['P7-8','核实备用直查链路（故障兜底）','功能：16 项旁路路径实证；已拍板不再扩展、存量保留为演示兜底链路。价值：主数据源故障时有备胎。','16 项旁路路径实证','done','台账 int-csp','',''],
+  ['P7-9','搭建主数据源故障备用链路','功能：提供产品状态/按名称查产品/管理人信息/暂停申购备用源。价值：主数据源不可用时服务不中断。','product-status／product-by-name／manager-info／stop-buy','done','台账 int-csp','',''],
  ]},
- {id:'P8', name:'P8 · 治理与交付（文档／安全／部署／外网／台账）', note:'来源：台账「横切治理层」5 节点（gov-*，共 21 条）', items:[
-  ['P8-1','综合板多页签','维护综合板多页签结构','架构总览／供给设计／权限设计…，渲染实测 0 越界','done','台账 gov-doc','',''],
-  ['P8-2','接口文档 v1.19','维护对外接口文档','§01/§08/§8.4/§8.6/§11.4 ＋ AND 注 ＋ 变更记录，源＋板内 srcdoc 双写 <b>⚠️ §11.4 的 H3 代问接口是否保留待定</b>','done','台账 gov-doc','',''],
-  ['P8-3','MCP 工具权限盘点表','维护工具权限盘点表','全集 83＝53＋30 · 运行态 81 口径','done','台账 gov-doc','',''],
-  ['P8-4','方案探讨 ①~⑨ 收口','收口方案探讨全部条目','①~⑨ 全部收口落板','done','台账 gov-doc','',''],
-  ['P8-5','认申赎 10 工具契约卡','交付契约卡（与 P3-17 同一产出）','见 P3-17','done','台账 gov-doc','',''],
-  ['P8-6','PRD 更深同步','推进 PRD 与现状同步','工具表描述已同步（B7），其余段落随下批','wip','台账 gov-doc','随下批',''],
-  ['P8-7','SSRF 防护','出站安全防护','协议校验 ＋ 私网阻断 ＋ MCP_OUTBOUND_ALLOWLIST 白名单 ＋ 禁重定向，过 Mimosa 门禁','done','台账 gov-sec','',''],
-  ['P8-8','tls_bypass 重命名修复 _ssl 遮蔽','修 direct/stdio 直跑崩溃根因','同时消除了 bat 守护长期未启用的问题（d5a456208）','done','台账 gov-sec','',''],
-  ['P8-9','GitHub Token 纪律','凭据不落明文','凭据管理器 x-access-token；发布脚本白名单主机校验','done','台账 gov-sec','',''],
-  ['P8-10','5089 挂回 bat 守护','恢复 5089 守护链','PID 27024，守护链 cmd→python 验证（#12 拍板 a 落地）','done','台账 gov-deploy','',''],
-  ['P8-11','批次部署','三原语与聚合处置部署','59a746644（stash 前置留档）＋ 4e2e2e231','done','台账 gov-deploy','',''],
-  ['P8-12','服务注册表规范','规范服务启停','status 探测先行／外部启动标记／update 刷新','done','台账 gov-deploy','',''],
-  ['P8-13','4 服务 bat :loop 守护补齐','补齐其余三服务的守护','仅 5089 完成；5090／5095／5096 仍终端直启，双 env 自动重启依赖此项','wip','台账 gov-deploy','待补',''],
-  ['P8-14','外网发布通道','建立外网预览通道','通道建立并三次推送（Git Data API）','done','台账 gov-web','',''],
-  ['P8-15','board.html 重推 v1.94','重推板到外网','Contents API，commit e7c89da，线上实测通过','done','台账 gov-web','',''],
-  ['P8-16','发布脚本安全化','发布脚本加安全约束','固定主机白名单 ＋ 禁重定向，过 Mimosa SSRF 门禁','done','台账 gov-web','',''],
-  ['P8-17','契约卡 HTML 挂外网','把契约卡挂外网','contract-cards.html，待定','wip','台账 gov-web','待定',''],
-  ['P8-18','判定链降级边界','与 P2-6 同一事项','接口明确拒绝不降级 ／ 影子比对','todo','台账 gov-todo','待拍板',''],
-  ['P8-19','鉴权缓存 TTL 收紧','收紧鉴权缓存 TTL','配置化／写时失效（设计期语义，待拍板再动）','todo','台账 gov-todo','待拍板',''],
-  ['P8-20','治理待办台账维护','维护跨批次治理事项台账','docs/pending-decisions.md 统一登记','done','台账 gov-todo','',''],
-  ['P8-21','板外网推送恢复','按 #github-hold 恢复推送','等用户指令','todo','台账 gov-todo','等指令',''],
+ {id:'P8', name:'任务包八 · 治理与交付（文档／安全／部署／外网／台账）', note:'来源：台账「横切治理层」5 节点（gov-*，共 21 条）', items:[
+  ['P8-1','维护综合板多页签结构','功能：架构总览、供给设计、权限设计等多页签维护（渲染零越界）。价值：全部材料一板可查。','架构总览／供给设计／权限设计…，渲染实测 0 越界','done','台账 gov-doc','',''],
+  ['P8-2','维护对外接口文档','功能：章节、判定语义注、变更记录维护（源＋板内双写）。价值：对外口径与实现同步。','§01/§08/§8.4/§8.6/§11.4 ＋ AND 注 ＋ 变更记录，源＋板内 srcdoc 双写 <b>⚠️ §11.4 的 H3 代问接口是否保留待定</b>','done','台账 gov-doc','',''],
+  ['P8-3','更新工具权限盘点表','功能：全集 83＝53＋30、运行态 81 口径维护。价值：工具与权限对照的唯一底账。','全集 83＝53＋30 · 运行态 81 口径','done','台账 gov-doc','',''],
+  ['P8-4','收口方案探讨全部条目','功能：全部待探讨条目收口落板。价值：悬而未决的问题清零。','①~⑨ 全部收口落板','done','台账 gov-doc','',''],
+  ['P8-5','交付认申赎契约卡（与 P3-17 同产出）','功能：契约卡交付与 P3-17 同一产出、不重复建账。价值：治理类产出单一口径。','见 P3-17','done','台账 gov-doc','',''],
+  ['P8-6','同步需求文档与现状','功能：工具表描述已同步，其余段落随下批同步。价值：需求文档与实现一致。','工具表描述已同步（B7），其余段落随下批','wip','台账 gov-doc','随下批','2026-10-31'],
+  ['P8-7','加固出站安全防护','功能：协议校验、私网阻断、出站白名单、禁重定向（过安全门禁）。价值：防止服务被利用探测内网。','协议校验 ＋ 私网阻断 ＋ MCP_OUTBOUND_ALLOWLIST 白名单 ＋ 禁重定向，过 Mimosa 门禁','done','台账 gov-sec','',''],
+  ['P8-8','修复直跑崩溃（模块遮蔽根因）','功能：修复直连/标准输入模式直跑崩溃，顺带恢复守护脚本长期未启用问题。价值：本地与守护方式运行都稳定。','同时消除了 bat 守护长期未启用的问题（d5a456208）','done','台账 gov-sec','',''],
+  ['P8-9','落实凭据不落明文纪律','功能：凭据由凭据管理器托管、发布脚本校验目标主机白名单。价值：防止凭据泄露。','凭据管理器 x-access-token；发布脚本白名单主机校验','done','台账 gov-sec','',''],
+  ['P8-10','恢复 5089 服务守护链','功能：守护链（命令行→服务进程）验证通过。价值：服务崩溃自动拉起。','PID 27024，守护链 cmd→python 验证（#12 拍板 a 落地）','done','台账 gov-deploy','',''],
+  ['P8-11','完成三原语与聚合处置批次部署','功能：本批次两个提交部署完成。价值：本批次能力上线可交付。','59a746644（stash 前置留档）＋ 4e2e2e231','done','台账 gov-deploy','',''],
+  ['P8-12','规范服务启停流程','功能：状态探测先行、外部启动标记、注册表刷新。价值：多会话并行时不重复启停服务。','status 探测先行／外部启动标记／update 刷新','done','台账 gov-deploy','',''],
+  ['P8-13','补齐其余三服务守护脚本','功能：5090/5095/5096 守护补齐（现仅 5089 完成）。价值：双环境自动切换重启可信。','仅 5089 完成；5090／5095／5096 仍终端直启，双 env 自动重启依赖此项','wip','台账 gov-deploy','待补','2026-09-30'],
+  ['P8-14','建立外网预览通道','功能：外网预览通道建立并三次推送成功。价值：材料可对外预览。','通道建立并三次推送（Git Data API）','done','台账 gov-web','',''],
+  ['P8-15','重推外网看板至新版本','功能：外网看板重推并线上实测通过。价值：外网版本与内网同步。','Contents API，commit e7c89da，线上实测通过','done','台账 gov-web','',''],
+  ['P8-16','加固发布脚本安全','功能：固定主机白名单、禁重定向、过安全门禁。价值：发布过程不被劫持。','固定主机白名单 ＋ 禁重定向，过 Mimosa SSRF 门禁','done','台账 gov-web','',''],
+  ['P8-17','收敛工具说明卡外网挂载（已并入 P3-19）','功能：已并入 P3-19；只挂内部工作台、不挂外网。价值：口径收敛，避免双份维护。','<b>已并入 P3-19</b>；契约卡只挂 5095 工作台、不挂外网——本项外网挂载取消，随 P3-19 收口','todo','台账 gov-web','外网挂载取消','2026-10-31'],
+  ['P8-18','落地判定链降级边界（已并入 P2-6）','功能：已并入 P2-6（拒绝不降级、无应答即拦）。价值：同一事项单一出口。','<b>已并入 P2-6</b>；接口明确拒绝＝不降级硬拦；无应答/超时＝fail-closed；影子比对仅过渡观察','todo','台账 gov-todo','随P2-6落地','2026-11-15'],
+  ['P8-19','收紧鉴权缓存有效期（待拍板）','功能：配置化/写时失效方案待拍板后实施。价值：缩短权限变更生效延迟。','配置化／写时失效（设计期语义，待拍板再动）','todo','台账 gov-todo','待拍板',''],
+  ['P8-20','维护治理待办台账','功能：跨批次治理事项统一登记。价值：治理事项不散落、不遗忘。','docs/pending-decisions.md 统一登记','done','台账 gov-todo','',''],
+  ['P8-21','恢复看板外网推送（按指令）','功能：已恢复一次；其余外网发布逐次听指令。价值：外网发布受控。','<b>0914 已恢复一次</b>：用户明确指示，单文件版导出件已推 GitHub（luistream/rag-html-preview·58dfb80）；board.html 等其余外网发布仍等指令逐次推','todo','台账 gov-todo','已恢复一次·其余等指令',''],
  ]},
- {id:'P9', name:'P9 · 本议题引出的我方工作项', note:'来源：09-13 走读定盘（原在清单页末附录）', items:[
-  ['X1','梳理并确定「公共／免申请」工具子集','由智能体平台梳理并确定 <b>1 个可枚举的</b>「公共工具」子集（开通即用·免申请），作为 MCP 服务授权流程勾选树的免申部分与字典初始值','从 83 项工具全集（53 平台接口代理 ＋ 30 直连）中划出<b>可枚举</b>的免申子集。建议判据三层：① <b>无平台业务数据</b>（纯平台元信息／协议层）→ 公共；② <b>有业务数据但不含个人／机构敏感信息</b>（产品要素／净值／交易日历／公告／合同条款等）→ 复核后入公共；③ <b>含敏感信息</b>（投资者／持仓／账户／交易流水／反洗钱）<b>或产生副作用</b>（预审／表单准备／监控触发）→ 受控。产出物＝子集清单（工具名／归属分组／判据依据），须明确「<b>免申请 ≠ 免判定</b>」。⚠️ <b>该子集最终需人工确定</b>（属业务敏感度判断，09-13 用户明确）——系统侧可先出<b>候选草案＋判据依据</b>供评审，不做自动定档','todo','09-13 定盘','09-13 用户指派·需人工定',''],
-  ['X2','退役代码中的 scope 校验链路','按定盘「凭证只装身份、不需要 scope」——移除银小管侧的 scope 签发与校验，使实现与口径一致','涉及三处：① <code>mcp_server.py</code> 的 <code>_TOOL_SCOPES</code>（15 项 L2 工具 → 6 业务域）；② <code>api_business_review.py</code> 的 L2＋OAuth 校验分支（返回 <code>-32002</code>）；③ 401 保护资源元数据里的 <code>scopes_supported</code>。<b>保留</b>：<code>_TOOL_LEVELS</code>（展示维度）与 <code>MCP_PERM_CHECK_URL</code>（独立机制）。影响 5089 运行时行为，需按服务窗口重启','todo','09-13 定盘','09-13 用户指派',''],
-  ['X3','两类接口的平台登记与统一控权（平台侧）','把「非平台接口由管理人平台登记并控权限」落到接口与代码','09-13 定盘：接口分两类——管理人平台的接口／非管理人平台的接口；<b>非平台接口不需物理经平台，但管理人平台也要登记并控制权限</b>。落地：① 菜单-接口对应表范围扩展到两类接口；② 直连工具的代问逻辑由智能体平台侧落地（见 X5）；③ <b>纯内部工具（14 项）也纳入平台登记</b>——09-13 定盘：管理人平台是客户登录后权限管控的中心，故全部 83 项工具统一登记；登记项含「调用路径分类」','todo','09-13 定盘','责任方＝管理人平台；落地待做（含开只读账号支撑 X4 直查）',''],
-  ['X4','演示路径权限直查路由（读平台只读视图）','演示阶段判定链直读平台后台权限数据，真数据判权限；白名单退居兜底','直读 v_agent_user_perm＋manager_scope（H4 已交付视图；query_user_product_scope 5 分钟缓存＋心跳刷新已上线）——已完成大半；缺＝菜单↔接口对应关系（等 H1 平台交表后补全逐项判定）。实现红线：参数绑定、凭据只走环境变量、fail-closed（★B）、短 TTL（★C）','bdone','09-14 用户提出并确认已完成大半','银小帆智能体平台（前置：平台只读账号，随 X3 推动）',''],
-  ['X5','登记供数与代问逻辑（银小帆智能体平台）','承接 X3 的我方侧落地','① 给平台供登记清单数据（全部工具：工具名／调用路径分类／权限要求）② 银小管侧写代问平台权限接口的调用逻辑（咬合 H3）','todo','09-14 多责任方拆分规则自 X3 拆出','我方',''],
+ {id:'P9', name:'任务包九 · 本议题引出的YXF工作项', note:'来源：09-13 走读定盘（原在清单页末附录）', items:[
+  ['X1','确定免申请工具子集（需人工定档）','功能：从 83 项工具划出可枚举的免申请子集（三层判据：无业务数据→公共；无敏感信息→复核；敏感或有副作用→受控），系统先出候选草案。价值：免申请不等于免判定，授权流程有清晰基线。','从 83 项工具全集（53 平台接口代理 ＋ 30 直连）中划出<b>可枚举</b>的免申子集。建议判据三层：① <b>无平台业务数据</b>（纯平台元信息／协议层）→ 公共；② <b>有业务数据但不含个人／机构敏感信息</b>（产品要素／净值／交易日历／公告／合同条款等）→ 复核后入公共；③ <b>含敏感信息</b>（投资者／持仓／账户／交易流水／反洗钱）<b>或产生副作用</b>（预审／表单准备／监控触发）→ 受控。产出物＝子集清单（工具名／归属分组／判据依据），须明确「<b>免申请 ≠ 免判定</b>」。⚠️ <b>该子集最终需人工确定</b>（属业务敏感度判断，09-13 用户明确）——系统侧可先出<b>候选草案＋判据依据</b>供评审，不做自动定档','todo','09-13 定盘','09-13 用户指派·需人工定','2026-10-16'],
+  ['X2','退役代码中的权限校验链路（三处）','功能：移除智能体平台侧的权限档位签发与校验，使实现与「凭证只装身份」定盘一致（含服务重启窗口）。价值：减少一次判定的冗余与漂移风险。','涉及三处：① <code>mcp_server.py</code> 的 <code>_TOOL_SCOPES</code>（15 项 L2 工具 → 6 业务域）；② <code>api_business_review.py</code> 的 L2＋OAuth 校验分支（返回 <code>-32002</code>）；③ 401 保护资源元数据里的 <code>scopes_supported</code>。<b>保留</b>：<code>_TOOL_LEVELS</code>（展示维度）与 <code>MCP_PERM_CHECK_URL</code>（独立机制）。影响 5089 运行时行为，需按服务窗口重启','todo','09-13 定盘','09-13 用户指派','2026-09-30'],
+  ['X3','实现两类接口的 FMP 登记与统一控权','功能：菜单-接口对应表扩展到两类接口；纯内部工具（14 项）也纳入 FMP 登记。价值：全部 83 项工具统一登记管控。','09-13 定盘：接口分两类——FMP的接口／非FMP的接口；<b>非平台接口不需物理经平台，但FMP也要登记并控制权限</b>。落地：① 菜单-接口对应表范围扩展到两类接口；② 直连工具的代问逻辑由智能体平台侧落地（见 X5）；③ <b>纯内部工具（14 项）也纳入平台登记</b>——09-13 定盘：FMP是客户登录后权限管控的中心，故全部 83 项工具统一登记；登记项含「调用路径分类」','todo','09-13 定盘','责任方＝FMP；落地待做（含开只读账号支撑 X4 直查）','2026-11-15'],
+  ['X4','打通权限直查路由（演示路径）','功能：判定链直读 FMP 后台权限数据（白名单退居兜底）；缺的菜单对应关系待 FMP 交表后补全。价值：演示期即用真数据判权限。','直读 v_agent_user_perm＋manager_scope（H4 已交付视图；query_user_product_scope 5 分钟缓存＋心跳刷新已上线）——已完成大半；缺＝菜单↔接口对应关系（等 H1 平台交表后补全逐项判定）。实现红线：参数绑定、凭据只走环境变量、fail-closed、短 TTL','bdone','09-14 用户提出并确认已完成大半','银小帆智能体平台（前置：FMP 只读账号，随 X3 推动）','2026-11-30'],
+  ['X5','实现登记供数与权限代问逻辑','功能：向 FMP 供给工具登记清单数据；调用前代问 FMP 权限接口。价值：FMP 侧登记工作的智能体平台侧落地，闭环权限管控。','① 给平台供登记清单数据（全部工具：工具名／调用路径分类／权限要求）② YXF侧写代问平台权限接口的调用逻辑（咬合 H3）','todo','09-14 多责任方拆分规则自 X3 拆出','YXF','2026-11-15'],
  ]}
 ]},
   {id:'yd', tab:'云鼎系统', sub:'5 条 · 待对齐', pane:'bodyYd', groups: [
- {id:'Y', name:'Y · 云鼎系统', note:'来源：09-13 用户定盘 ＋ 全景总图对客面｜⚠️ 细节待与云鼎方对齐，本页为初始框架', items:[
-  ['Y1','提供 MCP 服务（绩效分析能力）','云鼎作为<b>独立服务提供方</b>，对外提供绩效分析能力','云鼎侧 MCP 服务<b>基本完成</b>（09-14 用户口径）；依赖管理人平台用户权限认证接口（最终方案）；先期可按过渡方案自行发 key 自鉴权','bdone','09-13 定盘；09-14 进度口径','09-14 用户口径：基本完成',''],
-  ['Y2','菜单权限汇集到管理人平台','云鼎的菜单权限汇集到管理人平台，做统一用户鉴权与权限管理','权限不在云鼎侧独立判定，汇集到平台统一管理','pend','09-13 定盘','待与云鼎方对齐',''],
-  ['Y3','对接口径确认（过渡方案 or 最终方案）','确认云鼎与平台/智能体平台的对接方式（两方案二选）','① <b>过渡方案</b>：云鼎自行发 key、自行用户鉴权（首批提供可用）；② <b>最终方案</b>：与管理人平台对接（依赖平台用户权限认证接口，菜单权限汇集平台统一管理）。另：云鼎 MCP server <b>后期统一接入管理人平台 MCP server</b>（09-14 用户口径）；智能体平台侧负责编排与 MCP 服务统筹。09-14 用户口径：<b>过渡方案基本就绪</b>；最终方案待平台用户权限认证接口','bdone','09-13 定盘；09-14 两方案口径','09-14 用户口径：过渡基本就绪',''],
-  ['Y4','提供能力清单（工具名／入参出参／权限要求）','云鼎提供可供封装的绩效分析能力清单','便于编入工具元数据表与 MCP 服务授权勾选树','pend','待补','待与云鼎方对齐',''],
-  ['Y5','云鼎能力对客汇入编排','把云鼎绩效分析能力纳入对客服务（我方侧编排统筹）','云鼎独立提供方；菜单权限汇集平台统一鉴权；我方负责编排与 MCP 服务统筹（09-13 定盘）；待 Y3 对齐后启动','pend','09-13 定盘；09-14 原 P1-4 移入','我方（云鼎侧服务与权限汇集见 Y1/Y2）',''],
+ {id:'Y', name:'任务包一 · 云鼎系统', note:'来源：09-13 用户定盘 ＋ 全景总图对客面｜⚠️ 细节待与云鼎方对齐，本页为初始框架', items:[
+  ['Y1','接入云鼎 MCP 服务（绩效分析能力）','功能：接入云鼎绩效分析 MCP 服务（云鼎自行发 key 自鉴权，过渡方案先行）。价值：对客能力扩展，先期不依赖 FMP 联调即可提供。','云鼎侧 MCP 服务<b>基本完成</b>（09-14 用户口径）；依赖FMP用户权限认证接口（最终方案）；先期可按过渡方案自行发 key 自鉴权','bdone','09-13 定盘；09-14 进度口径','09-14 用户口径：基本完成','2026-09-30'],
+  ['Y2','汇集云鼎菜单权限至 FMP 统一鉴权','功能：权限不在云鼎侧独立判定，汇集 FMP 统一管理。价值：客户权限视图统一、管控一致。','权限不在云鼎侧独立判定，汇集到平台统一管理','pend','09-13 定盘','待与云鼎方对齐','2026-11-30'],
+  ['Y3','确认云鼎对接口径（过渡方案/最终方案）','功能：两方案二选一——过渡方案自行发 key（先期可用）；最终方案与 FMP 对接。价值：接入路径明确、时间可控。','① <b>过渡方案</b>：云鼎自行发 key、自行用户鉴权（首批提供可用）；② <b>最终方案</b>：与FMP对接（依赖平台用户权限认证接口，菜单权限汇集平台统一管理）。另：云鼎 MCP server <b>后期统一接入FMP MCP server</b>（09-14 用户口径）；智能体平台侧负责编排与 MCP 服务统筹。09-14 用户口径：<b>过渡方案基本就绪</b>；最终方案待平台用户权限认证接口','bdone','09-13 定盘；09-14 两方案口径','09-14 用户口径：过渡基本就绪','2026-09-30'],
+  ['Y4','取得云鼎能力清单（工具/入参出参/权限）','功能：用于编入工具元数据表与授权勾选树。价值：云鼎能力可被统一编目、纳入统一授权。','便于编入工具元数据表与 MCP 服务授权勾选树','pend','待补','待与云鼎方对齐','2026-09-30'],
+  ['Y5','汇入云鼎能力至对客编排','功能：云鼎提供服务、智能体平台负责编排与统筹。价值：客户侧体验统一，能力可组合。','云鼎独立提供方；菜单权限汇集平台统一鉴权；YXF负责编排与 MCP 服务统筹（09-13 定盘）；待 Y3 对齐后启动','pend','09-13 定盘；09-14 原 P1-4 移入','YXF（云鼎侧服务与权限汇集见 Y1/Y2）','2026-11-30'],
  ]}
 ]},
   {id:'zx', tab:'直销系统', sub:'5 条 · 待对齐', pane:'bodyZx', groups: [
- {id:'Z', name:'Z · 直销系统', note:'来源：09-13 用户定盘 ＋ 全景总图对客面｜⚠️ 细节待与直销方对齐，本页为初始框架', items:[
-  ['Z1','提供对外接口清单','直销系统提供其对外接口清单','直销系统<b>只出接口</b>；整体 skill 编排与 MCP 服务统筹由智能体平台负责','pend','09-13 定盘','待与直销方对齐',''],
-  ['Z2','接口对接规范（鉴权／环境／限流／报文）','约定接口对接的技术规范','待定；需明确鉴权方式、测试与生产环境、限流与报文约定','pend','待补','待与直销方对齐',''],
-  ['Z3','测试环境与联调配合','提供测试环境并配合联调','待定','pend','待补','待与直销方对齐',''],
-  ['Z4','分工与责任边界书面确认','把「直销只出接口、编排归智能体平台」的分工书面确认','已由 09-13 定盘；需与直销方书面确认','pend','09-13 定盘','待书面确认',''],
-  ['Z5','直销接口对客包装','把直销系统接口包装为对客服务能力（我方侧编排统筹）','直销只出接口；整体 skill 编排与 MCP 服务统筹由我方负责（09-13 定盘）；待 Z2 对齐后启动','pend','09-13 定盘；09-14 原 P1-5 移入','我方（直销侧接口清单见 Z1）',''],
+ {id:'Z', name:'任务包一 · 直销系统', note:'来源：09-13 用户定盘 ＋ 全景总图对客面｜⚠️ 细节待与直销方对齐，本页为初始框架', items:[
+  ['Z1','取得直销系统对外接口清单','功能：直销只出接口、整体编排与 MCP 服务统筹归智能体平台。价值：分工明确、能力可编排。','直销系统<b>只出接口</b>；整体 skill 编排与 MCP 服务统筹由智能体平台负责','pend','09-13 定盘','待与直销方对齐','2026-10-16'],
+  ['Z2','约定直销接口对接规范','功能：明确鉴权方式、测试与生产环境、限流与报文约定。价值：对接技术边界清晰，减少联调返工。','待定；需明确鉴权方式、测试与生产环境、限流与报文约定','pend','待补','待与直销方对齐','2026-10-16'],
+  ['Z3','对接直销测试环境并完成联调','功能：提供测试环境、双方共同联调。价值：上线前可完整验证。','待定','pend','待补','待与直销方对齐','2026-11-15'],
+  ['Z4','书面确认直销分工与责任边界','功能：把「直销只出接口、编排归智能体平台」分工书面确认。价值：责任边界清晰、减少扯皮。','已由 09-13 定盘；需与直销方书面确认','pend','09-13 定盘','待书面确认','2026-09-30'],
+  ['Z5','包装直销接口为对客能力','功能：待对接规范对齐后启动包装。价值：客户可用到直销类服务。','直销只出接口；整体 skill 编排与 MCP 服务统筹由YXF负责（09-13 定盘）；待 Z2 对齐后启动','pend','09-13 定盘；09-14 原 P1-5 移入','YXF（直销侧接口清单见 Z1）','2026-11-30'],
  ]}
 ]},
 ];
@@ -13719,16 +13628,15 @@ function renderPane(S){
     <h2 id=&quot;${S.id}-${g.id}&quot;>${g.name} <span class=&quot;cnt&quot;>${g.items.length} 条</span></h2>
     <div class=&quot;note&quot; style=&quot;${g.desc?'border-left-color:#1f6feb;background:#f0f6ff;color:#1f3a5f':'border-left-color:#94a3b8;background:#f8fafc;color:#475569'}&quot;>${g.desc||g.note||''}</div>
     <div class=&quot;tblwrap&quot;><table>
-      <thead><tr><th>#</th><th>任务项名称</th><th>任务项内容</th><th>实现技术要求描述</th><th>时间要求</th><th>状态</th><th>完成度</th><th>我的意见</th></tr></thead>
+      <thead><tr><th>#</th><th>任务项名称</th><th>任务项内容</th><th>实现技术要求描述</th><th>时间要求</th><th>状态</th><th>完成度</th></tr></thead>
       <tbody>${g.items.map(it=>`<tr data-id=&quot;${it[0]}&quot; data-g=&quot;${g.id}&quot; data-sys=&quot;${S.id}&quot;>
         <td class=&quot;num&quot;>${it[0]}</td>
         <td class=&quot;c-name&quot;>${it[1]}</td>
         <td class=&quot;c-cont&quot;>${it[2]}</td>
         <td class=&quot;c-tech&quot;>${it[3]}</td>
-        <td class=&quot;c-time&quot;><input type=&quot;text&quot; data-t=&quot;time-${it[0]}&quot; placeholder=&quot;走读时填&quot;></td>
+        <td class=&quot;c-time&quot;><input type=&quot;date&quot; data-t=&quot;time-${it[0]}&quot;></td>
         <td class=&quot;c-st&quot;><select class=&quot;stsel v-${it[4]}&quot; data-s=&quot;st-${it[0]}&quot;>${STS.map(v=>`<option value=&quot;${v}&quot;${v===it[4]?' selected':''}>${ST[v]}</option>`).join('')}</select></td>
         <td class='c-pct'><input type='text' inputmode='decimal' data-p='${it[0]}' placeholder='${DEFV[it[4]]}'></td>
-        <td class=&quot;c-fb&quot;><input type=&quot;text&quot; data-k=&quot;fb-${it[0]}&quot; placeholder=&quot;按 ${it[0]} 提意见&quot;></td>
       </tr>`).join('')}</tbody>
     </table></div>
     ${g.apx?`<details class=&quot;apx&quot;><summary>📎 附录 · 来源与口径记录（${g.items.length} 条）</summary><div class=&quot;apx-b&quot;>${g.apx}</div></details>`:''}`).join('');
@@ -13747,14 +13655,17 @@ document.querySelectorAll('tbody tr').forEach(tr=>{
   const id = tr.dataset.id;
   const ti = tr.querySelector(`input[data-t=&quot;time-${id}&quot;]`);
   if (ti){ const v = localStorage.getItem('time-'+id);
-    if (v !== null &amp;&amp; v !== ''){ ti.value=v; ti.classList.add('has'); }
-    else if (PREFILL[id]){ ti.value=PREFILL[id]; ti.classList.add('has'); localStorage.setItem('time-'+id, PREFILL[id]); } }
+    const sv = localStorage.getItem('timev-'+id);
+    const pf = PREFILL[id]; const pfOk = pf &amp;&amp; /^\d{4}-\d{2}-\d{2}$/.test(pf);
+    const vOk = v &amp;&amp; /^\d{4}-\d{2}-\d{2}$/.test(v);
+    if (vOk &amp;&amp; sv !== null &amp;&amp; v !== sv){ ti.value=v; ti.classList.add('has'); }
+    else if (pfOk){ ti.value=pf; ti.classList.add('has'); localStorage.setItem('time-'+id, pf); localStorage.setItem('timev-'+id, pf); }
+    else if (vOk){ ti.value=v; ti.classList.add('has'); localStorage.setItem('timev-'+id, v); }
+    else { localStorage.removeItem('time-'+id); localStorage.removeItem('timev-'+id); } }
   const sel = tr.querySelector(`select[data-s=&quot;st-${id}&quot;]`);
   if (sel){ const v = localStorage.getItem('st-'+id);
     if (v &amp;&amp; ST[v]) sel.value = v;
     sel.className = 'stsel v-' + sel.value; }
-  const fi = tr.querySelector(`input[data-k=&quot;fb-${id}&quot;]`);
-  if (fi){ const v = localStorage.getItem('fb-'+id); if (v){ fi.value=v; fi.classList.add('has'); } }
   const pi = tr.querySelector(`input[data-p='${id}']`);
   if (pi){ const v = localStorage.getItem('pct-'+id);
     if (v !== null){ if (v !== ''){ pi.value=v; pi.classList.add('has'); } } }
@@ -13767,11 +13678,6 @@ document.querySelectorAll('.stsel').forEach(sel=>{
 });
 document.querySelectorAll('input[data-t]').forEach(inp=>{
   inp.addEventListener('input', ()=>{ const k='time-'+inp.dataset.t.slice(5);
-    if (inp.value.trim()){ localStorage.setItem(k, inp.value); inp.classList.add('has'); }
-    else { localStorage.removeItem(k); inp.classList.remove('has'); } });
-});
-document.querySelectorAll('input[data-k]').forEach(inp=>{
-  inp.addEventListener('input', ()=>{ const k=inp.dataset.k;
     if (inp.value.trim()){ localStorage.setItem(k, inp.value); inp.classList.add('has'); }
     else { localStorage.removeItem(k); inp.classList.remove('has'); } });
 });
@@ -13826,7 +13732,7 @@ document.querySelectorAll('.tabbar button').forEach(b=>{
   b.addEventListener('click', ()=>{ showSys(b.dataset.sys); window.scrollTo({top:0,behavior:'smooth'}); });
 });
 
-/* 筛选（只作用当前系统；页末附表随管理人平台面板） */
+/* 筛选（只作用当前系统；页末附表随FMP面板） */
 function apply(){
   const q = $('#q').value.trim().toLowerCase();
   const fg = $('#fg').value, fs = $('#fs').value, only = $('#onlyFb').dataset.on==='1';
@@ -13839,7 +13745,7 @@ function apply(){
     if (fg &amp;&amp; tr.dataset.g !== fg) ok = false;
     const sel = tr.querySelector('.stsel');
     if (fs &amp;&amp; sel.value !== fs) ok = false;
-    if (only &amp;&amp; !((localStorage.getItem('fb-'+id)||'').trim() || (localStorage.getItem('time-'+id)||'').trim())) ok = false;
+    if (only &amp;&amp; !((localStorage.getItem('time-'+id)||'').trim())) ok = false;
     tr.classList.toggle('hidden', !ok);
     if (ok) shown++;
   });
@@ -13879,17 +13785,16 @@ $('#expBtn').addEventListener('click',()=>{
       const name = (tr.querySelector('.c-name')||{}).textContent.trim() || id;
       const orig = ORIG[id] || st;
       const tm = (localStorage.getItem('time-'+id)||'').trim();
-      const fb = (localStorage.getItem('fb-'+id)||'').trim();
       const chg = st !== orig;
-      if (!tm &amp;&amp; !fb &amp;&amp; !chg) return null;
-      return `  ${id}（${name}）｜状态：${ST[st]}${chg?'（原：'+(ST[orig]||orig)+'）':''}｜时间要求：${tm||'（未填）'}｜意见：${fb||'（无）'}`;
+      if (!tm &amp;&amp; !chg) return null;
+      return `  ${id}（${name}）｜状态：${ST[st]}${chg?'（原：'+(ST[orig]||orig)+'）':''}｜时间要求：${tm||'（未填）'}`;
     }).filter(Boolean);
     if (lines.length) bySys.push(`【${S.tab}】
 ` + lines.join('\n'));
   });
   const txt = bySys.length
     ? `走读结果（按系统）\n生成时间：${new Date().toLocaleString('zh-CN')}\n\n` + bySys.join('\n\n')
-    : '（还没有填写任何时间要求/意见，也没有改过状态）';
+    : '（还没有填写任何时间要求，也没有改过状态）';
   $('#expBox').value = txt; $('#expBar').classList.remove('hidden'); $('#expBox').focus(); $('#expBox').select();
 });
 $('#copyBtn').addEventListener('click', async ()=>{
@@ -14062,7 +13967,7 @@ showSys('mgr');
       <div class="table-wrap" style="margin-top:10px;"><table>
         <tr><th style="width:50%;">🤖 智能体平台新增（角色：OAuth 资源服务器）</th><th>🏦 管理人平台新增（角色：OAuth 授权服务器）</th></tr>
         <tr><td>① 401 + WWW-Authenticate 服务发现（MCP 规范）<br>② JWT 验签中间件 → 解出用户+租户（scope 六域退役）＋权限判定走阶段主通道<br>③ 工具清单按权限预过滤（筛子·fail-open）＋调用时判定（闸·fail-closed）<br>④ 审计日志补用户维度<br>⑤ prepare_form_data 的 <strong>bindUser 从 token 解出</strong><br>⑥ 接口文档 v1.17 §08 OAuth 规范成文</td>
-        <td>① 用户中心自助开通（发放工具 clientId，台账挂本人/本机构名下）<br>② 授权页（管理人平台账号登录+授权确认）+ token 签发（access ≤8h 随源会话·不发放 refresh）+ PKCE<br>③ 「我的授权」设备管理页 + 首次授权通知<br>④ token 只装 用户+机构（scope 六域退役——功能权限由平台判定，直连工具银小管前置查平台权限接口）<br>⑤ 机构服务账号挂同一授权服务器<br>⑥ 默认最小集（核定按工具批——公共工具免申，办理类须核定＋二次确认）</td></tr>
+        <td>① 用户中心自助开通（发放工具 clientId，台账挂本人/本机构名下）<br>② 授权页（管理人平台账号登录+授权确认）+ token 签发（access 1h＋refresh 30 天滑动／90 天封顶·不贴浏览器会话）+ PKCE<br>③ 「我的授权」设备管理页 + 首次授权通知<br>④ token 只装 用户+机构（scope 六域退役——功能权限由平台判定，直连工具银小管前置查平台权限接口）<br>⑤ 机构服务账号挂同一授权服务器<br>⑥ 默认最小集（核定按工具批——公共工具免申，办理类须核定＋二次确认）</td></tr>
       </table></div>
       <p style="margin:8px 0 0 0;font-size:.86rem;color:#475569;"><strong>适用边界</strong>：✅ MCP 接入（§08）/ bindUser（§07 与预填）/ 服务间存票（client_credentials）/ ONES §3.2.3 Token 携带·§3.5 权限校验（由 OAuth 实现）。❌ 预填取件（路段 D：平台登录态+一次性码，平台内部会话）/ ONES §3.2.8 前端接口依赖（平台自身会话）/ 银小管内部 API Key 与 CAS 续期（数据源①②内部 plumbing，不跨信任边界）。</p>
       <p style="margin:6px 0 0 0;font-size:.86rem;color:#475569;"><strong>token 生命周期配套（必做）</strong>：单张 access（≤8h·随源会话、可吊销）+ 撤销即时（token 内省）+ 已授权设备管理页 + 首次授权通知——access 凭证与服务账号 secret 是密码级资产，明文存于客户设备/服务配置文件，泄露面必须可管理。</p>
@@ -14435,7 +14340,7 @@ renderPfFlowList();
     b.addEventListener('click', function(){ document.getElementById('mpAuthDetail').style.display = 'block'; });
   });
   var agree = root.querySelector('[data-mp-action="agree"]');
-  if (agree) agree.addEventListener('click', function(){ msg(document.getElementById('mpConsentMsg'), '✓ 授权成功，跳转回 Trae。Trae 现持有一张随源登录会话（≤8 小时）的访问通行证，不发放续期凭证。', '#16a34a'); });
+  if (agree) agree.addEventListener('click', function(){ msg(document.getElementById('mpConsentMsg'), '✓ 授权成功，跳转回 Trae。Trae 现持有 1 小时访问凭证＋长期续期凭证（不贴浏览器会话，客户端自动续期）。', '#16a34a'); });
   var deny = root.querySelector('[data-mp-action="deny"]');
   if (deny) deny.addEventListener('click', function(){ msg(document.getElementById('mpConsentMsg'), '你已拒绝授权，Trae 无法访问银小管。', '#dc2626'); });
   var prov = root.querySelector('[data-mp-action="provision"]');
@@ -15635,7 +15540,7 @@ TA巨…</td><td style="white-space:nowrap;">对客</td></tr>
         <tr><td>🔐 权限认证需求设计</td><td>板内原生（总纲/四章正文＋配图①②③走读 SVG）</td><td>无（仅本板）</td><td>直接改本板</td></tr>
         <tr><td>📡 智能体平台服务</td><td><strong>srcdoc ①《对外接口文档》</strong>完整嵌入</td><td><code>docs/LYQREFER/LYQNEW/银小管-小帆智能体平台对外接口文档.html</code></td><td><strong>双写</strong></td></tr>
         <tr><td>📑 管理人平台对接</td><td><strong>srcdoc ② ONES《6.智能体平台交互方案》</strong> wiki 导出（React 应用，7.88MB）</td><td>ONES wiki 导出（<strong>冻结版不可改</strong>）</td><td>只读冻结</td></tr>
-        <tr><td>📋 管理人平台侧工作面条目</td><td><strong>srcdoc ④《管理人平台侧工作面条目》</strong>走读页完整嵌入（四系统页签：管理人平台 42 · 智能体平台 93 · 云鼎 4 · 直销 4；时间要求/状态/意见可填并一键导出）</td><td><code>docs/管理人平台侧工作面条目-20260913.html</code></td><td><strong>双写</strong></td></tr>
+        <tr><td>📋 项目任务明细计划</td><td><strong>srcdoc ④《项目任务明细计划》</strong>走读页完整嵌入（四系统页签：管理人平台 42 · 智能体平台 91 · 云鼎 5 · 直销 5；时间要求/状态可填并一键导出）</td><td><code>docs/管理人平台侧工作面条目-20260913.html</code></td><td><strong>双写</strong></td></tr>
         <tr><td>🧩 表单预填方案</td><td>板内原生</td><td>无（仅本板）</td><td>直接改本板</td></tr>
         <tr><td>📋 业务场景清单</td><td>板内原生（77 场景，自源表整理）</td><td>源表《答查醒办场景整理.md》</td><td>改源表后同步</td></tr>
         <tr><td>📄 管理人端 AI 服务需求</td><td><strong>srcdoc ③ PRD 需求文档</strong>完整嵌入</td><td><code>docs/管理人端业务助手需求文档.html</code></td><td><strong>双写</strong></td></tr>
@@ -16019,7 +15924,7 @@ function createWalkable(wrap, S, ORDER, hint) {
 
 
 (function embedArch() {
-  // 管理人侧 AI 服务体系架构（任务项＝大类级，数据取自内嵌的《管理人平台侧工作面条目》清单）
+  // 管理人侧 AI 服务体系架构（任务项＝大类级，数据取自内嵌的《项目任务明细计划》清单）
   var wrap = document.getElementById('archDiagram');
   if (!wrap) return;
   var NS = 'http://www.w3.org/2000/svg';
@@ -16253,7 +16158,7 @@ function createWalkable(wrap, S, ORDER, hint) {
   add(txt(1840, 1222, '口径更新：2026-09-14', {size: 13.5, fill: '#94a3b8', anchor: 'end'}));
 
   /* ===== 运行期清单联动（2026-09-14 用户拍板）：自动聚合打底＋人工行覆盖 =====
-     数据源＝板内「📋 管理人平台侧工作面条目」srcdoc 清单（同源 iframe 全局 SYSTEMS）
+     数据源＝板内「📋 项目任务明细计划」srcdoc 清单（同源 iframe 全局 SYSTEMS）
      状态覆盖＝localStorage「st-条目编号」（与清单页同一份，含其下拉改动）
      聚合规则＝done已完成/wip进行中/todo未开始/pend待确认 → 行[总数,已完成,进行中,未开始,待确认]；
               行完成度＝round((已完成+0.5×进行中)/总数×(无预留框?100:90))，框完成度沿用 boxPct
@@ -16588,9 +16493,9 @@ function createWalkable(wrap, S, ORDER, hint) {
   var S = {
     au_embed:{n:'内嵌', t:'银河管理人平台·银小管(AI 问答)', w:'内嵌通道 · 不走 OAuth', s:'have', b:'这条链路三步看：<br><br>▪ <strong>平台怎么认人</strong>——用户打开银河管理人平台时已经登录过（平台账号 · CAS 单点登录），平台记得他是谁，不需要为用 AI 再登录一次（这就是「平台会话」）。<br>▪ <strong>请求怎么走</strong>——用户在页面里问 AI，请求先交给平台侧的 <strong>fmp-ai-proxy 代理</strong>，由它转发给银小管。<br>▪ <strong>银小管怎么放行</strong>——代理与银小管之间对<strong>固定 API Key</strong>（服务间暗号，认证的是代理这个“服务”而非用户本人）：两边配置同一串强随机值，请求带来、比对一致即放行。<strong>三个注意</strong>：①内网测试用的还是开发默认值（dev-api-key…），上线前须换强随机值，只存两侧服务配置文件（不进代码库/文档）；②暗号无时效，轮换需两侧同步（先加新再删旧）；③只认暗号不认人——谁拿到 key 谁就能以“平台代理”名义调用，故按“整扇门的钥匙”等级保密。「提问人是谁」随请求一起带给银小管（即 <code>X-Fmp-User-Token</code> 头——<strong>银小管不解析、不校验、不用于鉴权</strong>，仅按会话暂存供回调管理人平台时携带；接口文档 §2.2）。<br><br><strong>权限归谁管（目标态 · 见第八章「权限总装」）</strong>：内嵌流量将按机构在<strong>智能体平台权限管理</strong>中建档接入——数据范围沿用既有 MANAGER_ID 机制（查数按机构产品清单过滤），个人能办哪些事由<strong>管理人平台菜单权限</strong>按人裁剪技能清单；现状过渡期内银小管只认服务级 API Key、谁能用 AI 由<strong>平台页面权限</strong>管住入口。<br><br><strong>判别</strong>：「在银河管理人平台页面里用」= 内嵌通道（本格）；「管理人用户的桌面智能体来连」= B；「管理人机构的智能体平台来连」= C。'},
     au_fwd:{n:'🔁', t:'内嵌 · 代理转发（fmp-ai-proxy → 银小管）', w:'内部链路 · 维持现状', s:'have', b:'fmp-ai-proxy 把平台内 AI 请求<strong>代理转发</strong>至银小管：网关侧 API Key 鉴权（服务间内部），用户身份随 <code>X-Fmp-User-Token</code> 头带给银小管——<strong>该头不参与鉴权</strong>（银小管不解析不校验，仅按会话暂存，供阶段三回调管理人平台 API 时原样携带；接口文档 §2.2）。<strong>权限归谁管</strong>：现状只认服务级 API Key（谁能用 AI 由平台页面权限管入口）；目标态代理只须把「用户标识」交给<strong>智能体平台权限管理</strong>既有校验链（载体可沿用 X-Fmp-User-Token 头）——功能按菜单权限裁剪、数据按机构产品范围过滤；功能闸判定权威在平台（平台接口工具平台拦·直连工具代问权限接口，过渡期校验链库直查兜底），见第八章「权限总装」。与 OAuth 体系<strong>并存互不影响</strong>——内部链路不引入 OAuth；跨信任边界的外部工具（B/C）才走 OAuth。图中蓝色虚线即此链路。'},
-    au_c1:{n:'B', t:'管理人用户智能体端', w:'外部调用方 · 走标准 OAuth', s:'todo', b:'管理人（客户）的员工在<strong>自己桌面上</strong>用的 AI 智能体工具，如 Trae、WorkBuddy、千问办公、豆包或客户自建的 agent。<br><br>这类工具要调银小管，先得回答一个问题：<strong>凭什么信你？</strong>员工不能把平台密码交给工具——密码一给出去就管不住了。所以按 MCP 官方规范走<strong>授权码 + PKCE</strong>，拿「张三用 Trae 查数据」举例，共三步：<br>▪ <strong>第一步</strong>：张三把 MCP 链接粘贴进 Trae，Trae 直接来调——没带凭证，先被拒（401）；响应里告诉它去哪儿领证，于是自动打开<strong>银河管理人平台的官方授权页</strong>——张三的密码只输给平台，Trae 碰不到；<br>▪ <strong>第二步</strong>：张三登录——用的就是他平时登录管理人平台的那个账号（即<strong>管理人平台账号</strong>），人挂在机构名下；页面问「允许 Trae 访问你的数据吗？」，张三点「同意」；<br>▪ <strong>第三步</strong>：平台发给 Trae 一张<strong>有时效的通行证（token）</strong>。<br><br><strong>PKCE 是啥</strong>：兑换通行证时的「对暗号」——Trae 发起授权时自造一个随机暗号，只把暗号的<strong>指纹</strong>随请求发给平台（暗号本体不走网络、只留在 Trae 手里）；兑换时必须出示暗号本体、现场对上指纹才发通行证。这样授权码即使被恶意程序截获，没有暗号也换不走通行证。桌面工具存不住长期密钥，用它替代——这正是判定特征第三问「secret 存得住吗」的技术根据，MCP 官方规范也因此强制要求。全程自动完成，用户无感。<br><br>之后 Trae 每次调银小管都带这张通行证（图中 S3）。银小管验通行证便知道：这是张三、属于哪家机构（租户）；功能闸按工具判定——平台接口工具平台拦 · 直连工具代问权限接口——所以 <strong>Trae 能查到的 = 张三本人此刻能查到的</strong>，操作日志也记在张三名下。通行证随源登录会话有效（≤8 小时，不发放续期凭证），当日不必反复登录；张三随时可在「我的授权」页面作废它。<br><br><strong>怎么判断一个客户端属于 B 还是 C</strong>：▪ token 代表谁——个人用户本人 → B；机构系统自身 → C。▪ 授权时有没有人登录——用户本人操作 → B；无人值守纯服务端 → C。▪ secret 存在哪——桌面工具存不住 → 只能用 PKCE；服务端存得住 → 可用 client_credentials。同一个客户可以两条都要：员工白天用的前端 agent 走 B，夜间跑批的服务端走 C。<br><br><strong>产品形态注</strong>：Trae（字节 AI IDE）与 Cursor / Claude Desktop / VS Code 同类，支持配置 MCP 远程服务器；千问办公（QwenWork）有 SKILL 开发与 MCP client 生态；WorkBuddy 是腾讯的 AI 办公助手（桌面形态，可接入 QQ）；豆包则多以 MCP server 角色对外提供能力，作为 client 接入需先确认其支持自配 MCP 服务器。'},
+    au_c1:{n:'B', t:'管理人用户智能体端', w:'外部调用方 · 走标准 OAuth', s:'todo', b:'管理人（客户）的员工在<strong>自己桌面上</strong>用的 AI 智能体工具，如 Trae、WorkBuddy、千问办公、豆包或客户自建的 agent。<br><br>这类工具要调银小管，先得回答一个问题：<strong>凭什么信你？</strong>员工不能把平台密码交给工具——密码一给出去就管不住了。所以按 MCP 官方规范走<strong>授权码 + PKCE</strong>，拿「张三用 Trae 查数据」举例，共三步：<br>▪ <strong>第一步</strong>：张三把 MCP 链接粘贴进 Trae，Trae 直接来调——没带凭证，先被拒（401）；响应里告诉它去哪儿领证，于是自动打开<strong>银河管理人平台的官方授权页</strong>——张三的密码只输给平台，Trae 碰不到；<br>▪ <strong>第二步</strong>：张三登录——用的就是他平时登录管理人平台的那个账号（即<strong>管理人平台账号</strong>），人挂在机构名下；页面问「允许 Trae 访问你的数据吗？」，张三点「同意」；<br>▪ <strong>第三步</strong>：平台发给 Trae 一张<strong>有时效的通行证（token）</strong>。<br><br><strong>PKCE 是啥</strong>：兑换通行证时的「对暗号」——Trae 发起授权时自造一个随机暗号，只把暗号的<strong>指纹</strong>随请求发给平台（暗号本体不走网络、只留在 Trae 手里）；兑换时必须出示暗号本体、现场对上指纹才发通行证。这样授权码即使被恶意程序截获，没有暗号也换不走通行证。桌面工具存不住长期密钥，用它替代——这正是判定特征第三问「secret 存得住吗」的技术根据，MCP 官方规范也因此强制要求。全程自动完成，用户无感。<br><br>之后 Trae 每次调银小管都带这张通行证（图中 S3）。银小管验通行证便知道：这是张三、属于哪家机构（租户）；功能闸按工具判定——平台接口工具平台拦 · 直连工具代问权限接口——所以 <strong>Trae 能查到的 = 张三本人此刻能查到的</strong>，操作日志也记在张三名下。通行证 1 小时有效、续期凭证闲置 30 天滑动（总上限 90 天），不贴浏览器会话、日常不必反复登录；张三随时可在「我的授权」页面作废它。<br><br><strong>怎么判断一个客户端属于 B 还是 C</strong>：▪ token 代表谁——个人用户本人 → B；机构系统自身 → C。▪ 授权时有没有人登录——用户本人操作 → B；无人值守纯服务端 → C。▪ secret 存在哪——桌面工具存不住 → 只能用 PKCE；服务端存得住 → 可用 client_credentials。同一个客户可以两条都要：员工白天用的前端 agent 走 B，夜间跑批的服务端走 C。<br><br><strong>产品形态注</strong>：Trae（字节 AI IDE）与 Cursor / Claude Desktop / VS Code 同类，支持配置 MCP 远程服务器；千问办公（QwenWork）有 SKILL 开发与 MCP client 生态；WorkBuddy 是腾讯的 AI 办公助手（桌面形态，可接入 QQ）；豆包则多以 MCP server 角色对外提供能力，作为 client 接入需先确认其支持自配 MCP 服务器。'},
     au_c3:{n:'C', t:'管理人机构智能体平台（服务账号）', w:'外部调用方 · 走标准 OAuth', s:'todo', b:'管理人（客户）以<strong>机构名义自建的智能体平台</strong>——部署在客户机房的后端系统。它调用银小管时，代表的<strong>不是某位登录用户，而是机构自身</strong>，所以不走个人授权流程（B 通道的授权码 + PKCE），而是走 <strong>client_credentials</strong>：机构在管理人平台<strong>在线申请</strong>（「API 服务授权」页 →「MCP 服务授权」页签：提交盖章授权书、勾选所需场景，经材料审核与三岗审批），<strong>审批通过自动开户</strong>——系统生成 <code>clientId + clientSecret</code>（secret 仅存哈希、邮件送达一次），机构智能体平台此后拿这对凭据直接向管理人平台换 access_token，全程不需要任何个人用户参与。预填存票（路段 C 的 pf_ticket）用的就是这条服务账号链路。<br><br>它拿到的权限约束用三句话就能说完：<br>▪ <strong>身份闸</strong>：token 是机构身份，能用哪些工具按机构申请范围最小化发放——办理类同权：按需申请、审批通过即发放；调用留痕记「机构 · 服务账号」（表单落地路径仍由经办人确认）；<br>▪ <strong>数据闸</strong>：查得到的数据只限本机构名下，碰不到其他管理人的；<br>▪ <strong>记账簿</strong>：每次调用都留痕，记到「某机构 · 某服务账号」名下。<br><br>要以「张三本人」身份办事是 B 通道的事——它的 token 是个人身份，过的同样是这三关。<br><br>这个服务账号与个人用户的授权记录登记在<strong>同一个授权服务器（管理人平台）</strong>之下，统一签发、变更、吊销。'},
-    au_as:{n:'🏦', t:'管理人平台 = OAuth 授权服务器', w:'管理人平台新增', s:'todo', b:'这一格回答一个问题：<strong>外部工具要去哪儿领通行证？</strong>——去管理人平台。平台今天只负责「自己网页认人」（员工打开页面→用账号登录→看自己的业务）；要充当 OAuth 授权服务器（发通行证的窗口），得新增下面 6 件套。按张三接入 Trae 的时间顺序读：<br><br>▪ <strong>① 先登记</strong>（用户中心自助开通）：给每台接入的工具发一个<strong>自己的 clientId</strong>（接入编号），记录挂在授权主体——本人或本机构名下。<strong>注意它不是你的登录账号</strong>：管理人平台账号回答「你是谁」，clientId 回答「这是哪台工具」——同一个人可以授权五台工具，就是五个号。多数客户端（Trae 等）第一次连接时自动领取（MCP 动态注册），不需要人去申请；平台未开自动注册时才需到用户中心手动开通。C 通道的机构服务账号没有浏览器也没有人参与，由管理员预先开好（见 C 格）。<br>▪ <strong>② 再点头</strong>（授权页）：Trae 第一次要数据时弹出的官方授权页就是这块——用账号登录＋点「同意」；PKCE＝兑换通行证时的防截获「对暗号」。密码从头到尾只输给平台页面，Trae 碰不到。<br>▪ <strong>③ 发一张证</strong>（token 签发）：访问通行证 access_token（≤8h 随源登录会话，TTL＝有效期）——与平台登录同寿命，过期重走授权；不发放跨会话长效凭证。<br>▪ <strong>④ 可后悔</strong>（「我的授权」设备管理页＋首次授权通知）：像手机查「已登录设备」——张三能列出所有授权过的工具并一键撤销；有新工具第一次拿到授权会收到通知，不是本人点的同意马上能发现。<br>▪ <strong>⑤ 证里只写身份</strong>（token claims）：发证时只印「你是谁／哪家机构」（scope 六域已退役·功能权限管理员预配置）；细粒度菜单权限不进凭证——由银小管持凭证向平台权限接口问询（签发保持标准件，菜单改动即刻生效）。<br>▪ <strong>⑥ 机构一本账</strong>（服务账号挂同一授权服务器 · 默认窄 scope）：C 通道的机构服务账号也注册在这同一个发证窗口、不另起炉灶；且默认只给很窄的授权（开通默认只读子集）——新开的门默认只开条小缝。申请入口：「API 服务授权」页→「MCP 服务授权」页签（授权书＋三岗审批，审批通过自动注册到此）。<br><br>一句话：<strong>先登记 → 再点头 → 发两张证 → 可后悔 → 证里写字 → 机构一本账收进来。</strong>对面🤖银小管那格是「验票窗口」6 件套，一头发证、一头验票，两格对着看。'},
+    au_as:{n:'🏦', t:'管理人平台 = OAuth 授权服务器', w:'管理人平台新增', s:'todo', b:'这一格回答一个问题：<strong>外部工具要去哪儿领通行证？</strong>——去管理人平台。平台今天只负责「自己网页认人」（员工打开页面→用账号登录→看自己的业务）；要充当 OAuth 授权服务器（发通行证的窗口），得新增下面 6 件套。按张三接入 Trae 的时间顺序读：<br><br>▪ <strong>① 先登记</strong>（用户中心自助开通）：给每台接入的工具发一个<strong>自己的 clientId</strong>（接入编号），记录挂在授权主体——本人或本机构名下。<strong>注意它不是你的登录账号</strong>：管理人平台账号回答「你是谁」，clientId 回答「这是哪台工具」——同一个人可以授权五台工具，就是五个号。多数客户端（Trae 等）第一次连接时自动领取（MCP 动态注册），不需要人去申请；平台未开自动注册时才需到用户中心手动开通。C 通道的机构服务账号没有浏览器也没有人参与，由管理员预先开好（见 C 格）。<br>▪ <strong>② 再点头</strong>（授权页）：Trae 第一次要数据时弹出的官方授权页就是这块——用账号登录＋点「同意」；PKCE＝兑换通行证时的防截获「对暗号」。密码从头到尾只输给平台页面，Trae 碰不到。<br>▪ <strong>③ 发一张证</strong>（token 签发）：访问通行证 access_token（1h）＋续期凭证（闲置 30 天滑动、总上限 90 天）——不贴浏览器会话（MCP 凭证与浏览器登录各自独立），客户端自动续期。<br>▪ <strong>④ 可后悔</strong>（「我的授权」设备管理页＋首次授权通知）：像手机查「已登录设备」——张三能列出所有授权过的工具并一键撤销；有新工具第一次拿到授权会收到通知，不是本人点的同意马上能发现。<br>▪ <strong>⑤ 证里只写身份</strong>（token claims）：发证时只印「你是谁／哪家机构」（scope 六域已退役·功能权限管理员预配置）；细粒度菜单权限不进凭证——由银小管持凭证向平台权限接口问询（签发保持标准件，菜单改动即刻生效）。<br>▪ <strong>⑥ 机构一本账</strong>（服务账号挂同一授权服务器 · 默认窄 scope）：C 通道的机构服务账号也注册在这同一个发证窗口、不另起炉灶；且默认只给很窄的授权（开通默认只读子集）——新开的门默认只开条小缝。申请入口：「API 服务授权」页→「MCP 服务授权」页签（授权书＋三岗审批，审批通过自动注册到此）。<br><br>一句话：<strong>先登记 → 再点头 → 发两张证 → 可后悔 → 证里写字 → 机构一本账收进来。</strong>对面🤖银小管那格是「验票窗口」6 件套，一头发证、一头验票，两格对着看。'},
     au_rs:{n:'🤖', t:'银小管 = OAuth 资源服务器', w:'智能体平台新增', s:'todo', b:'校验 token 并分发能力，6 项职责：▪ 401 + WWW-Authenticate 服务发现（MCP 规范）；▪ JWT 验签中间件 → 解出用户+租户；▪ 工具清单按权限预过滤（筛子）+ 功能闸判定（平台接口工具平台拦·直连工具代问权限接口）；▪ 审计日志补用户维度；▪ prepare_form_data 的 bindUser 从 token 解出；▪ 接口文档 v1.17 §08 OAuth 规范成文。资源服务器与对外 MCP server 是同一服务的两个角色面——银小管对外仅一个 MCP server（/mcp）。'},
     au_v:{n:'S4', t:'验凭证 / 换新', w:'两服务器之间', s:'todo', b:'资源服务器向授权服务器获取 JWKS 公钥验签 token；到期重走授权（B）／凭 secret 直接换（C）；撤销经 token 内省即时生效。两框间的双向虚线箭头即此链路。'},
     au_l1:{n:'🚪', t:'身份闸 · token 代表谁', w:'三道关 · 第一关', s:'todo', b:'第一关决定这张 token 是谁的身份：<strong>B 通道</strong>（管理人用户智能体端）经授权码+PKCE 发的是<strong>个人身份</strong>，解出「用户+租户」，bindUser 由此而来；<strong>C 通道</strong>（管理人机构智能体平台）的服务账号发的是<strong>机构身份</strong>，工具按机构申请范围最小化发放——办理类同权：按需申请、审批通过即发放，调用留痕记机构·服务账号。身份定了，后两关的口径随之而定。'},
@@ -16699,7 +16604,7 @@ function createWalkable(wrap, S, ORDER, hint) {
   roleCard('au_as', 60, 410, 700, '🏦 管理人平台 = OAuth 授权服务器', '办证大厅：给外部工具发通行证', '#0d9488', [
     '▪ 先登记：接入编号 clientId 关联授权主体（本人/本机构）',
     '▪ 再点头：官方授权页 · 账号登录 + 同意（PKCE）',
-    '▪ 发一张证：access ≤8h·随源登录会话',
+    '▪ 发一张证：access 1h＋续期凭证（30 天滑动／90 天封顶·不贴会话）',
     '▪ 可后悔：「我的授权」页随时撤销 + 首次授权通知',
     '▪ 证里写字：只写身份·机构（scope 退役·功能权限管理员预配置）',
     '▪ 机构一本账：服务账号同窗口 · 默认窄授权',
